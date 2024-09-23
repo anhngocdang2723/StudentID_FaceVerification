@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID and Face Matching</title>
+</head>
+<body>
+    <h1>Student ID and Face Matching</h1>
+
+    <!-- Form để upload hai ảnh -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="studentCard">Upload Student Card:</label><br>
+        <input type="file" id="studentCard" name="studentCard" accept="image/*" required><br><br>
+
+        <label for="faceImage">Upload Face Image to Compare:</label><br>
+        <input type="file" id="faceImage" name="faceImage" accept="image/*" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <h3>Result:</h3>
+    <p id="result"></p>
+
+    <script>
+        // JavaScript xử lý form và gửi ảnh lên server
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('student_card', document.getElementById('studentCard').files[0]);
+            formData.append('face_image', document.getElementById('faceImage').files[0]);
+
+            const response = await fetch('/process_student_card/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById('result').innerText = result.match_result + '\nExtracted Text: ' + result.extracted_text;
+        });
+    </script>
+</body>
+</html>
