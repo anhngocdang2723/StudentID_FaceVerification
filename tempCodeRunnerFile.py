@@ -54,7 +54,7 @@ def main(card_image_path, live_image_path):
         print("\nKết quả: Khuôn mặt không khớp!")
 
 if __name__ == "__main__":
-    card_image_path = "D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\R.jpg"
-    live_image_path = "D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\R.jpg"
+    card_image_path = r"StudentID_FaceVerification/student-id-face-matching/R.jpg"
+    live_image_path = r"StudentID_FaceVerification/student-id-face-matching/face.jpg"
     
     main(card_image_path, live_image_path)
