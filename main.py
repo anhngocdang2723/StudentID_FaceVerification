@@ -6,27 +6,24 @@ import cv2
 import re
 import os
 
-# Khởi tạo ứng dụng FastAPI
 app = FastAPI()
 
-# Khởi tạo PaddleOCR cho Tiếng Việt
+#tạo paddleocr model 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Đường dẫn đến các thư mục xử lý
+#đường dẫn và đảm bảo tồn tại
 UPLOAD_FOLDER = "uploads/"
 PROCESSED_FOLDER = "processed/"
 RESULTS_FOLDER = "results/"
 
-# Đảm bảo các thư mục tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
-# Mount static files (for CSS, JS, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# Endpoint trả về file HTML (Giao diện web)
+#endpoints tra vể trang chủ
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
     with open("static/index.html", "r", encoding="utf-8") as f:
@@ -34,7 +31,7 @@ async def get_home():
     return HTMLResponse(content=html_content)
 
 
-# Tiền xử lý ảnh (grayscale và ngưỡng hóa)
+#tiền xử lý ảnh
 def preprocess_image(image_path: str) -> str:
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -45,7 +42,7 @@ def preprocess_image(image_path: str) -> str:
     return processed_image_path
 
 
-# Trích xuất thông tin từ kết quả OCR
+#trích xuất thông tin
 def extract_info_from_ocr(result):
     fields = {
         "Tên": "",
@@ -96,7 +93,7 @@ def extract_info_from_ocr(result):
     return fields
 
 
-# Endpoint để xử lý ảnh và thực hiện OCR
+#endpoint upload ảnh và xử lý ảnh
 @app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     # Lưu ảnh tải lên
@@ -117,7 +114,7 @@ async def upload_image(file: UploadFile = File(...)):
     return JSONResponse(content=extracted_info)
 
 
-# Endpoint để phục vụ ảnh đã xử lý
+#endpoint trả về ảnh đã xử lý
 @app.get("/processed/{filename}", response_class=FileResponse)
 async def get_processed_image(filename: str):
     return FileResponse(os.path.join(PROCESSED_FOLDER, f"processed_{filename}"))
