@@ -1,86 +1,123 @@
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from paddleocr import PaddleOCR
 import cv2
-import pytesseract
-import face_recognition
-import numpy as np
+import re
+import os
 
-# Đường dẫn đến file Tesseract
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# Khởi tạo ứng dụng FastAPI
+app = FastAPI()
 
-def extract_text_from_card(card_image_path):
-    """Trích xuất thông tin từ ảnh thẻ sinh viên bằng Tesseract OCR"""
-    try:
-        card_img = cv2.imread(card_image_path)
-        if card_img is None:
-            print(f"Không thể tải ảnh từ đường dẫn: {card_image_path}")
-            return None
+# Khởi tạo PaddleOCR cho Tiếng Việt
+ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-        card_img_rgb = cv2.cvtColor(card_img, cv2.COLOR_BGR2RGB)
-        
-        # Sử dụng Tesseract OCR để trích xuất văn bản
-        extracted_text = pytesseract.image_to_string(card_img_rgb)
-        return extracted_text
-    except Exception as e:
-        print(f"Đã xảy ra lỗi khi trích xuất văn bản: {e}")
-        return None
+# Đường dẫn đến các thư mục xử lý
+UPLOAD_FOLDER = "uploads/"
+PROCESSED_FOLDER = "processed/"
+RESULTS_FOLDER = "results/"
 
-def detect_and_encode_face(image_path):
-    """Tải và phát hiện khuôn mặt từ ảnh, sau đó mã hóa khuôn mặt"""
-    try:
-        # Đọc ảnh và tìm khuôn mặt bằng face_recognition
-        image = face_recognition.load_image_file(image_path)
-        face_locations = face_recognition.face_locations(image)
+# Đảm bảo các thư mục tồn tại
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
-        if len(face_locations) == 0:
-            print(f"Không tìm thấy khuôn mặt trong ảnh: {image_path}")
-            return None
+# Mount static files (for CSS, JS, etc.)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-        # Mã hóa khuôn mặt
-        face_encodings = face_recognition.face_encodings(image, face_locations)
-        if len(face_encodings) > 0:
-            return face_encodings[0]
-        else:
-            print(f"Không thể mã hóa khuôn mặt trong ảnh: {image_path}")
-            return None
-    except Exception as e:
-        print(f"Đã xảy ra lỗi khi phát hiện và mã hóa khuôn mặt: {e}")
-        return None
 
-def compare_faces(card_face_encoding, live_face_encoding):
-    """So sánh hai khuôn mặt xem có khớp nhau không"""
-    if card_face_encoding is None or live_face_encoding is None:
-        return False
-    
-    results = face_recognition.compare_faces([card_face_encoding], live_face_encoding)
-    return results[0]
+# Endpoint trả về file HTML (Giao diện web)
+@app.get("/", response_class=HTMLResponse)
+async def get_home():
+    with open("static/index.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
 
-def main(card_image_path, live_image_path):
-    # Bước 1: Trích xuất thông tin từ thẻ sinh viên
-    print("Trích xuất thông tin từ thẻ sinh viên...")
-    extracted_text = extract_text_from_card(card_image_path)
-    
-    if extracted_text:
-        print("Thông tin trên thẻ sinh viên: \n", extracted_text)
-    else:
-        print("Không thể trích xuất thông tin từ thẻ sinh viên.")
-        return
 
-    # Bước 2: Nhận diện và mã hóa khuôn mặt trên thẻ sinh viên và ảnh sống
-    print("\nNhận diện khuôn mặt...")
-    card_face_encoding = detect_and_encode_face(card_image_path)
-    live_face_encoding = detect_and_encode_face(live_image_path)
+# Tiền xử lý ảnh (grayscale và ngưỡng hóa)
+def preprocess_image(image_path: str) -> str:
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
-    # Bước 3: So sánh hai khuôn mặt
-    if card_face_encoding is not None and live_face_encoding is not None:
-        match_result = compare_faces(card_face_encoding, live_face_encoding)
-        if match_result:
-            print("\nKết quả: Khuôn mặt khớp!")
-        else:
-            print("\nKết quả: Khuôn mặt không khớp!")
-    else:
-        print("Không thể thực hiện so sánh khuôn mặt do thiếu mã hóa khuôn mặt.")
+    processed_image_path = os.path.join(PROCESSED_FOLDER, f"processed_{os.path.basename(image_path)}")
+    cv2.imwrite(processed_image_path, thresh)
+    return processed_image_path
 
-if __name__ == "__main__":
-    card_image_path = r"StudentID_FaceVerification/student-id-face-matching/img/R.jpg"
-    live_image_path = r"StudentID_FaceVerification/student-id-face-matching/img/face.jpg"
-    
-    main(card_image_path, live_image_path)
+
+# Trích xuất thông tin từ kết quả OCR
+def extract_info_from_ocr(result):
+    fields = {
+        "Tên": "",
+        "Ngành": "",
+        "Khoa/Viện": "",
+        "Khoá": "",
+        "MSV": ""
+    }
+
+    # Sắp xếp kết quả nhận diện theo tọa độ y_min
+    sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
+
+    next_line_is_name = False
+    found_msv = False
+
+    for line in sorted_result:
+        text = line[1][0].strip()
+
+        # Kiểm tra từ khóa "Thẻ Sinh Viên"
+        if "THE SINH VIEN" in text.upper():
+            next_line_is_name = True
+            continue
+
+        # Nếu dòng tiếp theo sau "Thẻ Sinh Viên" thì có khả năng là tên
+        if next_line_is_name:
+            fields["Tên"] = text
+            next_line_is_name = False
+
+        # Trích xuất MSV
+        if not found_msv and "MSV" in text.upper():
+            msv_match = re.search(r"\d{9,}", text)
+            if msv_match:
+                fields["MSV"] = msv_match.group(0)
+            found_msv = True
+
+        # Trích xuất Ngành học
+        if "NGANH" in text.upper() or "C." in text.upper():
+            fields["Ngành"] = text
+
+        # Trích xuất Khoa/Viện
+        if "VIEN" in text.upper():
+            fields["Khoa/Viện"] = text
+
+        # Trích xuất Khoá (dòng chứa năm học)
+        if re.search(r"\d{4}-\d{4}", text):
+            fields["Khoá"] = text
+
+    return fields
+
+
+# Endpoint để xử lý ảnh và thực hiện OCR
+@app.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    # Lưu ảnh tải lên
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_location, "wb") as f:
+        f.write(file.file.read())
+
+    # Tiền xử lý ảnh
+    processed_image_path = preprocess_image(file_location)
+
+    # OCR: Nhận diện văn bản từ ảnh đã tiền xử lý
+    result = ocr.ocr(processed_image_path, cls=True)
+
+    # Trích xuất thông tin từ kết quả OCR
+    extracted_info = extract_info_from_ocr(result)
+
+    # Trả về kết quả dưới dạng JSON
+    return JSONResponse(content=extracted_info)
+
+
+# Endpoint để phục vụ ảnh đã xử lý
+@app.get("/processed/{filename}", response_class=FileResponse)
+async def get_processed_image(filename: str):
+    return FileResponse(os.path.join(PROCESSED_FOLDER, f"processed_{filename}"))
