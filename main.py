@@ -5,25 +5,29 @@ from paddleocr import PaddleOCR
 import cv2
 import re
 import os
+import csv
 
+# Khởi tạo ứng dụng FastAPI
 app = FastAPI()
 
-#tạo paddleocr model 
+# Khởi tạo PaddleOCR cho Tiếng Việt
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-#đường dẫn và đảm bảo tồn tại
+# Đường dẫn đến các thư mục xử lý
 UPLOAD_FOLDER = "uploads/"
 PROCESSED_FOLDER = "processed/"
 RESULTS_FOLDER = "results/"
 
+# Đảm bảo các thư mục tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
+# Mount static files (for CSS, JS, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-#endpoints tra vể trang chủ
+# Endpoint trả về file HTML (Giao diện web)
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
     with open("static/index.html", "r", encoding="utf-8") as f:
@@ -31,7 +35,7 @@ async def get_home():
     return HTMLResponse(content=html_content)
 
 
-#tiền xử lý ảnh
+# Tiền xử lý ảnh (grayscale và ngưỡng hóa)
 def preprocess_image(image_path: str) -> str:
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -42,7 +46,7 @@ def preprocess_image(image_path: str) -> str:
     return processed_image_path
 
 
-#trích xuất thông tin
+# Trích xuất thông tin từ kết quả OCR
 def extract_info_from_ocr(result):
     fields = {
         "Tên": "",
@@ -93,7 +97,27 @@ def extract_info_from_ocr(result):
     return fields
 
 
-#endpoint upload ảnh và xử lý ảnh
+# Lưu kết quả vào file TXT
+def save_results_to_txt(filename, extracted_info):
+    result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.txt")
+    with open(result_file, "w", encoding="utf-8") as f:
+        for field, value in extracted_info.items():
+            f.write(f"{field}: {value}\n")
+    return result_file
+
+
+# Lưu kết quả vào file CSV
+def save_results_to_csv(filename, extracted_info):
+    result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.csv")
+    with open(result_file, "w", newline='', encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Field", "Value"])
+        for field, value in extracted_info.items():
+            writer.writerow([field, value])
+    return result_file
+
+
+# Endpoint để xử lý ảnh và thực hiện OCR
 @app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     # Lưu ảnh tải lên
@@ -110,11 +134,21 @@ async def upload_image(file: UploadFile = File(...)):
     # Trích xuất thông tin từ kết quả OCR
     extracted_info = extract_info_from_ocr(result)
 
-    # Trả về kết quả dưới dạng JSON
-    return JSONResponse(content=extracted_info)
+    # Lưu kết quả vào file TXT và CSV
+    txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
+    csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
+
+    # Trả về đường dẫn đến file TXT và CSV
+    return {
+        "message": "OCR thành công",
+        "txt_file": txt_file_path,
+        "csv_file": csv_file_path,
+        "extracted_info": extracted_info
+    }
 
 
-#endpoint trả về ảnh đã xử lý
-@app.get("/processed/{filename}", response_class=FileResponse)
-async def get_processed_image(filename: str):
-    return FileResponse(os.path.join(PROCESSED_FOLDER, f"processed_{filename}"))
+# Endpoint để tải file kết quả TXT
+@app.get("/results/{filename}", response_class=FileResponse)
+async def download_file(filename: str):
+    file_path = os.path.join(RESULTS_FOLDER, filename)
+    return FileResponse(file_path)

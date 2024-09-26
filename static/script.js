@@ -1,27 +1,33 @@
 document.getElementById('file').addEventListener('change', function() {
-    const preview = document.getElementById('preview');
     const file = this.files[0];
+    const preview = document.getElementById('imagePreview');
 
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
             preview.innerHTML = '<img src="' + e.target.result + '" alt="Image Preview">';
-        };
+        }
         reader.readAsDataURL(file);
     } else {
         preview.innerHTML = '';
     }
 });
 
+// Gửi ảnh và hiển thị kết quả sau khi xử lý
 document.getElementById('uploadForm').onsubmit = async function(event) {
     event.preventDefault();
-    const formData = new FormData(this);
+    document.getElementById('result').textContent = "Đang xử lý...";
     
-    const response = await fetch('/upload-image', {
+    let formData = new FormData(this);
+    let response = await fetch('/upload-image', {
         method: 'POST',
         body: formData
     });
 
-    const result = await response.json();
-    document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    let result = await response.json();
+    document.getElementById('result').textContent = JSON.stringify(result, null, 4);
+
+    // Liên kết tải file
+    document.getElementById('download-txt').href = result.txt_link;
+    document.getElementById('download-csv').href = result.csv_link;
 };
