@@ -45,16 +45,13 @@ input[type="submit"]:hover {
     background-color: #0056b3;
 }
 
-#result-container {
-    margin-top: 20px;
-}
-
 #result {
     margin-top: 20px;
     font-size: 1.2em;
     color: #333;
     white-space: pre-wrap;
 }
+
 .image-preview {
     margin-top: 15px;
 }
