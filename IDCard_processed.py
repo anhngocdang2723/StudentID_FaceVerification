@@ -1,6 +1,6 @@
 import cv2
 
-# Đọc ảnh từ file
+#đọc ảnh
 img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\img\ThaiTuanIDCard.jpg"
 img = cv2.imread(img_path)
 
