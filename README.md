@@ -76,7 +76,7 @@ StudentID_FaceVerification/
 4. Nhấn vào liên kết để tải file TXT hoặc CSV chứa kết quả nhận diện.
 
 ### Ảnh demo
-![Demo Image](static/demo.png)
+#![Demo Image](static/demo.png) #ảnh update sau
 
 ### Đóng góp
 Nếu bạn muốn đóng góp vào dự án, hãy fork dự án và gửi pull request. Hoặc bạn có thể mở các issue để báo cáo lỗi hoặc yêu cầu tính năng mới.
@@ -84,7 +84,7 @@ Nếu bạn muốn đóng góp vào dự án, hãy fork dự án và gửi pull 
 ---
 
 ### Liên hệ
-Nếu có bất kỳ câu hỏi hoặc thắc mắc nào, bạn có thể liên hệ qua email: `your-email@example.com`.
+Nếu có bất kỳ câu hỏi hoặc thắc mắc nào, bạn có thể liên hệ qua email: `anhngocdang27022003@example.com`.
 
 ---
 
