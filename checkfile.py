@@ -1,1 +1,0 @@
-#kiểm tra xem tên và msv có trong danh sách thi hay không
