@@ -1,28 +1,32 @@
 from paddleocr import PaddleOCR
+import os
 
+# Khởi tạo PaddleOCR với ngôn ngữ Tiếng Việt
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Đọc danh sách thí sinh từ ảnh
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\list1.pdf"
-result = ocr.ocr(img_path, cls=True)
+# Đường dẫn đến file danh sách thí sinh (có thể là file PDF hoặc ảnh)
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\image.png"
 
-# Chuyển danh sách từ ảnh sang text
-extracted_names = []
-for line in result[0]:
-    text = line[1][0].strip()
-    extracted_names.append(text)
+# Kiểm tra file có tồn tại không
+if not os.path.exists(img_path):
+    print(f"File {img_path} không tồn tại.")
+else:
+    # Nhận diện văn bản từ file danh sách
+    result = ocr.ocr(img_path, cls=True)
 
-def compare_with_image(student_info, extracted_names):
+    # Trích xuất văn bản từ kết quả OCR
+    extracted_names = []
+    for line in result[0]:  # Xử lý từng dòng được OCR nhận diện
+        text = line[1][0].strip()
+        extracted_names.append(text)
+
+    # In kết quả sau khi đọc danh sách
+    print("Kết quả trích xuất từ danh sách thí sinh:")
     for name in extracted_names:
-        if student_info['Tên'].lower() in name.lower():
-            return f"Sinh viên {student_info['Tên']} có mặt trong danh sách phòng thi."
-    return f"Sinh viên {student_info['Tên']} không có mặt trong danh sách phòng thi."
+        print(name)
 
-# Ví dụ sau khi đã nhận diện thông tin từ thẻ
-student_info = {
-    "Tên": "Đặng Ngọc Anh",
-    "MSV": "215748020110333"
-}
-
-result = compare_with_image(student_info, extracted_names)
-print(result)
+    # Bạn có thể lưu kết quả vào file TXT hoặc CSV nếu muốn
+    with open('extracted_list.txt', 'w', encoding='utf-8') as f:
+        for name in extracted_names:
+            f.write(name + '\n')
+        print("Kết quả đã được lưu vào file 'extracted_list.txt'.")
