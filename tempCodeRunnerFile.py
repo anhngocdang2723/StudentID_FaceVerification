@@ -1,33 +1,44 @@
-# Đọc thông tin sinh viên từ tệp
-def read_student_info(file_path):
-    student_info = {}
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            key, value = line.split(':', 1)  # Tách theo dấu ":"
-            student_info[key.strip()] = value.strip()  # Lưu key và value
-    return student_info
+from paddleocr import PaddleOCR
+import os
 
-# Đường dẫn đến tệp thông tin sinh viên
-student_info_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\results\NgocAnhIDCard_result.txt"
+# Khởi tạo PaddleOCR với ngôn ngữ Tiếng Việt
+ocr = PaddleOCR(use_angle_cls=True, lang='vi')  # Đặt ngôn ngữ là tiếng Việt
 
-# Lấy thông tin sinh viên
-student_info = read_student_info(student_info_path)
+# Đường dẫn đến file danh sách thí sinh (có thể là file PDF hoặc ảnh)
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\DemoDanhSach.png"
 
-# Hàm so sánh với danh sách đã trích xuất
-def compare_with_list(student_info, extracted_list):
-    for entry in extracted_list:
-        name, msv = entry.split(" - ")
-        if student_info['Tên'].strip().lower() == name.strip().lower() and student_info['MSV'] == msv.strip():
-            return f"Sinh viên {student_info['Tên']} có mặt trong danh sách phòng thi."
-    return f"Sinh viên {student_info['Tên']} không có mặt trong danh sách phòng thi."
+# Kiểm tra file có tồn tại không
+if not os.path.exists(img_path):
+    print(f"File {img_path} không tồn tại.")
+else:
+    # Nhận diện văn bản từ file danh sách
+    result = ocr.ocr(img_path, cls=True)
 
-# Đọc danh sách từ file đã lưu
-with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\extracted_list.txt', 'r', encoding='utf-8') as f:
-    extracted_list = f.readlines()
+    # Trích xuất văn bản từ kết quả OCR
+    extracted_names = []
+    
+    # Giữ tên và MSV tạm thời
+    names_and_ids = []
 
-# Xóa ký tự newline và khoảng trắng thừa
-extracted_list = [entry.strip() for entry in extracted_list]
+    for line in result[0]:  # Xử lý từng dòng được OCR nhận diện
+        text = line[1][0].strip()
+        names_and_ids.append(text)
 
-# So sánh và in kết quả
-result = compare_with_list(student_info, extracted_list)
-print(result)
+    # Xử lý để lấy tên và mã sinh viên
+    for i in range(1, len(names_and_ids)):  # Bắt đầu từ dòng thứ 2
+        current_line = names_and_ids[i]
+        if len(current_line) == 15 and current_line.isdigit():  # Nếu dòng hiện tại là mã sinh viên
+            student_id = current_line
+            student_name = names_and_ids[i - 1]  # Lấy tên từ dòng trên
+            extracted_names.append(f"{student_name} - {student_id}")  # Thêm vào danh sách kết quả
+
+    # In kết quả sau khi đọc danh sách
+    print("Kết quả trích xuất từ danh sách thí sinh:")
+    for student in extracted_names:
+        print(student)
+
+    # Lưu kết quả vào file TXT
+    with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\extracted_list.txt', 'w', encoding='utf-8') as f:
+        for student in extracted_names:
+            f.write(student + '\n')
+        print("Kết quả đã được lưu vào file 'extracted_list.txt'.")
