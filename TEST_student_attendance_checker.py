@@ -1,17 +1,9 @@
-# Đọc thông tin sinh viên từ tệp
-def read_student_info(file_path):
-    student_info = {}
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            key, value = line.split(':', 1)  # Tách theo dấu ":"
-            student_info[key.strip()] = value.strip()  # Lưu key và value
-    return student_info
-
-# Đường dẫn đến tệp thông tin sinh viên
-student_info_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\results\NgocAnhIDCard_result.txt"
-
-# Lấy thông tin sinh viên
-student_info = read_student_info(student_info_path)
+# Giả sử bạn đã có kết quả từ việc đọc thẻ sinh viên
+# student_info chứa tên và mã số sinh viên được đọc từ thẻ
+student_info = {
+    # "Tên": "Dang Ngoc Anh",  # Thay thế bằng tên thực tế đọc từ thẻ
+    # "MSV": "215748020110333"  # Thay thế bằng mã số sinh viên thực tế đọc từ thẻ
+}
 
 # Hàm so sánh với danh sách đã trích xuất
 def compare_with_list(student_info, extracted_list):
