@@ -5,3 +5,4 @@ paddlepaddle
 opencv-python
 aiofiles
 python-multipart
+fitz
