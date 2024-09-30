@@ -83,7 +83,7 @@ def extract_info_from_ocr(result):
             found_msv = True
 
         #trích xuất ngành học dựa trên từ khóa "Ngành"
-        if "NGANH" in text.upper() in text.upper():
+        if "NGANH" in text.upper() or "C." in text.upper() in text.upper():
             fields["Ngành"] = text
 
         #trích xuất Khoa/Viện dựa trên từ khóa "Khoa" hoặc "Viện"
