@@ -5,7 +5,7 @@ import os
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')  # Đặt ngôn ngữ là tiếng Việt
 
 # Đường dẫn đến file danh sách thí sinh (có thể là file PDF hoặc ảnh)
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\DemoDanhSach.pdf"
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\DemoDanhSach.png"
 
 # Kiểm tra file có tồn tại không
 if not os.path.exists(img_path):

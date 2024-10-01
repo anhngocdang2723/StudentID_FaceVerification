@@ -1,8 +1,8 @@
 # Giả sử bạn đã có kết quả từ việc đọc thẻ sinh viên
 # student_info chứa tên và mã số sinh viên được đọc từ thẻ
 student_info = {
-    # "Tên": "Dang Ngoc Anh",  # Thay thế bằng tên thực tế đọc từ thẻ
-    # "MSV": "215748020110333"  # Thay thế bằng mã số sinh viên thực tế đọc từ thẻ
+    "Tên": "Dang Ngoc Anh",  # Thay thế bằng tên thực tế đọc từ thẻ
+    "MSV": "215748020110333"  # Thay thế bằng mã số sinh viên thực tế đọc từ thẻ
 }
 
 # Hàm so sánh với danh sách đã trích xuất
