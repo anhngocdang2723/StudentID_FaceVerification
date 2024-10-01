@@ -1,6 +1,7 @@
 from paddleocr import PaddleOCR
 import os
 import openpyxl
+from unidecode import unidecode  # Thêm thư viện unidecode để bỏ dấu
 
 # Khởi tạo PaddleOCR với ngôn ngữ Tiếng Việt
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')  # Đặt ngôn ngữ là tiếng Việt
@@ -29,6 +30,8 @@ def read_from_image(img_path):
             if len(current_line) == 15 and current_line.isdigit():  # Nếu dòng hiện tại là mã sinh viên
                 student_id = current_line
                 student_name = names_and_ids[i - 1]  # Lấy tên từ dòng trên
+                # Loại bỏ dấu và chuyển thành in hoa
+                student_name = unidecode(student_name).upper()
                 extracted_names.append(f"{student_name} - {student_id}")
 
         return extracted_names
@@ -76,6 +79,8 @@ def read_from_excel(excel_path):
                 name = row[name_col - 1]  # Trừ 1 vì openpyxl đánh số từ 1
                 msv = row[msv_col - 1]
                 if name and msv:  # Chỉ lấy những dòng có dữ liệu
+                    # Loại bỏ dấu và chuyển thành in hoa
+                    name = unidecode(name).upper()
                     excel_data.append(f"{name} - {msv}")
             return excel_data
         else:
