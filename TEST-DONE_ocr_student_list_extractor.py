@@ -93,25 +93,27 @@ def read_from_excel(excel_path):
 students_from_image = read_from_image(img_path)
 students_from_excel = read_from_excel(excel_path)
 
-# Hiển thị danh sách sinh viên từ ảnh
+########Thay thế bằng đọc qua Excel và lưu vào DB
+#hiện kết quả đọc ảnh
 if students_from_image:
     print("Danh sách sinh viên từ ảnh:")
     for student in students_from_image:
         print(student)
 
-    # Lưu danh sách sinh viên từ ảnh vào file TXT
+    #lưu vào file txt
     with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\student_list_from_image.txt', 'w', encoding='utf-8') as f:
         for student in students_from_image:
             f.write(student + '\n')
     print("Danh sách sinh viên từ ảnh đã được lưu vào file 'student_list_from_image.txt'.")
 
-# Hiển thị danh sách sinh viên từ Excel
+#hiển thị kết quả và lưu danh sách sinh viên từ Excel
 if students_from_excel:
     print("Danh sách sinh viên từ Excel:")
     for student in students_from_excel:
         print(student)
 
-    # Lưu danh sách sinh viên từ Excel vào file TXT
+    ##### Sẽ thay thế bằng cách lưu vào DB
+    #lưu sang txt
     with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\student_list_from_excel.txt', 'w', encoding='utf-8') as f:
         for student in students_from_excel:
             f.write(student + '\n')
