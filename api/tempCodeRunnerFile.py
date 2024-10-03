@@ -1,119 +1,176 @@
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from paddleocr import PaddleOCR
+import cv2
+import re
 import os
-import openpyxl
-from unidecode import unidecode  # Thêm thư viện unidecode để bỏ dấu
+import csv
 
-# Khởi tạo PaddleOCR với ngôn ngữ Tiếng Việt
-ocr = PaddleOCR(use_angle_cls=True, lang='vi')  # Đặt ngôn ngữ là tiếng Việt
+# Khởi tạo FastAPI
+app = FastAPI()
 
-# Đường dẫn đến file danh sách thí sinh (ảnh hoặc PDF)
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\0.png"
-excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\DemoDanhSach.xlsx'
+# Khởi tạo PaddleOCR để đọc tiếng Việt
+ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Hàm xử lý đọc danh sách từ hình ảnh
-def read_from_image(img_path):
-    if os.path.exists(img_path):
-        # Nhận diện văn bản từ file ảnh
-        result = ocr.ocr(img_path, cls=True)
+# Đường dẫn lưu trữ đến các thư mục chứa ảnh, ảnh đã xử lý và kết quả
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Đường dẫn thư mục hiện tại
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+PROCESSED_FOLDER = os.path.join(BASE_DIR, "processed")
+RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
+STATIC_FOLDER = os.path.join(BASE_DIR, "static")  # Đường dẫn đến thư mục static
 
-        # Trích xuất văn bản từ kết quả OCR
-        extracted_names = []
-        names_and_ids = []
+# Kiểm tra và tạo thư mục nếu chưa tồn tại
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+os.makedirs(RESULTS_FOLDER, exist_ok=True)
+os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-        for line in result[0]:  # Xử lý từng dòng được OCR nhận diện
-            text = line[1][0].strip()
-            names_and_ids.append(text)
+# Mount static files (CSS, JS, etc.)
+app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 
-        # Xử lý để lấy tên và mã sinh viên
-        for i in range(1, len(names_and_ids)):  # Bắt đầu từ dòng thứ 2
-            current_line = names_and_ids[i]
-            if len(current_line) == 15 and current_line.isdigit():  # Nếu dòng hiện tại là mã sinh viên
-                student_id = current_line
-                student_name = names_and_ids[i - 1]  # Lấy tên từ dòng trên
-                # Loại bỏ dấu và chuyển thành in hoa
-                student_name = unidecode(student_name).upper()
-                extracted_names.append(f"{student_name} - {student_id}")
+# Endpoints hiển thị web
+@app.get("/", response_class=HTMLResponse)
+async def get_home():
+    with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
 
-        return extracted_names
-    else:
-        print(f"File {img_path} không tồn tại.")
-        return []
+# Tiền xử lý ảnh (grayscale và ngưỡng hóa)
+def preprocess_image(image_path: str) -> str:
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
-# Hàm phát hiện các cột chứa "Họ tên" và "Mã sinh viên"
-def find_columns(sheet):
-    name_col = None
-    msv_col = None
-    header_row = None
+    processed_image_path = os.path.join(PROCESSED_FOLDER, f"processed_{os.path.basename(image_path)}")
+    cv2.imwrite(processed_image_path, thresh)
+    return processed_image_path
 
-    # Duyệt qua các dòng để tìm dòng tiêu đề
-    for row in sheet.iter_rows(values_only=True):
-        for idx, cell_value in enumerate(row):
-            if cell_value:
-                # Tìm cột có chứa "Họ tên"
-                if "họ tên" in str(cell_value).lower():
-                    name_col = idx + 1  # openpyxl đánh số cột từ 1
-                # Tìm cột có chứa "Mã sinh viên"
-                elif "mã sinh viên" in str(cell_value).lower():
-                    msv_col = idx + 1
+# Trích xuất thông tin từ kết quả OCR
+def extract_info_from_ocr(result):
+    fields = {
+        "Tên": "",
+        "Ngành": "",
+        "Khoa/Viện": "",
+        "Khoá": "",
+        "MSV": ""
+    }
 
-        # Nếu đã tìm thấy cả 2 cột thì dừng lại
-        if name_col and msv_col:
-            header_row = row
-            break
+    # Sắp xếp kết quả theo thứ tự từ trên xuống dưới theo trục y
+    sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
 
-    return name_col, msv_col, header_row
+    next_line_is_name = False
+    found_msv = False
 
-# Hàm xử lý đọc danh sách từ Excel cho nhiều định dạng
-def read_from_excel(excel_path):
-    if os.path.exists(excel_path):
-        wb = openpyxl.load_workbook(excel_path)
-        sheet = wb.active
+    for line in sorted_result:
+        text = line[1][0].strip()
 
-        # Tìm vị trí cột chứa "Họ tên" và "Mã sinh viên"
-        name_col, msv_col, header_row = find_columns(sheet)
+        # Kiểm tra từ khóa "Thẻ Sinh Viên"
+        if "THE SINH VIEN" in text.upper():
+            next_line_is_name = True
+            continue
 
-        if name_col and msv_col:
-            excel_data = []
-            # Bắt đầu đọc từ dòng sau tiêu đề
-            for row in sheet.iter_rows(min_row=sheet.min_row + 1, values_only=True):
-                name = row[name_col - 1]  # Trừ 1 vì openpyxl đánh số từ 1
-                msv = row[msv_col - 1]
-                if name and msv:  # Chỉ lấy những dòng có dữ liệu
-                    # Loại bỏ dấu và chuyển thành in hoa
-                    name = unidecode(name).upper()
-                    excel_data.append(f"{name} - {msv}")
-            return excel_data
-        else:
-            print("Không tìm thấy cột 'Họ tên' và 'Mã sinh viên'.")
-            return []
-    else:
-        print(f"File Excel {excel_path} không tồn tại.")
-        return []
+        # Nếu dòng tiếp theo sau "Thẻ Sinh Viên" thì có là tên
+        if next_line_is_name:
+            fields["Tên"] = text
+            next_line_is_name = False
 
-# Đọc danh sách từ ảnh và Excel
-students_from_image = read_from_image(img_path)
-students_from_excel = read_from_excel(excel_path)
+        # Trích xuất MSV 
+        if not found_msv and "MSV" in text.upper():
+            msv_match = re.search(r"\d{9,}", text)
+            if msv_match:
+                fields["MSV"] = msv_match.group(0)
+            found_msv = True
 
-# Hiển thị danh sách sinh viên từ ảnh
-if students_from_image:
-    print("Danh sách sinh viên từ ảnh:")
-    for student in students_from_image:
-        print(student)
+        # Trích xuất ngành học dựa trên từ khóa "Ngành"
+        if "NGANH" in text.upper() or "C." in text.upper() in text.upper():
+            fields["Ngành"] = text
 
-    # Lưu danh sách sinh viên từ ảnh vào file TXT
-    with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\student_list_from_image.txt', 'w', encoding='utf-8') as f:
-        for student in students_from_image:
-            f.write(student + '\n')
-    print("Danh sách sinh viên từ ảnh đã được lưu vào file 'student_list_from_image.txt'.")
+        # Trích xuất Khoa/Viện dựa trên từ khóa "Khoa" hoặc "Viện"
+        if "VIEN" in text.upper():
+            fields["Khoa/Viện"] = text
 
-# Hiển thị danh sách sinh viên từ Excel
-if students_from_excel:
-    print("Danh sách sinh viên từ Excel:")
-    for student in students_from_excel:
-        print(student)
+        # Trích xuất Khoá học dựa trên định dạng "xxxx-xxxx"
+        if re.search(r"\d{4}-\d{4}", text):
+            fields["Khoá"] = text
 
-    # Lưu danh sách sinh viên từ Excel vào file TXT
-    with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\student_list_from_excel.txt', 'w', encoding='utf-8') as f:
-        for student in students_from_excel:
-            f.write(student + '\n')
-    print("Danh sách sinh viên từ Excel đã được lưu vào file 'student_list_from_excel.txt'.")
+    return fields
+
+# Sẽ update để lưu vào database
+# Lưu kết quả vào file TXT
+def save_results_to_txt(filename, extracted_info):
+    result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.txt")
+    with open(result_file, "w", encoding="utf-8") as f:
+        for field, value in extracted_info.items():
+            f.write(f"{field}: {value}\n")
+    return result_file
+
+# Lưu kết quả vào file CSV
+def save_results_to_csv(filename, extracted_info):
+    result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.csv")
+    with open(result_file, "w", newline='', encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Field", "Value"])
+        for field, value in extracted_info.items():
+            writer.writerow([field, value])
+    return result_file
+
+# Endpoint để xử lý ảnh và thực hiện OCR
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    # Lưu file ảnh vào thư mục uploads
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_location, "wb") as f:
+        f.write(file.file.read())
+
+    # Tiền xử lý ảnh
+    processed_image_path = preprocess_image(file_location)
+
+    # OCR: Nhận diện văn bản từ ảnh đã tiền xử lý
+    result = ocr.ocr(processed_image_path, cls=True)
+
+    # Trích xuất thông tin từ kết quả OCR
+    extracted_info = extract_info_from_ocr(result)
+
+    # Lưu kết quả vào file TXT và CSV
+    txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
+    csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
+
+    # Thông báo thành công và trả về thông tin trích xuất cùng các liên kết tải về
+    return {
+        "message": "OCR thành công",
+        "extracted_info": extracted_info,
+        "txt_link": f"/api/results/{os.path.basename(txt_file_path)}",  # Thay đổi này
+        "csv_link": f"/api/results/{os.path.basename(csv_file_path)}"   # Thay đổi này
+    }
+
+    # Lưu file ảnh vào thư mục uploads
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_location, "wb") as f:
+        f.write(file.file.read())
+
+    # Tiền xử lý ảnh
+    processed_image_path = preprocess_image(file_location)
+
+    # OCR: Nhận diện văn bản từ ảnh đã tiền xử lý
+    result = ocr.ocr(processed_image_path, cls=True)
+
+    # Trích xuất thông tin từ kết quả OCR
+    extracted_info = extract_info_from_ocr(result)
+
+    # Lưu kết quả vào file TXT và CSV
+    txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
+    csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
+
+    # Thông báo thành công và trả về thông tin trích xuất
+    return {
+        "message": "OCR thành công",
+        "extracted_info": extracted_info
+    }
+
+# Sẽ sửa thành update vào database
+# # Endpoint để tải file kết quả TXT
+# @app.get("/results/{filename}", response_class=FileResponse)
+# async def download_file(filename: str):
+#     file_path = os.path.join(RESULTS_FOLDER, filename)
+#     return FileResponse(file_path)

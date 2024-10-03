@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nhận diện thẻ sinh viên</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/api/static/style.css"> <!-- Đã sửa -->
 </head>
 <body>
     <div class="container">
@@ -13,7 +13,6 @@
             <label for="file">Chọn ảnh thẻ sinh viên:</label>
             <input type="file" id="file" name="file" accept="image/*" required><br>
 
-            <!-- Thêm phần hiển thị ảnh -->
             <div class="image-preview" id="imagePreview"></div>
 
             <input type="submit" value="Gửi">
@@ -23,12 +22,11 @@
             <h4>Kết quả:</h4>
             <pre id="result"></pre>
 
-            <!-- Liên kết tải file kết quả -->
             <a id="download-txt" href="#">Tải file TXT</a> <br>
             <a id="download-csv" href="#">Tải file CSV</a>
         </div>
     </div>
 
-    <script src="/static/script.js"></script>
+    <script src="/api/static/script.js"></script> <!-- Đã sửa -->
 </body>
 </html>

@@ -8,3 +8,5 @@ python-multipart
 PyMuPDF
 pandas
 openpyxl
+unidecode
+pymongo
