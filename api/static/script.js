@@ -27,7 +27,7 @@ document.getElementById('uploadForm').onsubmit = async function(event) {
     let result = await response.json();
     document.getElementById('result').textContent = JSON.stringify(result, null, 4);
 
-    // Liên kết tải file
-    document.getElementById('download-txt').href = result.txt_link;
-    document.getElementById('download-csv').href = result.csv_link;
+    // Liên kết tải file //Bỏ qua
+    // document.getElementById('download-txt').href = result.txt_link;
+    // document.getElementById('download-csv').href = result.csv_link;
 };
