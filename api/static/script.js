@@ -19,7 +19,7 @@ document.getElementById('uploadForm').onsubmit = async function(event) {
     document.getElementById('result').textContent = "Đang xử lý...";
     
     let formData = new FormData(this);
-    let response = await fetch('/upload-image', {
+    let response = await fetch('api/upload-image', {
         method: 'POST',
         body: formData
     });

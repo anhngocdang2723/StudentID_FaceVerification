@@ -1,40 +1,38 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from paddleocr import PaddleOCR
 import cv2
 import re
 import os
-from pymongo import MongoClient
+import csv
 
 # Khởi tạo FastAPI
 app = FastAPI()
 
-# Khởi tạo PaddleOCR để đọc tiếng việt
+# Khởi tạo PaddleOCR để đọc tiếng Việt
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 # Đường dẫn lưu trữ đến các thư mục chứa ảnh, ảnh đã xử lý và kết quả
-UPLOAD_FOLDER = "uploads/"
-PROCESSED_FOLDER = "processed/"
-RESULTS_FOLDER = "results/"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Đường dẫn thư mục hiện tại
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+PROCESSED_FOLDER = os.path.join(BASE_DIR, "processed")
+RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
+STATIC_FOLDER = os.path.join(BASE_DIR, "static")  # Đường dẫn đến thư mục static
 
 # Kiểm tra và tạo thư mục nếu chưa tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
+os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 # Mount static files (CSS, JS, etc.)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Kết nối MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['student_database']  # Tên database
-collection = db['student_cards']  # Tên collection
+app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 
 # Endpoints hiển thị web
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
-    with open("static/index.html", "r", encoding="utf-8") as f:
+    with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
@@ -77,7 +75,7 @@ def extract_info_from_ocr(result):
             fields["Tên"] = text
             next_line_is_name = False
 
-        # Trích xuất MSV
+        # Trích xuất MSV 
         if not found_msv and "MSV" in text.upper():
             msv_match = re.search(r"\d{9,}", text)
             if msv_match:
@@ -98,6 +96,7 @@ def extract_info_from_ocr(result):
 
     return fields
 
+# Sẽ update để lưu vào database
 # Lưu kết quả vào file TXT
 def save_results_to_txt(filename, extracted_info):
     result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.txt")
@@ -106,13 +105,19 @@ def save_results_to_txt(filename, extracted_info):
             f.write(f"{field}: {value}\n")
     return result_file
 
-# Lưu kết quả vào MongoDB
-def save_results_to_db(extracted_info):
-    collection.insert_one(extracted_info)
-    print("Đã lưu kết quả vào MongoDB thành công")
+###Bỏ qua###
+# Lưu kết quả vào file CSV 
+# def save_results_to_csv(filename, extracted_info):
+#     result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.csv")
+#     with open(result_file, "w", newline='', encoding="utf-8") as csvfile:
+#         writer = csv.writer(csvfile)
+#         writer.writerow(["Field", "Value"])
+#         for field, value in extracted_info.items():
+#             writer.writerow([field, value])
+#     return result_file
 
 # Endpoint để xử lý ảnh và thực hiện OCR
-@app.post("/upload-image")
+@app.post("/api/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     # Lưu file ảnh vào thư mục uploads
     file_location = os.path.join(UPLOAD_FOLDER, file.filename)
@@ -128,12 +133,45 @@ async def upload_image(file: UploadFile = File(...)):
     # Trích xuất thông tin từ kết quả OCR
     extracted_info = extract_info_from_ocr(result)
 
-    # Lưu kết quả vào file TXT và MongoDB
+    # Lưu kết quả vào file TXT và CSV
     txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
-    save_results_to_db(extracted_info)
+    #csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
+
+    # Thông báo thành công và trả về thông tin trích xuất cùng các liên kết tải về
+    return {
+        "message": "OCR thành công",
+        "extracted_info": extracted_info,
+        #"txt_link": f"/api/results/{os.path.basename(txt_file_path)}",  # Thay đổi này
+        #"csv_link": f"/api/results/{os.path.basename(csv_file_path)}"   # Thay đổi này
+    }
+
+    # Lưu file ảnh vào thư mục uploads
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_location, "wb") as f:
+        f.write(file.file.read())
+
+    # Tiền xử lý ảnh
+    processed_image_path = preprocess_image(file_location)
+
+    # OCR: Nhận diện văn bản từ ảnh đã tiền xử lý
+    result = ocr.ocr(processed_image_path, cls=True)
+
+    # Trích xuất thông tin từ kết quả OCR
+    extracted_info = extract_info_from_ocr(result)
+
+    # Lưu kết quả vào file TXT và CSV
+    txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
+    #csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
 
     # Thông báo thành công và trả về thông tin trích xuất
     return {
         "message": "OCR thành công",
         "extracted_info": extracted_info
     }
+
+# Sẽ sửa thành update vào database
+# # Endpoint để tải file kết quả TXT
+# @app.get("/results/{filename}", response_class=FileResponse)
+# async def download_file(filename: str):
+#     file_path = os.path.join(RESULTS_FOLDER, filename)
+#     return FileResponse(file_path)
