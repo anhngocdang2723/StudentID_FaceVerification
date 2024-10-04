@@ -14,7 +14,7 @@ def compare_with_list(student_info, extracted_list):
     return f"Sinh viên {student_info['Tên']} không có mặt trong danh sách phòng thi."
 
 # Đọc danh sách từ file đã lưu
-with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\extracted_list\extracted_list.txt', 'r', encoding='utf-8') as f:
+with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt', 'r', encoding='utf-8') as f:
     extracted_list = f.readlines()
 
 # Xóa ký tự newline và khoảng trắng thừa
