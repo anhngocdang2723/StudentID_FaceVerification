@@ -12,11 +12,12 @@ result = ocr.ocr(img_path, cls=True)
 #vẽ box
 for line in result:
     for word_info in line:
-        # Lấy tọa độ các góc của box (dạng 4 điểm)
+        #lấy toạ độ các góc của box
         points = word_info[0]
-        # Convert tọa độ sang dạng integer
+        #convert toạ độ sang dạng integer
         points = [(int(point[0]), int(point[1])) for point in points]
-        # Vẽ đường viền box (dùng màu xanh lá)
+        print(points)
+        #vẽ viền theo points
         cv2.polylines(img, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
 
 cv2.imshow('Image with OCR boxes', img)
