@@ -7,36 +7,31 @@ import re
 import os
 import csv
 
-# Khởi tạo FastAPI
 app = FastAPI()
 
-# Khởi tạo PaddleOCR để đọc tiếng Việt
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Đường dẫn lưu trữ đến các thư mục chứa ảnh, ảnh đã xử lý và kết quả
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Đường dẫn thư mục hiện tại
+#lấy file path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 PROCESSED_FOLDER = os.path.join(BASE_DIR, "processed")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
-STATIC_FOLDER = os.path.join(BASE_DIR, "static")  # Đường dẫn đến thư mục static
+STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
-# Kiểm tra và tạo thư mục nếu chưa tồn tại
+#tạo file path nếu chưa tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# Mount static files (CSS, JS, etc.)
 app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 
-# Endpoints hiển thị web
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
     with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-# Tiền xử lý ảnh (grayscale và ngưỡng hóa)
 def preprocess_image(image_path: str) -> str:
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -46,7 +41,6 @@ def preprocess_image(image_path: str) -> str:
     cv2.imwrite(processed_image_path, thresh)
     return processed_image_path
 
-# Trích xuất thông tin từ kết quả OCR
 def extract_info_from_ocr(result):
     fields = {
         "Tên": "",
@@ -56,7 +50,7 @@ def extract_info_from_ocr(result):
         "MSV": ""
     }
 
-    # Sắp xếp kết quả theo thứ tự từ trên xuống dưới theo trục y
+    #được sắp xếp theo tọa độ y(trên xuống)
     sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
 
     next_line_is_name = False
@@ -65,32 +59,26 @@ def extract_info_from_ocr(result):
     for line in sorted_result:
         text = line[1][0].strip()
 
-        # Kiểm tra từ khóa "Thẻ Sinh Viên"
         if "THE SINH VIEN" in text.upper():
             next_line_is_name = True
             continue
 
-        # Nếu dòng tiếp theo sau "Thẻ Sinh Viên" thì có là tên
         if next_line_is_name:
             fields["Tên"] = text
             next_line_is_name = False
 
-        # Trích xuất MSV 
         if not found_msv and "MSV" in text.upper():
             msv_match = re.search(r"\d{9,}", text)
             if msv_match:
                 fields["MSV"] = msv_match.group(0)
             found_msv = True
 
-        # Trích xuất ngành học dựa trên từ khóa "Ngành"
         if "NGANH" in text.upper() or "C." in text.upper() in text.upper():
             fields["Ngành"] = text
 
-        # Trích xuất Khoa/Viện dựa trên từ khóa "Khoa" hoặc "Viện"
         if "VIEN" in text.upper():
             fields["Khoa/Viện"] = text
 
-        # Trích xuất Khoá học dựa trên định dạng "xxxx-xxxx"
         if re.search(r"\d{4}-\d{4}", text):
             fields["Khoá"] = text
 
