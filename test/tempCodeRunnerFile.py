@@ -1,7 +1,9 @@
 import cv2
 
 # Đọc ảnh
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocAnhIDCard.jpg"
+#img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
+img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\CuuChuongIDCard.jpg"
+#img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
 img = cv2.imread(img_path)
 
 # Chuyển ảnh sang xám
@@ -33,7 +35,10 @@ if len(faces) > 0:
 
     # Cắt và lưu ảnh khuôn mặt
     face_img = img[y:y+h, x:x+w]
-    cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\resultTest\NgocAnhIDCard_face.jpg", face_img)
+    #cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
+    cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\CuuChuongIDCard_face.jpg", face_img)
+    #cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
+
     
     # Hiển thị ảnh đã cắt
     cv2.imshow("Face", face_img)
@@ -44,7 +49,9 @@ else:
 _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
 # Lưu ảnh đã xử lý
-cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\resultTest\NgocAnhIDCard_processed.jpg", thresh)
+#cv2.imwrite(r"D:\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed.jpg", thresh)
+cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\CuuChuongIDCard_processed.jpg", thresh)
+#cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed.jpg", thresh)
 
 # Đợi và đóng cửa sổ hiển thị
 cv2.waitKey(0)
