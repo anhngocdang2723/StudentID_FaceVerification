@@ -1,9 +1,12 @@
 import cv2
+import numpy as np
+from paddleocr import PaddleOCR
+
+# Khởi tạo PaddleOCR
+ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 # Đọc ảnh
-#img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
-img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\CuuChuongIDCard.jpg"
-#img_path = r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
+img_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
 img = cv2.imread(img_path)
 
 # Chuyển ảnh sang xám
@@ -35,23 +38,35 @@ if len(faces) > 0:
 
     # Cắt và lưu ảnh khuôn mặt
     face_img = img[y:y+h, x:x+w]
-    #cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
-    cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\CuuChuongIDCard_face.jpg", face_img)
-    #cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
+    cv2.imwrite(r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
 
-    
     # Hiển thị ảnh đã cắt
     cv2.imshow("Face", face_img)
+
+    # Áp dụng ngưỡng hóa để tạo ảnh nhị phân (ảnh chỉ chứa 2 màu đen và trắng)
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+
+    # Chạy OCR trên ảnh ngưỡng hóa
+    result = ocr.ocr(thresh, cls=True)
+
+    # Vẽ box lên ảnh ngưỡng hóa
+    for line in result:
+        for word_info in line:
+            # Lấy toạ độ các góc của box
+            points = word_info[0]
+            # Chuyển đổi toạ độ sang dạng integer
+            points = [(int(point[0]), int(point[1])) for point in points]
+            # Vẽ viền theo points
+            cv2.polylines(thresh, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
+
+    # Lưu ảnh đã xử lý với box OCR
+    cv2.imwrite(r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed_with_boxes.jpg', thresh)
+
+    # Hiển thị ảnh với box OCR
+    cv2.imshow('Processed Image with OCR boxes', thresh)
+
 else:
     print("Không tìm thấy khuôn mặt.")
-
-# Áp dụng ngưỡng hóa để tạo ảnh nhị phân (ảnh chỉ chứa 2 màu đen và trắng)
-_, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-
-# Lưu ảnh đã xử lý
-#cv2.imwrite(r"D:\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed.jpg", thresh)
-cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\CuuChuongIDCard_processed.jpg", thresh)
-#cv2.imwrite(r"D:\\Edu\\Python\StudentID_FaceVerification\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed.jpg", thresh)
 
 # Đợi và đóng cửa sổ hiển thị
 cv2.waitKey(0)
