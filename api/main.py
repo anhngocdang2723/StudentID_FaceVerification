@@ -7,6 +7,9 @@ import re
 import os
 import csv
 
+# Import preprocess_image từ file image_processing.py
+from image_processing import preprocess_image
+
 app = FastAPI()
 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
@@ -14,13 +17,13 @@ ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 #lấy file path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-PROCESSED_FOLDER = os.path.join(BASE_DIR, "processed")
+#PROCESSED_FOLDER = os.path.join(BASE_DIR, "processed")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
 STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
 #tạo file path nếu chưa tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+#os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
@@ -31,29 +34,6 @@ async def get_home():
     with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
-
-# # Tiền xử lý ảnh (grayscale và ngưỡng hóa)
-# def preprocess_image(image_path: str) -> str:
-#     image = cv2.imread(image_path)
-#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#     # _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-#     # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-#     #                                  cv2.THRESH_BINARY_INV, 11, 2)
-    
-#     ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-#     processed_image_path = os.path.join(PROCESSED_FOLDER, f"processed_{os.path.basename(image_path)}")
-#     cv2.imwrite(processed_image_path, thresh)
-#     return processed_image_path
-
-def preprocess_image(image_path: str) -> str:
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-
-    processed_image_path = os.path.join(PROCESSED_FOLDER, f"processed_{os.path.basename(image_path)}")
-    cv2.imwrite(processed_image_path, thresh)
-    return processed_image_path
 
 def extract_info_from_ocr(result):
     fields = {
@@ -106,17 +86,6 @@ def save_results_to_txt(filename, extracted_info):
         for field, value in extracted_info.items():
             f.write(f"{field}: {value}\n")
     return result_file
-
-###Bỏ qua###
-# Lưu kết quả vào file CSV 
-# def save_results_to_csv(filename, extracted_info):
-#     result_file = os.path.join(RESULTS_FOLDER, f"{filename}_result.csv")
-#     with open(result_file, "w", newline='', encoding="utf-8") as csvfile:
-#         writer = csv.writer(csvfile)
-#         writer.writerow(["Field", "Value"])
-#         for field, value in extracted_info.items():
-#             writer.writerow([field, value])
-#     return result_file
 
 # Endpoint để xử lý ảnh và thực hiện OCR
 @app.post("/api/upload-image")

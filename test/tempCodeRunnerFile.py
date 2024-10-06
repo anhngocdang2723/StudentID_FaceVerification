@@ -1,73 +1,50 @@
 import cv2
 import numpy as np
-from paddleocr import PaddleOCR
 
-# Khởi tạo PaddleOCR
-ocr = PaddleOCR(use_angle_cls=True, lang='en')
-
-# Đọc ảnh
-img_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
-img = cv2.imread(img_path)
-
-# Chuyển ảnh sang xám
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-# Tải mô hình phát hiện khuôn mặt
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
-# Giảm kích thước ảnh để tăng tốc độ phát hiện
-scale_percent = 50  # Tỉ lệ % để giảm kích thước
-width = int(img.shape[1] * scale_percent / 100)
-height = int(img.shape[0] * scale_percent / 100)
-dim = (width, height)
-resized_img = cv2.resize(img, dim)
-
-# Phát hiện khuôn mặt
-faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
-
-# Kiểm tra xem có khuôn mặt nào được phát hiện không
-if len(faces) > 0:
-    # Lấy tọa độ của khuôn mặt đầu tiên
-    (x, y, w, h) = faces[0]
+def detect_and_crop_card(image_path):
+    # Đọc ảnh
+    img = cv2.imread(image_path)
     
-    # Chuyển tọa độ về kích thước ảnh gốc
-    x = int(x * (100 / scale_percent))
-    y = int(y * (100 / scale_percent))
-    w = int(w * (100 / scale_percent))
-    h = int(h * (100 / scale_percent))
+    # Chuyển đổi ảnh sang màu xám
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Cắt và lưu ảnh khuôn mặt
-    face_img = img[y:y+h, x:x+w]
-    cv2.imwrite(r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
+    # Ngưỡng để chỉ lấy vùng thẻ sinh viên (đảo ngược)
+    retval, thresh_gray = cv2.threshold(gray, 220, 255, cv2.THRESH_BINARY_INV)  # Thay đổi giá trị ngưỡng
 
-    # Hiển thị ảnh đã cắt
-    cv2.imshow("Face", face_img)
+    # Tìm contour trong ảnh nhị phân
+    contours, hierarchy = cv2.findContours(thresh_gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Áp dụng ngưỡng hóa để tạo ảnh nhị phân (ảnh chỉ chứa 2 màu đen và trắng)
-    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+    # Tìm đối tượng có bounding box lớn nhất
+    mx = (0, 0, 0, 0)  # bounding box lớn nhất
+    mx_area = 0
+    aspect_ratio_target = 1.6  # Tỷ lệ khung hình của thẻ sinh viên (khoảng 1.6:1)
 
-    # Chạy OCR trên ảnh ngưỡng hóa
-    result = ocr.ocr(thresh, cls=True)
+    for cont in contours:
+        x, y, w, h = cv2.boundingRect(cont)
+        area = w * h
+        
+        # Tính tỷ lệ
+        aspect_ratio = float(w) / h if h != 0 else 0
+        
+        # Kiểm tra diện tích và tỷ lệ
+        if area > mx_area and aspect_ratio > 1.2 and aspect_ratio < 2.0:
+            mx = (x, y, w, h)
+            mx_area = area
+            
+    x, y, w, h = mx
 
-    # Vẽ box lên ảnh ngưỡng hóa
-    for line in result:
-        for word_info in line:
-            # Lấy toạ độ các góc của box
-            points = word_info[0]
-            # Chuyển đổi toạ độ sang dạng integer
-            points = [(int(point[0]), int(point[1])) for point in points]
-            # Vẽ viền theo points
-            cv2.polylines(thresh, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
+    if mx_area == 0:
+        print("Không tìm thấy thẻ sinh viên.")
+        return
 
-    # Lưu ảnh đã xử lý với box OCR
-    cv2.imwrite(r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed_with_boxes.jpg', thresh)
+    # Cắt và lưu ảnh
+    roi = img[y:y+h, x:x+w]
+    cv2.imwrite("Cropped_Student_ID_Card.jpg", roi)
 
-    # Hiển thị ảnh với box OCR
-    cv2.imshow('Processed Image with OCR boxes', thresh)
+    # Vẽ hình chữ nhật bounding box (để debug)
+    cv2.rectangle(img, (x, y), (x+w, y+h), (200, 0, 0), 2)
+    cv2.imwrite("Image_cont.jpg", img)
 
-else:
-    print("Không tìm thấy khuôn mặt.")
-
-# Đợi và đóng cửa sổ hiển thị
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Đường dẫn đến ảnh thẻ sinh viên
+image_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\ThaiTuanIDCard.jpg'
+detect_and_crop_card(image_path)
