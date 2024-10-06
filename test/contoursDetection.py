@@ -65,7 +65,7 @@ def getContours(img):
 
 
 path = 'Resources/shapes.png'
-img=cv2.imread(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\CuuChuongIDCard.jpg")
+img=cv2.imread(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocAnhIDCard.jpg")
 img = cv2.resize(img,(0,0),fx=0.5,fy=0.3)
 imgContour = img.copy()
 
