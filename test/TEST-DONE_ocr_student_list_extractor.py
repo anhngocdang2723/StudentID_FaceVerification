@@ -3,7 +3,7 @@ import os
 import openpyxl #thư viện đọc excel
 from unidecode import unidecode  #thư viện để in hoa bỏ dấu
 
-ocr = PaddleOCR(use_angle_cls=True, lang='vi')  # Đặt ngôn ngữ là tiếng Việt
+ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 #####thay thế hàm đọc ảnh bằng đọc từ excel
 #img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\List of candidates\0.png"
@@ -39,24 +39,23 @@ def read_from_image(img_path):
         print(f"File {img_path} không tồn tại.")
         return [] """
 
-# Hàm phát hiện các cột chứa "Họ tên" và "Mã sinh viên"
+# hàm phát hiện các cột chứa "Họ tên" và "Mã sinh viên"
 def find_columns(sheet):
     name_col = None
     msv_col = None
     header_row = None
 
-    # Duyệt qua các dòng để tìm dòng tiêu đề
+    # duyệt qua các dòng để tìm dòng tiêu đề
     for row in sheet.iter_rows(values_only=True):
         for idx, cell_value in enumerate(row):
             if cell_value:
-                # Tìm cột có chứa "Họ tên"
+                #tìm cột chứa "họ tên"
                 if "họ tên" in str(cell_value).lower():
                     name_col = idx + 1  # openpyxl đánh số cột từ 1
-                # Tìm cột có chứa "Mã sinh viên"
+                #tìm cột chứa "msv"
                 elif "mã sinh viên" in str(cell_value).lower():
                     msv_col = idx + 1
 
-        # Nếu đã tìm thấy cả 2 cột thì dừng lại
         if name_col and msv_col:
             header_row = row
             break
@@ -69,17 +68,15 @@ def read_from_excel(excel_path):
         wb = openpyxl.load_workbook(excel_path)
         sheet = wb.active
 
-        # Tìm vị trí cột chứa "Họ tên" và "Mã sinh viên"
         name_col, msv_col, header_row = find_columns(sheet)
 
         if name_col and msv_col:
             excel_data = []
-            # Bắt đầu đọc từ dòng sau tiêu đề
             for row in sheet.iter_rows(min_row=sheet.min_row + 1, values_only=True):
-                name = row[name_col - 1]  # Trừ 1 vì openpyxl đánh số từ 1
+                name = row[name_col - 1]
                 msv = row[msv_col - 1]
-                if name and msv:  # Chỉ lấy những dòng có dữ liệu
-                    # Loại bỏ dấu và chuyển thành in hoa
+                if name and msv: 
+                    #loại bỏ dấu, in hoa
                     name = unidecode(name).upper()
                     excel_data.append(f"{name} - {msv}")
             return excel_data
