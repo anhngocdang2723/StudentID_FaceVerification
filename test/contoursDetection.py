@@ -37,7 +37,6 @@ def stackImages(scale, imgArray):
         ver = hor
     return ver
 
-# Hàm xoay ảnh
 def rotateImage(img, angle):
     (h, w) = img.shape[:2]
     center = (w // 2, h // 2)
@@ -71,15 +70,12 @@ def getContoursAndAngle(img, imgOriginal):
                 card_img = imgOriginal[y:y + h, x:x + w]
     return card_img, angle
 
-# Xoay ảnh thẻ sinh viên dựa trên góc
-# Hàm xoay ảnh nếu chiều cao lớn hơn chiều rộng
 def ensureHorizontalWithAngle(card_img, angle):
-    if card_img.shape[0] < card_img.shape[1]:  # Nếu chiều cao lớn hơn chiều rộng
-        angle = angle - 90  # Thay đổi góc để xoay theo chiều kim đồng hồ
+    if card_img.shape[0] < card_img.shape[1]:  #xoay nếu h<w
+        angle = angle - 90  #đổi góc xoay
     return rotateImage(card_img, angle)
 
 
-# Tạo cửa sổ trackbars
 cv2.namedWindow("TrackBars")
 cv2.resizeWindow("TrackBars", 640, 240)
 cv2.createTrackbar("Canny Lower", "TrackBars", 30, 255, empty)
@@ -87,7 +83,6 @@ cv2.createTrackbar("Canny Upper", "TrackBars", 100, 255, empty)
 cv2.createTrackbar("Threshold1", "TrackBars", 150, 255, empty)
 cv2.createTrackbar("Threshold2", "TrackBars", 255, 255, empty)
 
-# Đọc ảnh và resize
 img = cv2.imread(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\z5903394151288_49235aed016f400877949e1d25163e52.jpg")
 img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
 
@@ -98,7 +93,6 @@ while True:
     threshold1 = cv2.getTrackbarPos("Threshold1", "TrackBars")
     threshold2 = cv2.getTrackbarPos("Threshold2", "TrackBars")
 
-    # Chuyển ảnh sang grayscale và làm mờ
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     imgBlur = cv2.GaussianBlur(imgGray, (7, 7), 1)
 
@@ -112,19 +106,16 @@ while True:
     imgContour = img.copy()  # Reset lại khung để vẽ khung mỗi lần lặp
     student_card, angle = getContoursAndAngle(imgCanny, imgContour)
 
-    # Xếp ảnh chồng lên nhau với các ảnh gốc, gray, threshold và Canny
     imgStack = stackImages(0.6, ([img, imgGray, imgThreshold], [imgCanny, imgContour, np.zeros_like(img)]))
 
-    # Hiển thị ảnh đã xếp
     cv2.imshow("Stacked Images", imgStack)
 
     if student_card is not None:
-        # Xoay ảnh thẻ sinh viên dựa trên góc tính toán được
+        # xoay ảnh theo góc
         student_card = ensureHorizontalWithAngle(student_card, angle)
         cv2.imshow("Student ID Card", student_card)
 
-    # Thoát khi nhấn phím ESC
-    if cv2.waitKey(1) & 0xFF == 27:
+    if cv2.waitKey(1) == ord('q'):
         break
 
 cv2.destroyAllWindows()
