@@ -32,6 +32,20 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
+# # Tiền xử lý ảnh (grayscale và ngưỡng hóa)
+# def preprocess_image(image_path: str) -> str:
+#     image = cv2.imread(image_path)
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     # _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+#     # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+#     #                                  cv2.THRESH_BINARY_INV, 11, 2)
+    
+#     ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+#     processed_image_path = os.path.join(PROCESSED_FOLDER, f"processed_{os.path.basename(image_path)}")
+#     cv2.imwrite(processed_image_path, thresh)
+#     return processed_image_path
+
 def preprocess_image(image_path: str) -> str:
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
