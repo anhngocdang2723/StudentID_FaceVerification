@@ -52,30 +52,23 @@ def extract_info_from_ocr(result):
 
     for line in sorted_result:
         text = line[1][0].strip()
-
         if "THE SINH VIEN" in text.upper():
             next_line_is_name = True
             continue
-
         if next_line_is_name:
             fields["Tên"] = text
             next_line_is_name = False
-
         if not found_msv and "MSV" in text.upper():
             msv_match = re.search(r"\d{9,}", text)
             if msv_match:
                 fields["MSV"] = msv_match.group(0)
             found_msv = True
-
         if "NGANH" in text.upper() or "C." in text.upper() in text.upper():
             fields["Ngành"] = text
-
         if "VIEN" in text.upper():
             fields["Khoa/Viện"] = text
-
         if re.search(r"\d{4}-\d{4}", text):
             fields["Khoá"] = text
-
     return fields
 
 # Sẽ update để lưu vào database
