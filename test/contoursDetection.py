@@ -62,7 +62,7 @@ def getContoursAndAngle(img, imgOriginal):
                 rect = cv2.minAreaRect(cnt)
                 angle = rect[2]  # Lấy góc xoay từ hình chữ nhật
                 box = cv2.boxPoints(rect)
-                box = np.int0(box)
+                box = np.intp(box)
                 cv2.drawContours(imgOriginal, [box], 0, (0, 255, 0), 2)
                 cv2.putText(imgOriginal, "ID Card", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
@@ -84,7 +84,7 @@ cv2.createTrackbar("Threshold1", "TrackBars", 150, 255, empty)
 cv2.createTrackbar("Threshold2", "TrackBars", 255, 255, empty)
 
 img = cv2.imread(r"test/imgTest/z5903394151288_49235aed016f400877949e1d25163e52.jpg")
-img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+img = cv2.resize(img, (0, 0), fx=0.7, fy=0.7)
 
 while True:
     # Lấy giá trị từ trackbars
@@ -115,7 +115,7 @@ while True:
         # xoay ảnh theo góc
         student_card = ensureHorizontalWithAngle(student_card, angle)
         cv2.imshow("Student ID Card", student_card)
-        cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\detected_NgocAnhIDCard.jpg", student_card)
+        cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\resultTest\detected_NgocAnhIDCard.jpg", student_card)
 
     if cv2.waitKey(1) == ord('q'):
         break
