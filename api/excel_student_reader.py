@@ -5,7 +5,6 @@ from unidecode import unidecode  # thư viện để in hoa bỏ dấu
 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Đường dẫn đến file Excel
 excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\DemoDanhSach.xlsx'
 
 # hàm phát hiện các cột chứa "Họ tên" và "Mã sinh viên"
@@ -22,12 +21,10 @@ def find_columns(sheet):
                     name_col = idx + 1  # openpyxl đánh số cột từ 1
                 # tìm cột chứa "msv"
                 elif "mã sinh viên" in str(cell_value).lower():
-                    msv_col = idx + 1
-                
-                # Nếu đã tìm thấy cả hai cột thì dừng vòng lặp
+                    msv_col = idx + 1                
+                # dừng lặp khi tìm thấy
                 if name_col and msv_col:
                     return name_col, msv_col
-
     return name_col, msv_col
 
 # hàm đọc danh sách sinh viên từ Excel
@@ -55,16 +52,15 @@ def read_from_excel(excel_path):
         print(f"File Excel {excel_path} không tồn tại.")
         return []
 
-# Đọc danh sách từ Excel
+# gọi hàm đọc từ Excel
 students_from_excel = read_from_excel(excel_path)
 
-# Hiển thị kết quả và lưu danh sách sinh viên từ Excel
+# hiển thị và lưu kết quả
 if students_from_excel:
     print("Danh sách sinh viên từ Excel:")
     for student in students_from_excel:
         print(student)
 
-    # Lưu danh sách vào file txt
     with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt', 'w', encoding='utf-8') as f:
         for student in students_from_excel:
             f.write(student + '\n')
