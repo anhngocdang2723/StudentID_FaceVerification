@@ -104,42 +104,16 @@ async def upload_image(file: UploadFile = File(...)):
     # Trích xuất thông tin từ kết quả OCR
     extracted_info = extract_info_from_ocr(result)
 
-    # Lưu kết quả vào file TXT và CSV
     txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
     #csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
 
-    # Thông báo thành công và trả về thông tin trích xuất cùng các liên kết tải về
     return {
         "message": "OCR thành công",
         "extracted_info": extracted_info,
         #"txt_link": f"/api/results/{os.path.basename(txt_file_path)}",  # Thay đổi này
         #"csv_link": f"/api/results/{os.path.basename(csv_file_path)}"   # Thay đổi này
     }
-
-    # Lưu file ảnh vào thư mục uploads
-    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-    with open(file_location, "wb") as f:
-        f.write(file.file.read())
-
-    # Tiền xử lý ảnh
-    processed_image_path = preprocess_image(file_location)
-
-    # OCR: Nhận diện văn bản từ ảnh đã tiền xử lý
-    result = ocr.ocr(processed_image_path, cls=True)
-
-    # Trích xuất thông tin từ kết quả OCR
-    extracted_info = extract_info_from_ocr(result)
-
-    # Lưu kết quả vào file TXT và CSV
-    txt_file_path = save_results_to_txt(os.path.splitext(file.filename)[0], extracted_info)
-    #csv_file_path = save_results_to_csv(os.path.splitext(file.filename)[0], extracted_info)
-
-    # Thông báo thành công và trả về thông tin trích xuất
-    return {
-        "message": "OCR thành công",
-        "extracted_info": extracted_info
-    }
-
+    
 # Sẽ sửa thành update vào database
 # # Endpoint để tải file kết quả TXT
 # @app.get("/results/{filename}", response_class=FileResponse)
