@@ -1,123 +1,66 @@
-import cv2
-import numpy as np
+from paddleocr import PaddleOCR
+import re
 
-def empty(a):
-    pass
+# Khởi tạo mô hình PaddleOCR với ngôn ngữ Tiếng Việt
+ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Hàm xếp ảnh chồng lên nhau theo tỉ lệ
-def stackImages(scale, imgArray):
-    rows = len(imgArray)
-    cols = len(imgArray[0])
-    rowsAvailable = isinstance(imgArray[0], list)
-    width = imgArray[0][0].shape[1]
-    height = imgArray[0][0].shape[0]
-    if rowsAvailable:
-        for x in range(0, rows):
-            for y in range(0, cols):
-                if imgArray[x][y].shape[:2] == imgArray[0][0].shape[:2]:
-                    imgArray[x][y] = cv2.resize(imgArray[x][y], (0, 0), None, scale, scale)
-                else:
-                    imgArray[x][y] = cv2.resize(imgArray[x][y], (imgArray[0][0].shape[1], imgArray[0][0].shape[0]), None, scale, scale)
-                if len(imgArray[x][y].shape) == 2:
-                    imgArray[x][y] = cv2.cvtColor(imgArray[x][y], cv2.COLOR_GRAY2BGR)
-        imageBlank = np.zeros((height, width, 3), np.uint8)
-        hor = [imageBlank] * rows
-        for x in range(0, rows):
-            hor[x] = np.hstack(imgArray[x])
-        ver = np.vstack(hor)
-    else:
-        for x in range(0, rows):
-            if imgArray[x].shape[:2] == imgArray[0].shape[:2]:
-                imgArray[x] = cv2.resize(imgArray[x], (0, 0), None, scale, scale)
-            else:
-                imgArray[x] = cv2.resize(imgArray[x], (imgArray[0].shape[1], imgArray[0].shape[0]), None, scale, scale)
-            if len(imgArray[x].shape) == 2:
-                imgArray[x] = cv2.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
-        hor = np.hstack(imgArray)
-        ver = hor
-    return ver
+# Đường dẫn đến ảnh thẻ sinh viên đã tiền xử lý
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocAnhIDCard_processed.jpg"
 
-def rotateImage(img, angle):
-    (h, w) = img.shape[:2]
-    center = (w // 2, h // 2)
-    M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    rotated = cv2.warpAffine(img, M, (w, h))
-    return rotated
+# Nhận diện văn bản từ ảnh
+result = ocr.ocr(img_path, cls=True)
 
-# Hàm lấy contour và cắt thẻ sinh viên, bao gồm cả tính góc xoay
-def getContoursAndAngle(img, imgOriginal):
-    contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    card_img = None
-    angle = 0
-    for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area > 1000:
-            peri = cv2.arcLength(cnt, True)
-            approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
-            x, y, w, h = cv2.boundingRect(approx)
-            aspectRatio = w / float(h)
+# Chuẩn bị từ khóa để trích xuất thông tin
+fields = {
+    "Tên": "",
+    "Ngành": "",
+    "Khoa/Viện": "",
+    "Khoá": "",
+    "MSV": ""
+}
 
-            if len(approx) == 4 and 1.3 < aspectRatio < 2.0:
-                # Tìm hình chữ nhật bao quanh và tính toán góc xoay
-                rect = cv2.minAreaRect(cnt)
-                angle = rect[2]  # Lấy góc xoay từ hình chữ nhật
-                box = cv2.boxPoints(rect)
-                box = np.intp(box)
-                cv2.drawContours(imgOriginal, [box], 0, (0, 255, 0), 2)
-                cv2.putText(imgOriginal, "ID Card", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+# Lấy kết quả nhận diện và sắp xếp theo tọa độ y_min (từ trên xuống dưới)
+sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  # Sắp xếp theo tọa độ y_min của điểm đầu tiên của box
 
-                # Cắt ảnh thẻ sinh viên
-                card_img = imgOriginal[y:y + h, x:x + w]
-    return card_img, angle
+# Biến lưu trữ tên và flag để tìm tên sau "Thẻ Sinh Viên"
+next_line_is_name = False
+next_line_is_khoa = False
+found_msv = False
 
-def ensureHorizontalWithAngle(card_img, angle):
-    if card_img.shape[0] < card_img.shape[1]:  #xoay nếu h<w
-        angle = angle - 90  #đổi góc xoay
-    return rotateImage(card_img, angle)
+# Duyệt qua kết quả nhận diện đã sắp xếp
+for line in sorted_result:
+    text = line[1][0].strip()
+    print(f"Detected Text: {text}")  # In kết quả OCR thô để kiểm tra
 
+    # Kiểm tra từ khóa "Thẻ Sinh Viên"
+    if "THE SINH VIEN" in text.upper():
+        next_line_is_name = True
+        continue
 
-cv2.namedWindow("TrackBars")
-cv2.resizeWindow("TrackBars", 640, 240)
-cv2.createTrackbar("Canny Lower", "TrackBars", 30, 255, empty)
-cv2.createTrackbar("Canny Upper", "TrackBars", 100, 255, empty)
-cv2.createTrackbar("Threshold1", "TrackBars", 150, 255, empty)
-cv2.createTrackbar("Threshold2", "TrackBars", 255, 255, empty)
+    # Nếu dòng tiếp theo sau "Thẻ Sinh Viên" thì có khả năng là tên
+    if next_line_is_name:
+        fields["Tên"] = text
+        next_line_is_name = False  # Sau khi tìm thấy tên thì reset flag
+    
+    # Trích xuất MSV
+    if not found_msv and "MSV" in text.upper():
+        msv_match = re.search(r"\d{9,}", text)  # Tìm MSV là dãy số dài (ít nhất 9 chữ số)
+        if msv_match:
+            fields["MSV"] = msv_match.group(0)
+        found_msv = True
 
-img = cv2.imread(r"test/imgTest/z5903394151288_49235aed016f400877949e1d25163e52.jpg")
-img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    # Trích xuất Ngành học 
+    if "NGANH" in text.upper() or "C." in text.upper():  # Kiểm tra cả từ "C." cho trường hợp viết tắt
+        fields["Ngành"] = text
 
-while True:
-    # Lấy giá trị từ trackbars
-    canny_lower = cv2.getTrackbarPos("Canny Lower", "TrackBars")
-    canny_upper = cv2.getTrackbarPos("Canny Upper", "TrackBars")
-    threshold1 = cv2.getTrackbarPos("Threshold1", "TrackBars")
-    threshold2 = cv2.getTrackbarPos("Threshold2", "TrackBars")
+    # Trích xuất Khoa/Viện
+    if "VIEN" in text.upper():
+        fields["Khoa/Viện"] = text
 
-    imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    imgBlur = cv2.GaussianBlur(imgGray, (7, 7), 1)
+    # Trích xuất Khoá (dòng chứa năm học)
+    if re.search(r"\d{4}-\d{4}", text):  # Tìm năm học
+        fields["Khoá"] = text
 
-    # Ngưỡng hóa ảnh
-    _, imgThreshold = cv2.threshold(imgGray, threshold1, threshold2, cv2.THRESH_BINARY)
-
-    # Dùng Canny để phát hiện cạnh
-    imgCanny = cv2.Canny(imgBlur, canny_lower, canny_upper)
-
-    # Lấy và cắt thẻ sinh viên từ contour, và lấy góc xoay
-    imgContour = img.copy()  # Reset lại khung để vẽ khung mỗi lần lặp
-    student_card, angle = getContoursAndAngle(imgCanny, imgContour)
-
-    #imgStack = stackImages(0.5, ([img, imgGray, imgThreshold], [imgCanny, imgContour, np.zeros_like(img)]))
-    imgStack = stackImages(0.7, ([img, imgCanny, imgContour]))
-
-    cv2.imshow("Stacked Images", imgStack)
-
-    if student_card is not None:
-        # xoay ảnh theo góc
-        student_card = ensureHorizontalWithAngle(student_card, angle)
-        cv2.imshow("Student ID Card", student_card)
-        cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\resultTest\detected_NgocAnhIDCard.jpg", student_card)
-
-    if cv2.waitKey(1) == ord('q'):
-        break
-
-cv2.destroyAllWindows()
+# Hiển thị kết quả trích xuất
+for field, value in fields.items():
+    print(f"{field}: {value}")
