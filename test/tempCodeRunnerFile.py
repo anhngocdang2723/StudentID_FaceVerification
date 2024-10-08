@@ -1,66 +1,61 @@
+import cv2
+import numpy as np
 from paddleocr import PaddleOCR
-import re
 
-# Khởi tạo mô hình PaddleOCR với ngôn ngữ Tiếng Việt
-ocr = PaddleOCR(use_angle_cls=True, lang='vi')
+ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
-# Đường dẫn đến ảnh thẻ sinh viên đã tiền xử lý
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocAnhIDCard_processed.jpg"
+img_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\imgTest\\NgocAnhIDCard.jpg"
+img = cv2.imread(img_path)
 
-# Nhận diện văn bản từ ảnh
-result = ocr.ocr(img_path, cls=True)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Chuẩn bị từ khóa để trích xuất thông tin
-fields = {
-    "Tên": "",
-    "Ngành": "",
-    "Khoa/Viện": "",
-    "Khoá": "",
-    "MSV": ""
-}
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Lấy kết quả nhận diện và sắp xếp theo tọa độ y_min (từ trên xuống dưới)
-sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  # Sắp xếp theo tọa độ y_min của điểm đầu tiên của box
+# giảm kích thước ảnh
+scale_percent = 50
+width = int(img.shape[1] * scale_percent / 100)
+height = int(img.shape[0] * scale_percent / 100)
+dim = (width, height)
+resized_img = cv2.resize(img, dim)
 
-# Biến lưu trữ tên và flag để tìm tên sau "Thẻ Sinh Viên"
-next_line_is_name = False
-next_line_is_khoa = False
-found_msv = False
+faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
 
-# Duyệt qua kết quả nhận diện đã sắp xếp
-for line in sorted_result:
-    text = line[1][0].strip()
-    print(f"Detected Text: {text}")  # In kết quả OCR thô để kiểm tra
-
-    # Kiểm tra từ khóa "Thẻ Sinh Viên"
-    if "THE SINH VIEN" in text.upper():
-        next_line_is_name = True
-        continue
-
-    # Nếu dòng tiếp theo sau "Thẻ Sinh Viên" thì có khả năng là tên
-    if next_line_is_name:
-        fields["Tên"] = text
-        next_line_is_name = False  # Sau khi tìm thấy tên thì reset flag
+if len(faces) > 0:
+    (x, y, w, h) = faces[0]
     
-    # Trích xuất MSV
-    if not found_msv and "MSV" in text.upper():
-        msv_match = re.search(r"\d{9,}", text)  # Tìm MSV là dãy số dài (ít nhất 9 chữ số)
-        if msv_match:
-            fields["MSV"] = msv_match.group(0)
-        found_msv = True
+    # chuyển toạ độ theo kích thước gốc
+    x = int(x * (100 / scale_percent))
+    y = int(y * (100 / scale_percent))
+    w = int(w * (100 / scale_percent))
+    h = int(h * (100 / scale_percent))
 
-    # Trích xuất Ngành học 
-    if "NGANH" in text.upper() or "C." in text.upper():  # Kiểm tra cả từ "C." cho trường hợp viết tắt
-        fields["Ngành"] = text
+    face_img = img[y:y+h, x:x+w]
+    cv2.imwrite(r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
 
-    # Trích xuất Khoa/Viện
-    if "VIEN" in text.upper():
-        fields["Khoa/Viện"] = text
+    cv2.imshow("Face", face_img)
 
-    # Trích xuất Khoá (dòng chứa năm học)
-    if re.search(r"\d{4}-\d{4}", text):  # Tìm năm học
-        fields["Khoá"] = text
+    # ap dụng ngưỡng hóa để tạo ảnh nhị phân
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
-# Hiển thị kết quả trích xuất
-for field, value in fields.items():
-    print(f"{field}: {value}")
+    # Chạy OCR trên ảnh ngưỡng hóa
+    result = ocr.ocr(thresh, cls=True)
+
+    # Vẽ box lên ảnh ngưỡng hóa
+    for line in result:
+        for word_info in line:
+            # Lấy toạ độ các góc của box
+            points = word_info[0]
+            # Chuyển đổi toạ độ sang dạng integer
+            points = [(int(point[0]), int(point[1])) for point in points]
+            # Vẽ viền theo points
+            cv2.polylines(thresh, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
+
+    cv2.imwrite(r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed_with_boxes.jpg', thresh)
+
+    cv2.imshow('Processed Image with OCR boxes', thresh)
+
+else:
+    print("Không tìm thấy khuôn mặt.")
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

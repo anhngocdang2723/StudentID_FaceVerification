@@ -80,8 +80,8 @@ def compare_with_list(student_info, extracted_list):
     for entry in extracted_list:
         name, msv = entry.split(" - ")
         if student_info['Tên'].strip().lower() == name.strip().lower() and student_info['MSV'] == msv.strip():
-            return f"Sinh viên {student_info['Tên']} có mặt trong danh sách phòng thi."
-    return f"Sinh viên {student_info['Tên']} không có mặt trong danh sách phòng thi."
+            return f"Sinh viên: {student_info['Tên']} có mặt trong danh sách phòng thi."
+    return f"Sinh viên: {student_info['Tên']} không có mặt trong danh sách phòng thi."
 
 def read_extracted_list(file_path):
     try:
