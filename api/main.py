@@ -36,57 +36,44 @@ def extract_info_from_ocr(result):
     fields = {
         "Tên": "",
         "Ngành": "",
-        "Khoa/Viện": "",
+        "Trường/Khoa/Viện": "",
         "Khoá": "",
         "MSV": ""
     }
 
     sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
 
-    next_line_is_name = False
-    next_line_is_major = False  # Để đánh dấu khi nào tìm thấy ngành
-    next_line_is_faculty = False  # Để đánh dấu khi nào tìm thấy khoa/viện
-    found_msv = False
+    next_line_is_name = False #flag tìm tên
+    next_line_is_major = False #flag tìm ngành
+    next_line_is_faculty = False #flag tìm trường/khoa/viện
+    found_msv = False #flag tìm MSV
 
     for line in sorted_result:
-        text = line[1][0].strip()
-        
-        # Kiểm tra nếu là dòng chứa "Thẻ sinh viên" để tìm tên
+        text = line[1][0].strip()               
         if "THE SINH VIEN" in text.upper():
             next_line_is_name = True
             continue
-
-        # Nếu vừa tìm thấy dòng "THE SINH VIEN", dòng kế là tên
         if next_line_is_name:
             fields["Tên"] = text
-            next_line_is_name = False
-            next_line_is_major = True  # Đánh dấu để dòng tiếp theo là ngành
+            next_line_is_name = False #reset flag sau khi tìm thấy tên
+            next_line_is_major = True 
             continue
-
-        # Tìm MSV
         if not found_msv and "MSV" in text.upper():
             msv_match = re.search(r"\d{9,}", text)
             if msv_match:
                 fields["MSV"] = msv_match.group(0)
             found_msv = True
-
-        # Xác định ngành dựa vào dòng dưới tên
         if next_line_is_major:
             fields["Ngành"] = text
-            next_line_is_major = False  # Ngưng tìm ngành sau khi đã tìm thấy
-            next_line_is_faculty = True  # Đánh dấu dòng tiếp theo là khoa/viện
+            next_line_is_major = False 
+            next_line_is_faculty = True
             continue
-
-        # Xác định Khoa/Viện dựa vào dòng dưới ngành
         if next_line_is_faculty:
-            fields["Khoa/Viện"] = text
-            next_line_is_faculty = False  # Ngưng tìm khoa/viện sau khi đã tìm thấy
+            fields["Trường/Khoa/Viện"] = text
+            next_line_is_faculty = False 
             continue
-
-        # Tìm Khoá
-        if re.search(r"\d{4}-\d{4}", text):
+        if re.search(r"\d{4}-\d{4}", text): #tìm năm học có dạng xxxx-xxxx
             fields["Khoá"] = text
-
     return fields
 
 def compare_with_list(student_info, extracted_list):
@@ -135,12 +122,11 @@ async def upload_image(file: UploadFile = File(...)):
     if extracted_list:
         result = compare_with_list(student_info, extracted_list)
         return {
-            "message": "OCR thành công",
-            "extracted_info": extracted_info,
-            "comparison_result": result
+            "Thông báo": "OCR thành công",
+            "Thông tin trích xuất được": extracted_info,
+            "Kết quả đối chiếu danh sách phòng thi": result
         }
     else:
         return {
-            "message": "Không thể đọc danh sách sinh viên.",
-            "extracted_info": extracted_info
+            "Thông báo": "Không thể đọc danh sách sinh viên.",
         }
