@@ -7,7 +7,7 @@ ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\DemoDanhSach.xlsx'
 
-# hàm phát hiện các cột chứa "Họ tên" và "Mã sinh viên"
+# hàm tìm cột chứa "họ tên" và "MSV"
 def find_columns(sheet):
     name_col = None
     msv_col = None
@@ -55,6 +55,7 @@ def read_from_excel(excel_path):
 # gọi hàm đọc từ Excel
 students_from_excel = read_from_excel(excel_path)
 
+######## Sẽ cập nhật lưu kết quả đọc được từ file excel vào DB sau ########
 # hiển thị và lưu kết quả
 if students_from_excel:
     print("Danh sách sinh viên từ Excel:")

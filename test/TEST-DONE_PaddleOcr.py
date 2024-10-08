@@ -5,7 +5,7 @@ import re
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 # Đường dẫn đến ảnh thẻ sinh viên đã tiền xử lý
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\processed\processed_NgocPhuongIDCard.jpg"
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocAnhIDCard_processed.jpg"
 
 # Nhận diện văn bản từ ảnh
 result = ocr.ocr(img_path, cls=True)

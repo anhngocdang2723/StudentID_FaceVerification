@@ -9,10 +9,9 @@ img = cv2.imread(img_path)
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# tải model phát hiện khuôn mặt
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# giảm kích thước ảnh để tăng tốc độ phát hiện
+# giảm kích thước ảnh
 scale_percent = 50
 width = int(img.shape[1] * scale_percent / 100)
 height = int(img.shape[0] * scale_percent / 100)
@@ -21,9 +20,7 @@ resized_img = cv2.resize(img, dim)
 
 faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
 
-# check xem có khuôn mặt không
 if len(faces) > 0:
-    # lấy toạ độ
     (x, y, w, h) = faces[0]
     
     # chuyển toạ độ theo kích thước gốc
@@ -32,13 +29,12 @@ if len(faces) > 0:
     w = int(w * (100 / scale_percent))
     h = int(h * (100 / scale_percent))
 
-    # cắt và lưu khuôn mặt
     face_img = img[y:y+h, x:x+w]
     cv2.imwrite(r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_face.jpg", face_img)
 
     cv2.imshow("Face", face_img)
 
-    # Áp dụng ngưỡng hóa để tạo ảnh nhị phân (ảnh chỉ chứa 2 màu đen và trắng)
+    # ap dụng ngưỡng hóa để tạo ảnh nhị phân
     _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
     # Chạy OCR trên ảnh ngưỡng hóa
@@ -54,15 +50,12 @@ if len(faces) > 0:
             # Vẽ viền theo points
             cv2.polylines(thresh, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
 
-    # Lưu ảnh đã xử lý với box OCR
     cv2.imwrite(r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\test\\resultTest\\NgocAnhIDCard_processed_with_boxes.jpg', thresh)
 
-    # Hiển thị ảnh với box OCR
     cv2.imshow('Processed Image with OCR boxes', thresh)
 
 else:
     print("Không tìm thấy khuôn mặt.")
 
-# Đợi và đóng cửa sổ hiển thị
 cv2.waitKey(0)
 cv2.destroyAllWindows()

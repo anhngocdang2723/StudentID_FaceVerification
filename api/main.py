@@ -124,7 +124,7 @@ async def upload_image(file: UploadFile = File(...)):
         return {
             "Thông báo": "OCR thành công",
             "Thông tin trích xuất được": extracted_info,
-            "Kết quả đối chiếu danh sách phòng thi": result
+            "Kết quả đối chiếu": result
         }
     else:
         return {
