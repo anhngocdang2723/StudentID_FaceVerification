@@ -1,95 +1,65 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f4f4f9;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #333;
+    margin: 0;
 }
 
 .container {
-    background-color: #fff;
+    background-color: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
+    max-width: 500px;
+    text-align: center;
 }
 
 h1 {
-    text-align: center;
-    color: #007bff;
-    margin-bottom: 20px;
+    color: #333;
 }
 
 label {
     font-weight: bold;
-    margin-bottom: 10px;
-    display: inline-block;
 }
 
 input[type="file"] {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    width: 100%;
 }
 
 input[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
+    background-color: #007BFF;
+    color: white;
     padding: 10px 20px;
-    border-radius: 4px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    width: 100%;
     font-size: 16px;
-    transition: background-color 0.3s ease;
 }
 
 input[type="submit"]:hover {
     background-color: #0056b3;
 }
 
+#result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #333;
+    white-space: pre-wrap;
+}
+
 .image-preview {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    text-align: center;
+    margin-top: 15px;
 }
 
 .image-preview img {
     max-width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    padding: 5px;
-}
-
-#result-container {
-    margin-top: 20px;
-}
-
-#result {
-    background-color: #f4f4f4;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
     max-height: 200px;
-    overflow-y: auto;
-}
-
-.student-info {
-    margin-top: 20px;
-}
-
-.student-info h3 {
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-.student-info p {
-    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
 }
