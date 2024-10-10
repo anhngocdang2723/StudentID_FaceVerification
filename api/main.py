@@ -7,7 +7,7 @@ import re
 import os
 
 # Import hàm từ file student_id_module.py
-from student_id_module import process_student_id
+from face_extraction import process_student_id
 
 app = FastAPI()
 
@@ -17,6 +17,8 @@ ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
+FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
+CARDS_FOLDER = os.path.join(RESULTS_FOLDER, "student_card")
 STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
 # tạo file path nếu chưa tồn tại
@@ -101,8 +103,8 @@ async def upload_image(file: UploadFile = File(...)):
         f.write(file.file.read())
 
     # Đường dẫn để lưu ảnh khuôn mặt và ảnh đã xử lý
-    output_face_path = os.path.join(RESULTS_FOLDER, f"{file.filename}_face.jpg")
-    output_processed_path = os.path.join(RESULTS_FOLDER, f"{file.filename}_processed.jpg")
+    output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
+    output_processed_path = os.path.join(CARDS_FOLDER, f"{file.filename}_processed.jpg")
 
     # Sử dụng hàm process_student_id để xử lý ảnh
     if process_student_id(file_location, output_face_path, output_processed_path):
@@ -128,8 +130,8 @@ async def upload_image(file: UploadFile = File(...)):
                 "Thông báo": "OCR thành công",
                 "Thông tin trích xuất được": extracted_info,
                 "Kết quả đối chiếu": comparison_result,
-                "Hình ảnh khuôn mặt": output_face_path,  # Trả về đường dẫn ảnh khuôn mặt
-                "Hình ảnh đã xử lý": output_processed_path  # Trả về đường dẫn ảnh đã xử lý
+                #"Hình ảnh khuôn mặt": output_face_path,  # Trả về đường dẫn ảnh khuôn mặt
+                #"Hình ảnh đã xử lý": output_processed_path  # Trả về đường dẫn ảnh đã xử lý
             }
         else:
             return {
