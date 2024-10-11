@@ -6,14 +6,12 @@ import cv2
 import re
 import os
 
-# Import hàm từ file student_id_module.py
 from face_extraction import process_student_id
 
 app = FastAPI()
 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# lấy file path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
@@ -21,7 +19,6 @@ FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
 CARDS_FOLDER = os.path.join(RESULTS_FOLDER, "student_card")
 STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
-# tạo file path nếu chưa tồn tại
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
@@ -94,27 +91,21 @@ def read_extracted_list(file_path):
         print(f"File {file_path} không tồn tại.")
         return []
 
-# Endpoint để xử lý ảnh và thực hiện OCR
 @app.post("/api/upload-image")
 async def upload_image(file: UploadFile = File(...)):
-    # Lưu file ảnh vào thư mục uploads
+
     file_location = os.path.join(UPLOAD_FOLDER, file.filename)
     with open(file_location, "wb") as f:
         f.write(file.file.read())
 
-    # Đường dẫn để lưu ảnh khuôn mặt và ảnh đã xử lý
     output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
     output_processed_path = os.path.join(CARDS_FOLDER, f"{file.filename}_processed.jpg")
 
-    # Sử dụng hàm process_student_id để xử lý ảnh
     if process_student_id(file_location, output_face_path, output_processed_path):
-        # Tiến hành OCR trên ảnh đã xử lý
         result = ocr.ocr(output_processed_path, cls=True)
 
-        # Trích xuất thông tin từ kết quả OCR
         extracted_info = extract_info_from_ocr(result)
 
-        # Lưu thông tin vào student_info
         student_info = {
             "Tên": extracted_info["Tên"],
             "MSV": extracted_info["MSV"]
@@ -123,7 +114,6 @@ async def upload_image(file: UploadFile = File(...)):
         file_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt'
         extracted_list = read_extracted_list(file_path)
 
-        # So sánh và in kết quả
         if extracted_list:
             comparison_result = compare_with_list(student_info, extracted_list)
             return {

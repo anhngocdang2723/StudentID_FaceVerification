@@ -1,143 +1,68 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 from paddleocr import PaddleOCR
-import cv2
-import re
 import os
-
-# Import hàm từ file student_id_module.py
-from face_extraction import process_student_id
-
-app = FastAPI()
+import openpyxl  # thư viện đọc excel
+from unidecode import unidecode  # thư viện để in hoa bỏ dấu
 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# lấy file path
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
-FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
-CARDS_FOLDER = os.path.join(RESULTS_FOLDER, "student_card")
-STATIC_FOLDER = os.path.join(BASE_DIR, "static")
+excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\DemoDanhSach.xlsx'
 
-# tạo file path nếu chưa tồn tại
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(RESULTS_FOLDER, exist_ok=True)
-os.makedirs(STATIC_FOLDER, exist_ok=True)
+# hàm tìm cột chứa "họ tên" và "MSV"
+def find_columns(sheet):
+    name_col = None
+    msv_col = None
 
-app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
+    # duyệt qua các dòng để tìm dòng tiêu đề
+    for row in sheet.iter_rows(values_only=True):
+        for idx, cell_value in enumerate(row):
+            if cell_value:
+                # tìm cột chứa "họ tên"
+                if "họ tên" in str(cell_value).lower():
+                    name_col = idx + 1  # openpyxl đánh số cột từ 1
+                # tìm cột chứa "msv"
+                elif "mã sinh viên" in str(cell_value).lower():
+                    msv_col = idx + 1                
+                # dừng lặp khi tìm thấy
+                if name_col and msv_col:
+                    return name_col, msv_col
+    return name_col, msv_col
 
-@app.get("/", response_class=HTMLResponse)
-async def get_home():
-    with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
-        html_content = f.read()
-    return HTMLResponse(content=html_content)
+# hàm đọc danh sách sinh viên từ Excel
+def read_from_excel(excel_path):
+    if os.path.exists(excel_path):
+        wb = openpyxl.load_workbook(excel_path)
+        sheet = wb.active
 
-def extract_info_from_ocr(result):
-    fields = {
-        "Tên": "",
-        "Ngành": "",
-        "Trường/Khoa/Viện": "",
-        "Khoá": "",
-        "MSV": ""
-    }
+        name_col, msv_col = find_columns(sheet)
 
-    sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
-
-    next_line_is_name = False  # flag tìm tên
-    next_line_is_major = False  # flag tìm ngành
-    next_line_is_faculty = False  # flag tìm trường/khoa/viện
-    found_msv = False  # flag tìm MSV
-
-    for line in sorted_result:
-        text = line[1][0].strip()
-        if "THE SINH VIEN" in text.upper():
-            next_line_is_name = True
-            continue
-        if next_line_is_name:
-            fields["Tên"] = text
-            next_line_is_name = False  # reset flag sau khi tìm thấy tên
-            next_line_is_major = True
-            continue
-        if not found_msv and "MSV" in text.upper():
-            msv_match = re.search(r"\\d{9,}", text)
-            if msv_match:
-                fields["MSV"] = msv_match.group(0)
-            found_msv = True
-        if next_line_is_major:
-            fields["Ngành"] = text
-            next_line_is_major = False
-            next_line_is_faculty = True
-            continue
-        if next_line_is_faculty:
-            fields["Trường/Khoa/Viện"] = text
-            next_line_is_faculty = False
-            continue
-        if re.search(r"\\d{4}-\\d{4}", text):  # tìm năm học có dạng xxxx-xxxx
-            fields["Khoá"] = text
-    return fields
-
-def compare_with_list(student_info, extracted_list):
-    for entry in extracted_list:
-        name, msv = entry.split(" - ")
-        if student_info['Tên'].strip().lower() == name.strip().lower() and student_info['MSV'] == msv.strip():
-            return f"Sinh viên: {student_info['Tên']} có mặt trong danh sách phòng thi."
-    return f"Sinh viên: {student_info['Tên']} không có mặt trong danh sách phòng thi."
-
-def read_extracted_list(file_path):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            extracted_list = f.readlines()
-        return [entry.strip() for entry in extracted_list]  # Xóa ký tự newline và khoảng trắng thừa
-    except FileNotFoundError:
-        print(f"File {file_path} không tồn tại.")
+        if name_col and msv_col:
+            excel_data = []
+            for row in sheet.iter_rows(min_row=sheet.min_row + 1, values_only=True):
+                name = row[name_col - 1]
+                msv = row[msv_col - 1]
+                if name and msv: 
+                    # loại bỏ dấu, in hoa
+                    name = unidecode(name).upper()
+                    excel_data.append(f"{name} - {msv}")
+            return excel_data
+        else:
+            print("Không tìm thấy cột 'Họ tên' và 'Mã sinh viên'.")
+            return []
+    else:
+        print(f"File Excel {excel_path} không tồn tại.")
         return []
 
-# Endpoint để xử lý ảnh và thực hiện OCR
-@app.post("/api/upload-image")
-async def upload_image(file: UploadFile = File(...)):
-    # Lưu file ảnh vào thư mục uploads
-    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-    with open(file_location, "wb") as f:
-        f.write(file.file.read())
+# gọi hàm đọc từ Excel
+students_from_excel = read_from_excel(excel_path)
 
-    # Đường dẫn để lưu ảnh khuôn mặt và ảnh đã xử lý
-    output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
-    output_processed_path = os.path.join(CARDS_FOLDER, f"{file.filename}_processed.jpg")
+######## Sẽ cập nhật lưu kết quả đọc được từ file excel vào DB sau ########
+# hiển thị và lưu kết quả
+if students_from_excel:
+    print("Danh sách sinh viên từ Excel:")
+    for student in students_from_excel:
+        print(student)
 
-    # Sử dụng hàm process_student_id để xử lý ảnh
-    if process_student_id(file_location, output_face_path, output_processed_path):
-        # Tiến hành OCR trên ảnh đã xử lý
-        result = ocr.ocr(output_processed_path, cls=True)
-
-        # Trích xuất thông tin từ kết quả OCR
-        extracted_info = extract_info_from_ocr(result)
-
-        # Lưu thông tin vào student_info
-        student_info = {
-            "Tên": extracted_info["Tên"],
-            "MSV": extracted_info["MSV"]
-        }
-
-        file_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt'
-        extracted_list = read_extracted_list(file_path)
-
-        # So sánh và in kết quả
-        if extracted_list:
-            comparison_result = compare_with_list(student_info, extracted_list)
-            return {
-                "Thông báo": "OCR thành công",
-                "Thông tin trích xuất được": extracted_info,
-                "Kết quả đối chiếu": comparison_result,
-                "Hình ảnh khuôn mặt": output_face_path,  # Trả về đường dẫn ảnh khuôn mặt
-                #"Hình ảnh đã xử lý": output_processed_path  # Trả về đường dẫn ảnh đã xử lý
-            }
-        else:
-            return {
-                "Thông báo": "Không thể đọc danh sách sinh viên.",
-            }
-    else:
-        return {
-            "Thông báo": "Không thể xử lý ảnh.",
-        }
+    with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt', 'w', encoding='utf-8') as f:
+        for student in students_from_excel:
+            f.write(student + '\n')
+    print("Danh sách sinh viên từ Excel đã được lưu vào file 'student_list_from_excel.txt'.")
