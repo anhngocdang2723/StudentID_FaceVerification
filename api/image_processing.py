@@ -4,6 +4,11 @@ import os
 
 PROCESSED_FOLDER = "processed_images"  # Thư mục để lưu ảnh xử lý
 
+##### Đây là hàm tiền xử lý ảnh thẻ sinh viên ################################################################
+# ở đây sẽ sử dụng model Yolo được train để detect thẻ sinh viên, sau đó crop ảnh thẻ và xử lý ảnh
+# sau đó lưu ảnh đã xử lý vào thư mục PROCESSED_FOLDER để module face_extraction.py cắt khuôn mặt khỏi thẻ
+##############################################################################################################
+
 # def adjust_brightness_contrast(image, brightness=0, contrast=0):
 #     brightness = np.clip(brightness, -100, 100)
 #     contrast = np.clip(contrast, -100, 100)
