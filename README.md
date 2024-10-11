@@ -1,5 +1,3 @@
-Dưới đây là tệp `README.md` đã viết thành code, bạn có thể copy và dán lên trang GitHub của mình:
-
 ```md
 # StudentID_FaceVerification
 
