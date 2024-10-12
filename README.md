@@ -82,7 +82,7 @@ Nếu bạn muốn đóng góp vào dự án, hãy fork dự án và gửi pull 
 ---
 
 ### Liên hệ
-Nếu có bất kỳ câu hỏi hoặc thắc mắc nào, bạn có thể liên hệ qua email: `anhngocdang27022003@example.com`.
+Nếu có bất kỳ câu hỏi hoặc thắc mắc nào, bạn có thể liên hệ qua email: `anhngocdang27022003@gmail.com`.
 
 ---
 
