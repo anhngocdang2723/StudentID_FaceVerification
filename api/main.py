@@ -7,6 +7,7 @@ import re
 import os
 
 from face_extraction import process_student_id
+from face_comparison import read_image, compare_faces
 
 app = FastAPI()
 
@@ -131,3 +132,12 @@ async def upload_image(file: UploadFile = File(...)):
         return {
             "Thông báo": "Không thể xử lý ảnh.",
         }
+        
+# Route để nhận và so sánh hai ảnh
+@app.post("/api/compare-faces")
+async def compare_faces_api(file1: UploadFile = File(...), file2: UploadFile = File(...)):
+    image1 = read_image(file1)
+    image2 = read_image(file2)
+
+    result = compare_faces(image1, image2)
+    return {"result": result}

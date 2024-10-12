@@ -2,15 +2,13 @@ import cv2
 import numpy as np
 from fastapi import UploadFile
 
-# Hàm đọc ảnh từ file tải lên
 def read_image(file: UploadFile):
     image = np.fromstring(file.file.read(), np.uint8)
     return cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-# Hàm nhận diện khuôn mặt trong ảnh
 def detect_faces(image):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Chuyển sang ảnh xám
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     return faces
 
@@ -24,13 +22,11 @@ def compare_faces(image1, image2):
     if len(faces2) == 0:
         return "ảnh 2 không tìm thấy khuôn mặt"
     
-    # Cắt khuôn mặt
     (x1, y1, w1, h1) = faces1[0]
     face1 = image1[y1:y1+h1, x1:x1+w1]
     (x2, y2, w2, h2) = faces2[0]
     face2 = image2[y2:y2+h2, x2:x2+w2]
     
-    # Resize 2 ảnh khuôn mặt về cùng kích thước
     face1_resized = cv2.resize(face1, (200, 200))
     face2_resized = cv2.resize(face2, (200, 200))
 
