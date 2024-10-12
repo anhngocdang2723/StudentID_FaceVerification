@@ -1,56 +1,50 @@
 import cv2
+import dlib
 import numpy as np
-from fastapi import UploadFile
 
-#####Tạm đọc ảnh từ file
-# def read_image(file: UploadFile):
-#     image = np.fromstring(file.file.read(), np.uint8)
-#     return cv2.imdecode(image, cv2.IMREAD_COLOR)
-
-def detect_faces(image):
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Load dlib's pre-trained face detector and the face landmark predictor
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\shape_predictor_68_face_landmarks.dat")
+# Load Face Recognition model (ResNet)
+facerec = dlib.face_recognition_model_v1(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\dlib_face_recognition_resnet_model_v1.dat")
+# Hàm trích xuất vector đặc trưng khuôn mặt
+def get_face_embedding(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    return faces
+    faces = detector(gray)
 
-#####Đọc ảnh đã cắt từ module face_extraction.py
-image1=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\NgocAnhIDCard.jpg_face.jpg')
-image2=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\NgocAnh_face.jpg')
+    if len(faces) == 0:
+        return None
 
-# Hàm so sánh hai khuôn mặt từ hai ảnh
-def compare_faces(image1, image2):
-    faces1 = detect_faces(image1)
-    faces2 = detect_faces(image2)
-
-    if len(faces1) == 0:
-        return "ảnh 1 không tìm thấy khuôn mặt"
-    if len(faces2) == 0:
-        return "ảnh 2 không tìm thấy khuôn mặt"
+    # Lấy vị trí khuôn mặt đầu tiên
+    shape = predictor(gray, faces[0])
     
-    (x1, y1, w1, h1) = faces1[0]
-    face1 = image1[y1:y1+h1, x1:x1+w1]
-    (x2, y2, w2, h2) = faces2[0]
-    face2 = image2[y2:y2+h2, x2:x2+w2]
-    
-    face1_resized = cv2.resize(face1, (200, 200))
-    face2_resized = cv2.resize(face2, (200, 200))
+    # Trích xuất vector đặc trưng khuôn mặt
+    face_embedding = facerec.compute_face_descriptor(image, shape)
 
-    # So sánh histogram của 2 ảnh khuôn mặt
-    hist1 = cv2.calcHist([face1_resized], [0], None, [256], [0, 256])
-    hist2 = cv2.calcHist([face2_resized], [0], None, [256], [0, 256])
+    return np.array(face_embedding)
 
-    # Chuẩn hóa histogram
-    hist1 = cv2.normalize(hist1, hist1)
-    hist2 = cv2.normalize(hist2, hist2)
+# Hàm so sánh hai khuôn mặt bằng khoảng cách Euclidean
+def compare_faces(image1, image2, threshold=0.6):
+    embedding1 = get_face_embedding(image1)
+    embedding2 = get_face_embedding(image2)
 
-    # Tính độ tương đồng giữa 2 histogram
-    similarity = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
+    if embedding1 is None:
+        return "Ảnh 1 không tìm thấy khuôn mặt"
+    if embedding2 is None:
+        return "Ảnh 2 không tìm thấy khuôn mặt"
 
-    # Ngưỡng xác định cùng 1 người hay không
-    if similarity > 0.7:
-        return "Cùng 1 người"
+    # Tính khoảng cách Euclidean giữa hai vector
+    distance = np.linalg.norm(embedding1 - embedding2)
+
+    if distance < threshold:
+        return f"Cùng 1 người (Khoảng cách Euclidean: {distance:.2f})"
     else:
-        return "2 người khác nhau"
+        return f"2 người khác nhau (Khoảng cách Euclidean: {distance:.2f})"
 
-compare=compare_faces(image1, image2)
-print(compare)
+##### Đọc ảnh đã cắt từ module face_extraction.py
+image1 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\NgocAnhIDCard.jpg_face.jpg')
+image2 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\NgocAnh_face.jpg')
+
+# So sánh hai khuôn mặt
+result = compare_faces(image1, image2)
+print(result)
