@@ -1,68 +1,56 @@
-from paddleocr import PaddleOCR
-import os
-import openpyxl  # thư viện đọc excel
-from unidecode import unidecode  # thư viện để in hoa bỏ dấu
+import cv2
+import numpy as np
+from fastapi import UploadFile
 
-ocr = PaddleOCR(use_angle_cls=True, lang='vi')
+#####Tạm đọc ảnh từ file
+# def read_image(file: UploadFile):
+#     image = np.fromstring(file.file.read(), np.uint8)
+#     return cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\DemoDanhSach.xlsx'
+def detect_faces(image):
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    return faces
 
-# hàm tìm cột chứa "họ tên" và "MSV"
-def find_columns(sheet):
-    name_col = None
-    msv_col = None
+#####Đọc ảnh đã cắt từ module face_extraction.py
+image1=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\NgocAnhIDCard.jpg_face.jpg')
+image2=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\NgocAnh_face.jpg')
 
-    # duyệt qua các dòng để tìm dòng tiêu đề
-    for row in sheet.iter_rows(values_only=True):
-        for idx, cell_value in enumerate(row):
-            if cell_value:
-                # tìm cột chứa "họ tên"
-                if "họ tên" in str(cell_value).lower():
-                    name_col = idx + 1  # openpyxl đánh số cột từ 1
-                # tìm cột chứa "msv"
-                elif "mã sinh viên" in str(cell_value).lower():
-                    msv_col = idx + 1                
-                # dừng lặp khi tìm thấy
-                if name_col and msv_col:
-                    return name_col, msv_col
-    return name_col, msv_col
+# Hàm so sánh hai khuôn mặt từ hai ảnh
+def compare_faces(image1, image2):
+    faces1 = detect_faces(image1)
+    faces2 = detect_faces(image2)
 
-# hàm đọc danh sách sinh viên từ Excel
-def read_from_excel(excel_path):
-    if os.path.exists(excel_path):
-        wb = openpyxl.load_workbook(excel_path)
-        sheet = wb.active
+    if len(faces1) == 0:
+        return "ảnh 1 không tìm thấy khuôn mặt"
+    if len(faces2) == 0:
+        return "ảnh 2 không tìm thấy khuôn mặt"
+    
+    (x1, y1, w1, h1) = faces1[0]
+    face1 = image1[y1:y1+h1, x1:x1+w1]
+    (x2, y2, w2, h2) = faces2[0]
+    face2 = image2[y2:y2+h2, x2:x2+w2]
+    
+    face1_resized = cv2.resize(face1, (200, 200))
+    face2_resized = cv2.resize(face2, (200, 200))
 
-        name_col, msv_col = find_columns(sheet)
+    # So sánh histogram của 2 ảnh khuôn mặt
+    hist1 = cv2.calcHist([face1_resized], [0], None, [256], [0, 256])
+    hist2 = cv2.calcHist([face2_resized], [0], None, [256], [0, 256])
 
-        if name_col and msv_col:
-            excel_data = []
-            for row in sheet.iter_rows(min_row=sheet.min_row + 1, values_only=True):
-                name = row[name_col - 1]
-                msv = row[msv_col - 1]
-                if name and msv: 
-                    # loại bỏ dấu, in hoa
-                    name = unidecode(name).upper()
-                    excel_data.append(f"{name} - {msv}")
-            return excel_data
-        else:
-            print("Không tìm thấy cột 'Họ tên' và 'Mã sinh viên'.")
-            return []
+    # Chuẩn hóa histogram
+    hist1 = cv2.normalize(hist1, hist1)
+    hist2 = cv2.normalize(hist2, hist2)
+
+    # Tính độ tương đồng giữa 2 histogram
+    similarity = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
+
+    # Ngưỡng xác định cùng 1 người hay không
+    if similarity > 0.7:
+        return "Cùng 1 người"
     else:
-        print(f"File Excel {excel_path} không tồn tại.")
-        return []
+        return "2 người khác nhau"
 
-# gọi hàm đọc từ Excel
-students_from_excel = read_from_excel(excel_path)
-
-######## Sẽ cập nhật lưu kết quả đọc được từ file excel vào DB sau ########
-# hiển thị và lưu kết quả
-if students_from_excel:
-    print("Danh sách sinh viên từ Excel:")
-    for student in students_from_excel:
-        print(student)
-
-    with open(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\student_list_from_excel.txt', 'w', encoding='utf-8') as f:
-        for student in students_from_excel:
-            f.write(student + '\n')
-    print("Danh sách sinh viên từ Excel đã được lưu vào file 'student_list_from_excel.txt'.")
+compare=compare_faces(image1, image2)
+print(compare)

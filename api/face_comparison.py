@@ -2,15 +2,20 @@ import cv2
 import numpy as np
 from fastapi import UploadFile
 
-def read_image(file: UploadFile):
-    image = np.fromstring(file.file.read(), np.uint8)
-    return cv2.imdecode(image, cv2.IMREAD_COLOR)
+#####Tạm đọc ảnh từ file
+# def read_image(file: UploadFile):
+#     image = np.fromstring(file.file.read(), np.uint8)
+#     return cv2.imdecode(image, cv2.IMREAD_COLOR)
 
 def detect_faces(image):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     return faces
+
+#####Đọc ảnh đã cắt từ module face_extraction.py
+image1=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\NgocAnhIDCard.jpg_face.jpg')
+image2=cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\NgocAnh_face.jpg')
 
 # Hàm so sánh hai khuôn mặt từ hai ảnh
 def compare_faces(image1, image2):
@@ -46,3 +51,6 @@ def compare_faces(image1, image2):
         return "Cùng 1 người"
     else:
         return "2 người khác nhau"
+
+compare=compare_faces(image1, image2)
+print(compare)
