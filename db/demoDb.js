@@ -15,6 +15,15 @@ Students = {
     }
 }
 
+//////////Giám thị
+Invigilators = {
+    "_id": "tự tạo",
+    "invigilator_id": "mã giám thị",
+    "invigilator_name": "tên giám thị",
+    "invigilator_phone": "sdt",
+    "invigilator_email": "email"
+}
+
 /////////Kỳ thi
 Exams = {
     "_id": "tự tạo",
@@ -23,16 +32,7 @@ Exams = {
     "exam_date": "ngày thi",
     "exam_room": "phòng thi",
     "invigilator_id": "mã giám thị",
-    "invigilator_name": "tên giám thị",
-}
-
-//////////Giám thị
-Invigilators = {
-    "_id": "tự tạo",
-    "invigilator_id": "mã giám thị",
-    "invigilator_name": "tên giám thị",
-    "invigilator_phone": "sdt",
-    "invigilator_email": "email"
+    //"invigilator_name": "tên giám thị",
 }
 
 //////////Phòng thi
@@ -78,7 +78,7 @@ ExamParticipants = {
     "_id": "tự tạo",
     "exam_id": "mã kỳ thi",
     "std_id": "msv",
-    "std_name": "tên sv",
+    //"std_name": "tên sv",
     "exam_room": "mã phòng",
     "invigilator_id": "mã giám thị"
 }

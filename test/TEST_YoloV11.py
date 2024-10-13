@@ -1,8 +1,7 @@
 import cv2
 from ultralytics import YOLO
 
-# tải model YOLOv11s
-model = YOLO('yolo11n.pt')  # Thay thế bằng 'yolo11n.pt' nếu có mô hình phù hợp
+model = YOLO('yolo11n.pt')
 
 cap = cv2.VideoCapture(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\video.mp4")
 
