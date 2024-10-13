@@ -10,3 +10,4 @@ pandas
 openpyxl
 unidecode
 pymongo
+ultralytics #model yolov11
