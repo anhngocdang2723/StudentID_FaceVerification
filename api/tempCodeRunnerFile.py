@@ -24,7 +24,7 @@ def get_face_embedding(image):
     return np.array(face_embedding)
 
 # Hàm so sánh hai khuôn mặt bằng khoảng cách Euclidean
-def compare_faces(image1, image2, threshold=0.6):
+def compare_faces(image1, image2, threshold=0.6): # Ngưỡng threshold tùy chọn, ở đây nếu khoảng cách Euclidean < 0.6 thì cùng 1 người
     embedding1 = get_face_embedding(image1)
     embedding2 = get_face_embedding(image2)
 
