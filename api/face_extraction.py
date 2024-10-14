@@ -16,7 +16,7 @@ def resize_image(img, scale_percent):
     dim = (width, height)
     return cv2.resize(img, dim)
 
-def detect_face(img, scale_percent=50):
+def detect_face(img, scale_percent=100):
     resized_img = resize_image(img, scale_percent)
     faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
     
@@ -36,7 +36,7 @@ def apply_ocr(img):
     result = ocr.ocr(thresh, cls=True)
 
     for line in result:
-        for word_info in line:
+        for word_info in line:  
             points = word_info[0]
             points = [(int(point[0]), int(point[1])) for point in points]
             cv2.polylines(thresh, [np.array(points)], isClosed=True, color=(0, 255, 0), thickness=2)
