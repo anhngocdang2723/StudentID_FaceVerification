@@ -6,8 +6,9 @@ import cv2
 import re
 import os
 
+#from image_processing import preprocess_image
 from face_extraction import process_student_id
-from face_comparison import read_image, compare_faces
+#from face_comparison import read_image, compare_faces
 
 app = FastAPI()
 
@@ -59,7 +60,7 @@ def extract_info_from_ocr(result):
             next_line_is_major = True
             continue
         if not found_msv and "MSV" in text.upper():
-            msv_match = re.search(r"\\d{9,}", text)
+            msv_match = re.search(r"\d{9,}", text)
             if msv_match:
                 fields["MSV"] = msv_match.group(0)
             found_msv = True
@@ -72,7 +73,7 @@ def extract_info_from_ocr(result):
             fields["Trường/Khoa/Viện"] = text
             next_line_is_faculty = False
             continue
-        if re.search(r"\\d{4}-\\d{4}", text):  # tìm năm học có dạng xxxx-xxxx
+        if re.search(r"\d{4}-\d{4}", text):  # tìm năm học có dạng xxxx-xxxx
             fields["Khoá"] = text
     return fields
 
@@ -134,10 +135,10 @@ async def upload_image(file: UploadFile = File(...)):
         }
         
 # Route để nhận và so sánh hai ảnh
-@app.post("/api/compare-faces")
-async def compare_faces_api(file1: UploadFile = File(...), file2: UploadFile = File(...)):
-    image1 = read_image(file1)
-    image2 = read_image(file2)
+# @app.post("/api/compare-faces")
+# async def compare_faces_api(file1: UploadFile = File(...), file2: UploadFile = File(...)):
+#     image1 = read_image(file1)
+#     image2 = read_image(file2)
 
-    result = compare_faces(image1, image2)
-    return {"result": result}
+#     result = compare_faces(image1, image2)
+#     return {"result": result}
