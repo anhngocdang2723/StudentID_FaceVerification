@@ -37,8 +37,8 @@ def compare_faces(image1, image2, threshold=0.6): # Ngưỡng threshold tùy ch�
     else:
         return f"2 người khác nhau (Khoảng cách Euclidean: {distance:.2f})"
 
-image1 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\ThaiTuanIDCard.jpg_face.jpg')
-image2 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\ThaiTuan_face.jpg')
+image1 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\results\student_card_faces\NgocAnhIDCard.jpg_face.jpg')
+image2 = cv2.imread(r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\img\NgocAnh_face.jpg')
 
 result = compare_faces(image1, image2)
 print(result)
