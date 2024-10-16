@@ -3,24 +3,20 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import os
 import logging
-from image_processing import preprocess_image  # Hàm xử lý ảnh trong module riêng
-from ocr_processing import perform_ocr, extract_info_from_ocr  # Import từ module ocr_processing
-from face_extraction import process_student_id  # Hàm xử lý ảnh trong module riêng
+from image_processing import preprocess_image
+from ocr_processing import perform_ocr, extract_info_from_ocr
+from face_extraction import process_student_id
 app = FastAPI()
 
-# Cấu hình thư mục
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
-#CARDS_FOLDER = os.path.join(RESULTS_FOLDER, "student_card")
 STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
-# Tạo các thư mục nếu chưa có
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(FACES_FOLDER, exist_ok=True)
-#os.makedirs(CARDS_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 # Mount thư mục static
@@ -33,6 +29,7 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
+####### Sẽ cập nhật để đọc từ db #######
 def read_extracted_list(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -57,16 +54,13 @@ async def upload_image(file: UploadFile = File(...)):
     with open(file_location, "wb") as f:
         f.write(file.file.read())
 
-    # Gọi hàm process_student_id để phát hiện và cắt khuôn mặt
     if process_student_id(file_location, output_face_path):
-        # Thực hiện tiền xử lý ảnh trước khi OCR
+        
         processed_image_path = preprocess_image(file_location)
-
-        # Thực hiện OCR trên ảnh đã xử lý
+        
         ocr_result = perform_ocr(processed_image_path)
-
+        
         if ocr_result:
-            # Trích xuất thông tin từ kết quả OCR
             extracted_info = extract_info_from_ocr(ocr_result)
 
             return {
