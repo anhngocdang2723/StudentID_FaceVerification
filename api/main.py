@@ -29,8 +29,32 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-####### Sẽ cập nhật để đọc từ db #######
-def read_extracted_list(file_path):
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+    output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
+
+    with open(file_location, "wb") as f:
+        f.write(file.file.read())
+
+    if process_student_id(file_location, output_face_path):
+        processed_image_path = preprocess_image(file_location)
+        ocr_result = perform_ocr(processed_image_path)
+
+        if ocr_result:
+            extracted_info = extract_info_from_ocr(ocr_result)
+            return {
+                "Thông báo": "OCR thành công",
+                "Thông tin trích xuất được": extracted_info
+            }
+        else:
+            return {"Thông báo": "OCR thất bại."}
+    else:
+        return {"Thông báo": "Không tìm thấy khuôn mặt."}
+
+
+########################### Các hàm kiểm tra sinh viên #######################
+def read_extracted_list(file_path): ### Sẽ update đọc từ database ###
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             extracted_list = f.readlines()
@@ -45,29 +69,12 @@ def compare_with_list(student_info, extracted_list):
             return f"Sinh viên: {student_info['Tên']} có mặt trong danh sách phòng thi."
     return f"Sinh viên: {student_info['Tên']} không có mặt trong danh sách phòng thi."
 
-@app.post("/api/upload-image")
-async def upload_image(file: UploadFile = File(...)):
-
-    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-    output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
-
-    with open(file_location, "wb") as f:
-        f.write(file.file.read())
-
-    if process_student_id(file_location, output_face_path):
-        
-        processed_image_path = preprocess_image(file_location)
-        
-        ocr_result = perform_ocr(processed_image_path)
-        
-        if ocr_result:
-            extracted_info = extract_info_from_ocr(ocr_result)
-
-            return {
-                "Thông báo": "OCR thành công",
-                "Thông tin trích xuất được": extracted_info
-            }
-        else:
-            return {"Thông báo": "OCR thất bại."}
-    else:
-        return {"Thông báo": "Không tìm thấy khuôn mặt."}
+@app.get("/api/check-exam-list")
+async def check_exam_list(student_name: str, student_id: str):
+    extracted_list = read_extracted_list("extracted_list.txt")
+    student_info = {
+        "Tên": student_name,
+        "MSV": student_id
+    }
+    return compare_with_list(student_info, extracted_list)
+#######################################################################################
