@@ -24,7 +24,6 @@ app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
-    # Trả về trang chủ từ thư mục static
     with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
