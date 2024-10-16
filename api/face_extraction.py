@@ -1,7 +1,7 @@
 import cv2
 import logging
 
-# Khởi tạo CascadeClassifier một lần khi khởi động module
+# Khởi tạo CascadeClassifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 logging.basicConfig(level=logging.INFO)

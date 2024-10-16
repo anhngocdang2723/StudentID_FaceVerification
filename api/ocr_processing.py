@@ -2,17 +2,13 @@ from paddleocr import PaddleOCR
 import re
 import logging
 
-# Khởi tạo OCR Paddle
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 logging.basicConfig(level=logging.INFO)
 
-def perform_ocr(image_path):
-    """
-    Chạy OCR trên ảnh và trả về kết quả đã sắp xếp.
-    """
+def perform_ocr(image_path): #hàm ocr và sắp xếp kết quả
     try:
-        result = ocr.ocr(image_path, cls=True)  # Thực hiện OCR
+        result = ocr.ocr(image_path, cls=True)
         if result and len(result) > 0:
             sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  # Sắp xếp theo tọa độ y của dòng văn bản
             logging.info(f"OCR thành công với {len(sorted_result)} dòng.")
@@ -24,10 +20,7 @@ def perform_ocr(image_path):
         logging.error(f"Lỗi trong quá trình OCR: {e}")
         return None
 
-def extract_info_from_ocr(result):
-    """
-    Trích xuất thông tin từ kết quả OCR đã sắp xếp.
-    """
+def extract_info_from_ocr(result): #hàm trích xuất thông tin từ kết quả đã sắp xếp
     fields = {
         "Tên": "",
         "Ngành": "",
@@ -65,7 +58,7 @@ def extract_info_from_ocr(result):
             fields["Trường/Khoa/Viện"] = text
             next_line_is_faculty = False
             continue
-        if re.search(r"\d{4}-\d{4}", text):  # Tìm khóa học dạng xxxx-xxxx
+        if re.search(r"\d{4}-\d{4}", text):
             fields["Khoá"] = text
 
     logging.info(f"Thông tin trích xuất: {fields}")
