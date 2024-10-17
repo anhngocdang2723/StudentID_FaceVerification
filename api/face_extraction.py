@@ -33,7 +33,6 @@ def process_student_id(img_path, output_face_path):
             raise ValueError(f"Không thể đọc được ảnh từ đường dẫn {img_path}")
         
         logging.info("Đã đọc thành công ảnh.")
-        
         face_img = detect_face(img)
 
         if face_img is not None:
