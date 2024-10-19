@@ -26,7 +26,7 @@ def detect_face(img, scale_percent=50):  # scale_percent = 100 == kích thước
         return img[y:y+h, x:x+w]
     return None
 
-def process_student_id(img_path, output_face_path):
+def process_student_id(img_path, output_face_path): # Hàm xử lý ảnh thẻ sinh viên và lưu khuôn mặt
     try:
         img = cv2.imread(img_path)
         if img is None:
