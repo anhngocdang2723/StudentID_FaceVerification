@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 
-PROCESSED_FOLDER = "processed_images"  # Thư mục để lưu ảnh xử lý
+PROCESSED_FOLDER = "processed_images"
 ##### Train model YoloV11 với custom dataset để detect thẻ tự động ####################
 #######################################################################################
 
