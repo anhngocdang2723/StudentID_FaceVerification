@@ -10,8 +10,8 @@ app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FE_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\frontend")  # Chỉ định tới thư mục FE
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\uploads")
+RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
 #STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
@@ -39,6 +39,7 @@ async def get_home():
 async def upload_image(file: UploadFile = File(...)):
     file_location = os.path.join(UPLOAD_FOLDER, file.filename)
     output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
+    #processed_image_path = os.path.join(RESULTS_FOLDER, f"processed_{file.filename}")  # Đường dẫn lưu ảnh đã xử lý
 
     with open(file_location, "wb") as f:
         f.write(file.file.read())
