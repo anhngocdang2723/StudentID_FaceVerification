@@ -1,10 +1,10 @@
-package com.example.myproject;
+package com.Project.StudentIDVerification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MyprojectApplicationTests {
+class StudentIdVerificationApplicationTests {
 
 	@Test
 	void contextLoads() {
