@@ -15,14 +15,14 @@ Students = {
     }
 }
 
-//////////Giám thị
-Invigilators = {
-    "_id": "tự tạo",
-    "invigilator_id": "mã giám thị",
-    "invigilator_name": "tên giám thị",
-    "invigilator_phone": "sdt",
-    "invigilator_email": "email"
-}
+    //////////Giám thị
+    Invigilators = {
+        "_id": "tự tạo",
+        "invigilator_id": "mã giám thị",
+        "invigilator_name": "tên giám thị",
+        "invigilator_phone": "sdt",
+        "invigilator_email": "email"
+    }
 
 /////////Kỳ thi
 Exams = {

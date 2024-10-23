@@ -9,22 +9,29 @@ from face_extraction import process_student_id
 app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FE_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\frontend")  # Chỉ định tới thư mục FE
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
-STATIC_FOLDER = os.path.join(BASE_DIR, "static")
+#STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(FACES_FOLDER, exist_ok=True)
-os.makedirs(STATIC_FOLDER, exist_ok=True)
+#s.makedirs(STATIC_FOLDER, exist_ok=True)
 
 # Mount thư mục static
-app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
+#app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
+#app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER)), name="static")
+
+# Mount thư mục tĩnh
+app.mount("/api/css", StaticFiles(directory=os.path.join(FE_FOLDER, "css")), name="css")
+app.mount("/api/js", StaticFiles(directory=os.path.join(FE_FOLDER, "js")), name="js")
+app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER, "static")), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def get_home():
-    with open(os.path.join(STATIC_FOLDER, "index.html"), "r", encoding="utf-8") as f:
+    with open(os.path.join(FE_FOLDER, "index.html"), "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
