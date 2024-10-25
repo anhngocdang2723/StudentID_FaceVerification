@@ -35,3 +35,22 @@ document.getElementById('uploadForm').onsubmit = async function(event) {
         document.getElementById('result').textContent = "Đã xảy ra lỗi: " + response.statusText;
     }
 };
+
+//Test api//
+document.getElementById('textForm').onsubmit = async function(event) {
+    event.preventDefault();
+
+    const text = document.getElementById('inputText').value;
+    const response = await fetch('http://127.0.0.1:8000/api/print', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: text })
+    });
+
+    const result = await response.json();
+    document.getElementById('resultText').textContent = result.received_text
+        ? "Đoạn text đã nhận: " + result.received_text
+        : "Đã xảy ra lỗi: " + response.statusText;
+};
