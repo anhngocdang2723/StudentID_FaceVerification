@@ -10,9 +10,9 @@ from face_extraction import process_student_id
 app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FE_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\frontend")  # Chỉ định tới thư mục FE
-UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\uploads")
-RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\results")
+FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\frontend")  # Chỉ định tới thư mục FE
+UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
+RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
 #STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
