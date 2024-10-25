@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 from image_processing import preprocess_image
@@ -20,6 +21,15 @@ os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(FACES_FOLDER, exist_ok=True)
 #s.makedirs(STATIC_FOLDER, exist_ok=True)
 
+# Cấu hình CORS cho phép truy cập từ Spring Boot
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # Cổng chạy Spring Boot
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Mount thư mục static
 #app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 #app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER)), name="static")
@@ -36,28 +46,31 @@ async def get_home():
     return HTMLResponse(content=html_content)
 
 @app.post("/api/upload-image")
-async def upload_image(file: UploadFile = File(...)):
-    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-    output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
-    #processed_image_path = os.path.join(RESULTS_FOLDER, f"processed_{file.filename}")  # Đường dẫn lưu ảnh đã xử lý
+async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
+    if file:
+        file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+        
+        with open(file_location, "wb") as f:
+            f.write(file.file.read())
 
-    with open(file_location, "wb") as f:
-        f.write(file.file.read())
+        # Tiến hành xử lý file ở đây
+        output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
+        if process_student_id(file_location, output_face_path):
+            processed_image_path = preprocess_image(file_location)
+            ocr_result = perform_ocr(processed_image_path)
 
-    if process_student_id(file_location, output_face_path):
-        processed_image_path = preprocess_image(file_location)
-        ocr_result = perform_ocr(processed_image_path)
-
-        if ocr_result:
-            extracted_info = extract_info_from_ocr(ocr_result)
-            return {
-                "Thông báo": "OCR thành công",
-                "Thông tin trích xuất được": extracted_info
-            }
+            if ocr_result:
+                extracted_info = extract_info_from_ocr(ocr_result)
+                return {
+                    "Thông báo": "OCR thành công",
+                    "Thông tin trích xuất được": extracted_info
+                }
+            else:
+                return {"Thông báo": "OCR thất bại."}
         else:
-            return {"Thông báo": "OCR thất bại."}
+            return {"Thông báo": "Không tìm thấy khuôn mặt."}
     else:
-        return {"Thông báo": "Không tìm thấy khuôn mặt."}
+        return {"Thông báo": "Không có file nào được nhận."}
 
 
 ########################### Các hàm kiểm tra sinh viên #######################
