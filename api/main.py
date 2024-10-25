@@ -71,15 +71,15 @@ async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tê
             return {"Thông báo": "Không tìm thấy khuôn mặt."}
     else:
         return {"Thông báo": "Không có file nào được nhận."}
-################# test api ########################
-from pydantic import BaseModel
-class TextInput(BaseModel):
-    text: str
-@app.post("/api/print")
-async def print_text(text_input: TextInput):
-    # Phản hồi lại nội dung nhận được từ frontend
-    return {"received_text": text_input.text}
-###################################################
+# ################# test api ########################
+# from pydantic import BaseModel
+# class TextInput(BaseModel):
+#     text: str
+# @app.post("/api/print")
+# async def print_text(text_input: TextInput):
+#     # Phản hồi lại nội dung nhận được từ frontend
+#     return {"received_text": text_input.text}
+# ###################################################
 
 ########################### Các hàm kiểm tra sinh viên #######################
 def read_extracted_list(file_path): ### Sẽ update đọc từ database ###
