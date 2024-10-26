@@ -5,7 +5,7 @@ import cv2
 model = YOLO(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\best.pt")  # Thay bằng đường dẫn đến file .pt của bạn
 
 # Khởi tạo webcam (device ID 0 là camera mặc định)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 # Kiểm tra xem webcam có mở thành công không
 if not cap.isOpened():
