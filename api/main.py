@@ -4,9 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
+
 from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
+#from camera_detection import detect_card_from_camera
 app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,6 +73,11 @@ async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tê
             return {"Thông báo": "Không tìm thấy khuôn mặt."}
     else:
         return {"Thông báo": "Không có file nào được nhận."}
+    
+# @app.get("/api/detect-card")
+# async def detect_card():
+#     return await detect_card_from_camera()
+
 # ################# test api ########################
 # from pydantic import BaseModel
 # class TextInput(BaseModel):
