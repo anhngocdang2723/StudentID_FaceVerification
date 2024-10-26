@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết Quả Phòng Thi</title>
+</head>
+<body>
+<h1>Danh Sách Sinh Viên trong Phòng: <span th:text="${roomId}"></span></h1>
+<table>
+    <thead>
+    <tr>
+        <th>Họ Tên</th>
+        <th>Mã Sinh Viên</th>
+        <th>Số Điện Thoại</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.stdName}"></td>
+        <td th:text="${student.stdId}"></td>
+        <td th:text="${student.stdPhone}"></td>
+    </tr>
+    </tbody>
+</table>
+<a href="/exam-room">Quay lại</a>
+</body>
+</html>

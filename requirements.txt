@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+paddleocr
+paddlepaddle
+opencv-python
+aiofiles
+python-multipart
+PyMuPDF
+pandas
+openpyxl
+unidecode
+pymongo
+ultralytics #model yolov11

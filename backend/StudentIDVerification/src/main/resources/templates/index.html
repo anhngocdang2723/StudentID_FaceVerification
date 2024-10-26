@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận diện thẻ sinh viên</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Tham chiếu đến favicon -->
+    <link rel="stylesheet" href="/css/style.css"> <!-- Đã sửa -->
+</head>
+<body>
+<div class="container">
+    <h1>Tải ảnh thẻ sinh viên để nhận diện</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Chọn ảnh thẻ sinh viên:</label>
+        <input type="file" id="file" name="file" accept="image/*" required><br>
+
+        <div class="image-preview" id="imagePreview"></div>
+
+        <input type="submit" value="Gửi">
+    </form>
+    <div id="result-container">
+        <h4>Kết quả:</h4>
+        <pre id="result"></pre>
+    </div>
+
+<!--    //Test api//-->
+<!--    <form id="textForm">-->
+<!--        <label for="inputText">Nhập nội dung:</label>-->
+<!--        <input type="text" id="inputText" name="text" required>-->
+<!--        <input type="submit" value="Gửi">-->
+<!--    </form>-->
+<!--    <div id="textResult">-->
+<!--        <h4>Kết quả:</h4>-->
+<!--        <pre id="resultText"></pre>-->
+<!--    </div>-->
+<!--    //Test api//-->
+
+</div>
+
+<script src="/js/script.js"></script> <!-- Đã sửa -->
+</body>
+</html>
