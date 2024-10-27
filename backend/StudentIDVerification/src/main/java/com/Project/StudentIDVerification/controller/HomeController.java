@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UploadController {
+public class HomeController {
 
-    @GetMapping("/uploadImage")
-    public String index() {
-        return "uploadImage"; // trả về tên tệp HTML (uploadImage.html)
+    @GetMapping("/")
+    public String home() {
+        return "index";
     }
 }
