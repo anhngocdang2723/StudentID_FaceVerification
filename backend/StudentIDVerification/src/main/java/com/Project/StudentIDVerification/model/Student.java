@@ -8,25 +8,30 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Student {
 
     @Id
-    private String id;        // _id trong MongoDB
+    private String id;
+
     @Field("std_id")
-    private String stdId;     // Mã sinh viên
+    private String stdId;
     @Field("std_name")
-    private String stdName;   // Tên sinh viên
+    private String stdName;
     @Field("std_dob")
-    private String stdDob;    // Ngày sinh
+    private String stdDob;
     @Field("std_class")
-    private String stdClass;  // Lớp học
+    private String stdClass;
     @Field("std_faculty")
-    private String stdFaculty; // Khoa/Viện/Trường
+    private String stdFaculty;
     @Field("std_course")
-    private String stdCourse;  // Khóa học
+    private String stdCourse;
     @Field("std_email")
-    private String stdEmail;   // Email
+    private String stdEmail;
     @Field("std_phone")
-    private String stdPhone;   // Số điện thoại
+    private String stdPhone;
     @Field("exam_results")
     private ExamResults examResults; // Đối tượng điểm thi
+
+    // Đổi tên trường để tuân thủ quy tắc đặt tên
+    @Field("status")
+    private boolean status; // Đối tượng trạng thái
 
     // Getters và Setters
     public String getId() {
@@ -107,6 +112,14 @@ public class Student {
 
     public void setExamResults(ExamResults examResults) {
         this.examResults = examResults;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     // Lớp nội bộ cho examResults (đã bổ sung các trường cần thiết)

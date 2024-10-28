@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+  <title>Student Management</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h2 class="mt-4">Student List</h2>
+  <a href="/students/new" class="btn btn-primary mb-2">Add New Student</a>
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="student : ${listStudents}">
+      <td th:text="${student.stdId}"></td>
+      <td th:text="${student.stdName}"></td>
+      <td th:text="${student.stdEmail}"></td>
+      <td>
+        <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-warning">Edit</a>
+        <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-danger">Delete</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

@@ -14,8 +14,8 @@ public class ExamController {
     @Autowired
     private ExamService examService;
 
-    @GetMapping("/students-in-room/{roomId}")
-    public ExamRoomDetails getStudentsInRoom(@PathVariable String roomId) {
-        return examService.getExamRoomDetails(roomId);
-    }
+//    @GetMapping("/students-in-room/{roomId}")
+//    public ExamRoomDetails getStudentsInRoom(@PathVariable String roomId) {
+//        return examService.getExamRoomDetails(roomId);
+//    }
 }

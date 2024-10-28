@@ -22,11 +22,11 @@ public class ExamRoomViewController {
         return "examRoomForm"; // Trả về tên tệp HTML
     }
 
-    @PostMapping("/exam-room")
-    public String getStudentsInRoom(@RequestParam String roomId, Model model) {
-        List<StudentInfoDTO> students = examService.getStudentsInExamRoom(roomId);
-        model.addAttribute("students", students);
-        model.addAttribute("roomId", roomId);
-        return "examRoomResult"; // Trả về tên tệp HTML cho kết quả
-    }
+//    @PostMapping("/exam-room")
+//    public String getStudentsInRoom(@RequestParam String roomId, Model model) {
+//        List<StudentInfoDTO> students = examService.getStudentsInExamRoom(roomId);
+//        model.addAttribute("students", students);
+//        model.addAttribute("roomId", roomId);
+//        return "examRoomResult"; // Trả về tên tệp HTML cho kết quả
+//    }
 }
