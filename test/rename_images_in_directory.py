@@ -18,6 +18,6 @@ def rename_images_in_directory(directory):
         os.rename(old_path, new_path)
         print(f"Đã đổi tên {filename} thành {new_name}")
 
-# thay phần này bằng đường dẫn chứa folder ảnh nhá :v
+# thay phần này bằng đường dẫn chứa folder chứa ảnh cần đổi tên
 directory = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\output"
 rename_images_in_directory(directory)

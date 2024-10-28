@@ -47,8 +47,8 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-@app.post("/api/upload-image")
-async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
+# @app.post("/api/upload-image")
+# async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
     if file:
         file_location = os.path.join(UPLOAD_FOLDER, file.filename)
         
@@ -60,6 +60,7 @@ async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tê
         if process_student_id(file_location, output_face_path):
             processed_image_path = preprocess_image(file_location)
             ocr_result = perform_ocr(processed_image_path)
+            extracted_info = extract_info_from_ocr(ocr_result)
 
             if ocr_result:
                 extracted_info = extract_info_from_ocr(ocr_result)
@@ -70,10 +71,41 @@ async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tê
             else:
                 return {"Thông báo": "OCR thất bại."}
         else:
-            return {"Thông báo": "Không tìm thấy khuôn mặt."}
+            return {"Thông báo": "Không tìm thấy khuôn mặt.",
+                    "Thông tin trích xuất được": extracted_info}
     else:
         return {"Thông báo": "Không có file nào được nhận."}
-    
+
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
+    if file:
+        file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+        
+        with open(file_location, "wb") as f:
+            f.write(file.file.read())
+
+        processed_image_path = preprocess_image(file_location)
+        ocr_result = perform_ocr(processed_image_path)
+
+        if ocr_result:
+            extracted_info = extract_info_from_ocr(ocr_result)
+        else:
+            extracted_info = "OCR thất bại hoặc không có thông tin."
+
+        output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
+        if process_student_id(file_location, output_face_path):
+            return {
+                "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
+                "Thông tin trích xuất được": extracted_info
+            }
+        else:
+            return {
+                "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
+                "Thông tin trích xuất được": extracted_info
+            }
+    else:
+        return {"Thông báo": "Không có file nào được nhận."}
+
 # @app.get("/api/detect-card")
 # async def detect_card():
 #     return await detect_card_from_camera()

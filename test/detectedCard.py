@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load the original image
-image_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocPhuongIDCard.jpg'
+image_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\output\best_detected_object_20241028124447_upscaled_x4.jpg'
 original_image = cv2.imread(image_path)
 
 # Resize image if it's too large (optional)
