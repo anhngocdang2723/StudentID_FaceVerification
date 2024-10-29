@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentRepository extends MongoRepository<Student, String> {
     // Các query bổ sung nếu cần
+    long countByStatus(boolean status);
 }

@@ -16,12 +16,20 @@ public class StudentService {
     private StudentRepository studentRepository;
 
     // Lấy tất cả sinh viên
+//    public List<Student> getAllStudents() {
+//        List<Student> students = studentRepository.findAll();
+//        System.out.println("Danh sách sinh viên: " + students); // In ra danh sách để kiểm tra
+//        return students;
+//    }
+
+    // Lấy tất cả sinh viên
     public List<Student> getAllStudents() {
-        List<Student> students = studentRepository.findAll();
-        System.out.println("Danh sách sinh viên: " + students); // In ra danh sách để kiểm tra
-        return students;
+        return studentRepository.findAll();
     }
 
+    public long getTotalStudents() {
+        return studentRepository.countByStatus(true);
+    }
 
     // Lấy thông tin sinh viên theo ID
     public Optional<Student> getStudentById(String id) {

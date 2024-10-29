@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin sinh viên chi tiết</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        p, li {
+            font-size: 1.1em;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f1f1f1;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .status {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .status.inactive {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Thông tin chi tiết sinh viên</h1>
+    <p><strong>Mã sinh viên:</strong> <span th:text="${student.stdId}"></span></p>
+    <p><strong>Tên sinh viên:</strong> <span th:text="${student.stdName}"></span></p>
+    <p><strong>Ngày sinh:</strong> <span th:text="${student.stdDob}"></span></p>
+    <p><strong>Lớp học:</strong> <span th:text="${student.stdClass}"></span></p>
+    <p><strong>Khoa:</strong> <span th:text="${student.stdFaculty}"></span></p>
+    <p><strong>Khóa học:</strong> <span th:text="${student.stdCourse}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${student.stdEmail}"></span></p>
+    <p><strong>Số điện thoại:</strong> <span th:text="${student.stdPhone}"></span></p>
+    <p><strong>Trạng thái:</strong>
+        <span th:classappend="${student.status} ? 'status active' : 'status inactive'"
+              th:text="${student.status ? 'Active' : 'Inactive'}"></span>
+    </p>
+
+    <h2>Điểm thi</h2>
+    <table class="table table-bordered">
+        <thead>
+            <th>Môn thi</th>
+            <th>Điểm thi</th>
+        </thead>
+        <tbody>
+            <tr th:text="${student.examResults.subject}"></tr>
+            <tr th:text="${student.examResults.score}"></tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
