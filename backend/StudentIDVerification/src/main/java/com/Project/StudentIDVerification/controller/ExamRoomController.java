@@ -7,13 +7,17 @@ import com.Project.StudentIDVerification.model.Student;
 import com.Project.StudentIDVerification.repository.ExamRoomRepository;
 import com.Project.StudentIDVerification.repository.InvigilatorRepository;
 import com.Project.StudentIDVerification.repository.StudentRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -60,6 +64,54 @@ public class ExamRoomController {
             // Nếu không tìm thấy phòng thi, bạn có thể trả về một thông báo hoặc trang khác
             model.addAttribute("message", "Không tìm thấy phòng thi với ID: " + roomId);
             return "error"; // Trả về tên file giao diện lỗi (error.html)
+        }
+    }
+
+    @PostMapping("/{roomId}/export")
+    @ResponseBody
+    public void exportStudentsToExcel(@PathVariable String roomId, HttpServletResponse response) throws IOException {
+        Optional<ExamRoom> examRoomOptional = examRoomRepository.findByRoomId(roomId);
+
+        if (examRoomOptional.isPresent()) {
+            ExamRoom examRoom = examRoomOptional.get();
+            ArrayList<StudentInfoDTO> studentsInfo = new ArrayList<>();
+
+            for (ExamRoom.StudentReference studentReference : examRoom.getStudents()) {
+                String stdId = studentReference.getStdId();
+                Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId));
+
+                studentOptional.ifPresent(student -> {
+                    StudentInfoDTO studentInfoDTO = new StudentInfoDTO(student.getStdName(), student.getStdId(), student.getStdPhone());
+                    studentsInfo.add(studentInfoDTO);
+                });
+            }
+
+            // Tạo workbook và sheet
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Students");
+
+            // Tạo header
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("Student ID");
+            headerRow.createCell(1).setCellValue("Student Name");
+            headerRow.createCell(2).setCellValue("Phone");
+
+            // Thêm dữ liệu vào sheet
+            int rowNum = 1;
+            for (StudentInfoDTO student : studentsInfo) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(student.getStdId());
+                row.createCell(1).setCellValue(student.getStdName());
+                row.createCell(2).setCellValue(student.getStdPhone());
+            }
+
+            // Thiết lập phản hồi
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=students.xlsx");
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy phòng thi với ID: " + roomId);
         }
     }
 }
