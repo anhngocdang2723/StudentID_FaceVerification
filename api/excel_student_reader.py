@@ -5,7 +5,7 @@ from unidecode import unidecode
 
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-excel_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\DemoDanhSach.xlsx'
+excel_path = r'c:\Users\anhng\Downloads\students.xlsx'
 
 def find_columns(sheet):
     name_col = None
