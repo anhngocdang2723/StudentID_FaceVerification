@@ -22,53 +22,39 @@ public class StudentController {
     @Autowired
     private StudentRepository studentRepository;
 
-    // Trang hiển thị danh sách sinh viên
     @GetMapping
     public String viewHomePage(Model model) {
-        model.addAttribute("listStudents", studentService.getAllStudents());
+        model.addAttribute("listStudents", studentService.getAllStudents(true));
         model.addAttribute("totalStudents", studentService.getTotalStudents());
         return "student_students";
     }
 
-    // Form tạo sinh viên mới
     @GetMapping("/new")
     public String showNewStudentForm(Model model) {
         Student student = new Student();
-        //student.setExamResults(new ArrayList<Student.ExamResults>());
+//        student.setExamResults(new ArrayList<Student.ExamResults>());
         student.setStatus(true);
         model.addAttribute("student", student);
         return "student_addNew";
     }
 
-    // Lưu sinh viên mới
     @PostMapping("/save")
     public String saveStudent(@ModelAttribute("student") Student student) {
         studentService.createStudent(student);
         return "redirect:/students";
     }
 
-    // Xem đầy đủ thông tin sinh viên
-//    @GetMapping("/viewmore/{id}")
-//    public String viewMoreInfor(@PathVariable("id") String id, Model model) {
-//        Student student = studentService.getStudentById(id)
-//                .orElseThrow(() -> new RuntimeException("Student not found"));
-//        model.addAttribute("student", student);
-//        return "student_viewMore";
-//    }
-
     @GetMapping("/viewmore/{id}")
     public String viewMore(@PathVariable("id") String id, Model model) {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isPresent()) {
             model.addAttribute("student", student.get());
-            return "student_viewMore"; // Trả về tên view tương ứng
+            return "student_viewMore";
         } else {
-            return "redirect:/students"; // Redirect về danh sách nếu không tìm thấy
+            return "redirect:/students";
         }
     }
 
-
-    // Form cập nhật sinh viên
     @GetMapping("/edit/{id}")
     public String showFormForUpdate(@PathVariable("id") String id, Model model) {
         Student student = studentService.getStudentById(id).orElseThrow(() -> new RuntimeException("Student not found"));
@@ -76,17 +62,21 @@ public class StudentController {
         return "student_edit";
     }
 
-    // Cập nhật sinh viên
     @PostMapping("/update/{id}")
     public String updateStudent(@PathVariable("id") String id, @ModelAttribute("student") Student studentDetails) {
         studentService.updateStudent(id, studentDetails);
         return "redirect:/students";
     }
 
-    // Xóa sinh viên
     @GetMapping("/delete/{id}")
     public String deleteStudent(@PathVariable("id") String id) {
-        studentService.deleteStudent(id);
+        Optional<Student> optionalStudent = studentRepository.findById(id);
+
+        if (optionalStudent.isPresent()) {
+            Student student = optionalStudent.get();
+            student.setStatus(false);
+            studentRepository.save(student);
+        }
         return "redirect:/students";
     }
 }

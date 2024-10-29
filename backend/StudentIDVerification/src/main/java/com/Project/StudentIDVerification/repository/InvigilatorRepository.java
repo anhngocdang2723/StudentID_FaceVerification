@@ -4,9 +4,7 @@ import com.Project.StudentIDVerification.model.Invigilator;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
-@Repository
+@Repository // Thêm annotation @Repository
 public interface InvigilatorRepository extends MongoRepository<Invigilator, String> {
-    Optional<Invigilator> findByInvigilatorId(String invigilatorId);
+    Invigilator findByInvigilatorId(String invigilatorId); // Tìm giám thị theo ID
 }

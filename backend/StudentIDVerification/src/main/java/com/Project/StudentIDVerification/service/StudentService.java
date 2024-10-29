@@ -15,33 +15,22 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
-    // Lấy tất cả sinh viên
-//    public List<Student> getAllStudents() {
-//        List<Student> students = studentRepository.findAll();
-//        System.out.println("Danh sách sinh viên: " + students); // In ra danh sách để kiểm tra
-//        return students;
-//    }
-
-    // Lấy tất cả sinh viên
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public List<Student> getAllStudents(Boolean status) {
+        return studentRepository.findByStatus(status);
     }
 
     public long getTotalStudents() {
         return studentRepository.countByStatus(true);
     }
 
-    // Lấy thông tin sinh viên theo ID
     public Optional<Student> getStudentById(String id) {
         return studentRepository.findById(id);
     }
 
-    // Tạo mới sinh viên
     public Student createStudent(Student student) {
         return studentRepository.save(student);
     }
 
-    // Cập nhật thông tin sinh viên
     public Student updateStudent(String id, Student studentDetails) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
         student.setStdId(studentDetails.getStdId());
@@ -57,7 +46,6 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    // Xóa sinh viên theo ID
     public void deleteStudent(String id) {
         studentRepository.deleteById(id);
     }
