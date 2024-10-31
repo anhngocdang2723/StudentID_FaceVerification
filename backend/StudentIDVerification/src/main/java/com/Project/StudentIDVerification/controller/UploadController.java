@@ -8,6 +8,6 @@ public class UploadController {
 
     @GetMapping("/uploadImage")
     public String index() {
-        return "uploadImage"; // trả về tên tệp HTML (uploadImage.html)
+        return "uploadImage";
     }
 }

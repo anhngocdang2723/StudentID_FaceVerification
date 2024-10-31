@@ -8,7 +8,7 @@
 <body>
 <div class="container">
   <h2 class="mt-4">Danh sách sinh viên</h2>
-  <a href="/students/new" class="btn btn-primary mb-2">Thêm ới sinh viên</a>
+  <a href="/students/new" class="btn btn-primary mb-2">Thêm mới sinh viên</a>
   <p>Tổng số sinh viên: <span th:text="${totalStudents}"></span></p>
   <table class="table table-bordered">
     <thead>
@@ -27,9 +27,9 @@
       <td th:text="${student.stdEmail}"></td>
       <td th:text="${student.stdPhone}"></td>
       <td>
-        <a th:href="@{/students/viewmore/{id}(id=${student.id})}" class="btn btn-info">View More</a>
-        <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-warning">Edit</a>
-        <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-danger">Delete</a>
+        <a th:href="@{/students/viewmore/{id}(id=${student.id})}" class="btn btn-info">Xem thêm</a>
+        <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-warning">Sửa</a>
+        <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-danger">Xoá</a>
       </td>
     </tr>
     </tbody>

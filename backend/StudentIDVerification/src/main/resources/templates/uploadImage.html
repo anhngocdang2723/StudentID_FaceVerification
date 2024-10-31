@@ -1,42 +1,36 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nhận diện thẻ sinh viên</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Tham chiếu đến favicon -->
-    <link rel="stylesheet" href="/css/style.css"> <!-- Đã sửa -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<div class="container">
-    <h1>Tải ảnh thẻ sinh viên để nhận diện</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="file">Chọn ảnh thẻ sinh viên:</label>
-        <input type="file" id="file" name="file" accept="image/*" required><br>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Tải ảnh thẻ sinh viên để nhận diện</h1>
+    <form id="uploadForm" enctype="multipart/form-data" class="bg-light p-4 border rounded shadow-sm">
+        <div class="form-group">
+            <label for="file">Chọn ảnh thẻ sinh viên:</label>
+            <input type="file" class="form-control-file" id="file" name="file" accept="image/*" required>
+        </div>
 
         <div class="image-preview" id="imagePreview"></div>
 
-        <input type="submit" value="Gửi">
+        <button type="submit" class="btn btn-primary btn-block">Gửi</button>
     </form>
-    <div id="result-container">
+
+    <div id="result-container" class="mt-4">
         <h4>Kết quả:</h4>
-        <pre id="result"></pre>
+        <pre id="result" class="border p-3 bg-light rounded"></pre>
     </div>
-
-<!--    //Test api//-->
-<!--    <form id="textForm">-->
-<!--        <label for="inputText">Nhập nội dung:</label>-->
-<!--        <input type="text" id="inputText" name="text" required>-->
-<!--        <input type="submit" value="Gửi">-->
-<!--    </form>-->
-<!--    <div id="textResult">-->
-<!--        <h4>Kết quả:</h4>-->
-<!--        <pre id="resultText"></pre>-->
-<!--    </div>-->
-<!--    //Test api//-->
-
 </div>
 
-<script src="/js/script.js"></script> <!-- Đã sửa -->
+<script src="/js/script.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

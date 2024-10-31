@@ -32,9 +32,8 @@ public class ExamRoomController {
     private StudentRepository studentRepository;
 
     @Autowired
-    private InvigilatorRepository invigilatorRepository; // Đảm bảo đã tiêm InvigilatorRepository
+    private InvigilatorRepository invigilatorRepository;
 
-    // Phương thức để hiển thị danh sách sinh viên theo roomId
     @GetMapping("/{roomId}/students")
     public String getStudentsByRoomId(@PathVariable String roomId, Model model) {
         Optional<ExamRoom> examRoomOptional = examRoomRepository.findByRoomId(roomId);
@@ -43,27 +42,24 @@ public class ExamRoomController {
         if (examRoomOptional.isPresent()) {
             ExamRoom examRoom = examRoomOptional.get();
             for (ExamRoom.StudentReference studentReference : examRoom.getStudents()) {
-                String stdId = studentReference.getStdId(); // Lấy stdId từ StudentReference
+                String stdId = studentReference.getStdId();
                 Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId)); // Tìm sinh viên theo stdId
 
                 Invigilator invigilator = invigilatorRepository.findByInvigilatorId(examRoom.getInvigilatorId());
 
                 model.addAttribute("invigilatorName", invigilator != null ? invigilator.getInvigilatorName() : "Chưa có thông tin");
 
-                // Sử dụng ifPresent để thêm thông tin sinh viên vào danh sách nếu tồn tại
                 studentOptional.ifPresent(student -> {
                     StudentInfoDTO studentInfoDTO = new StudentInfoDTO(student.getStdName(), student.getStdId(), student.getStdPhone());
                     studentsInfo.add(studentInfoDTO);
                 });
             }
-            // Đưa danh sách sinh viên vào model để truyền tới giao diện
             model.addAttribute("students", studentsInfo);
-            model.addAttribute("roomId", roomId); // Thêm roomId để hiển thị trên giao diện
-            return "examRoom"; // Trả về tên file giao diện (examRoom.html)
+            model.addAttribute("roomId", roomId);
+            return "examRoom";
         } else {
-            // Nếu không tìm thấy phòng thi, bạn có thể trả về một thông báo hoặc trang khác
             model.addAttribute("message", "Không tìm thấy phòng thi với ID: " + roomId);
-            return "error"; // Trả về tên file giao diện lỗi (error.html)
+            return "error";
         }
     }
 
