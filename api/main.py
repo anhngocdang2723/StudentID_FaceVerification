@@ -16,12 +16,10 @@ FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification
 UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
-#STATIC_FOLDER = os.path.join(BASE_DIR, "static")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(FACES_FOLDER, exist_ok=True)
-#s.makedirs(STATIC_FOLDER, exist_ok=True)
 
 # Cấu hình CORS cho phép truy cập từ Spring Boot
 app.add_middleware(
@@ -31,10 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Mount thư mục static
-#app.mount("/api/static", StaticFiles(directory=STATIC_FOLDER), name="static")
-#app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER)), name="static")
 
 # Mount thư mục tĩnh
 app.mount("/api/css", StaticFiles(directory=os.path.join(FE_FOLDER, "css")), name="css")
