@@ -41,64 +41,42 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-# @app.post("/api/upload-image")
-# async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
+@app.post("/api/upload-image")
+async def upload_image(file: UploadFile = File(...)):
     if file:
-        file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-        
-        with open(file_location, "wb") as f:
-            f.write(file.file.read())
+        try:
+            file_location = os.path.join(UPLOAD_FOLDER, file.filename)
 
-        # Tiến hành xử lý file ở đây
-        output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
-        if process_student_id(file_location, output_face_path):
-            processed_image_path = preprocess_image(file_location)
-            ocr_result = perform_ocr(processed_image_path)
-            extracted_info = extract_info_from_ocr(ocr_result)
+            # Lưu tệp hình ảnh tải lên
+            with open(file_location, "wb") as f:
+                f.write(file.file.read())
+
+            processed_image_path = preprocess_image(file_location)  # Hàm xử lý ảnh khác, nếu cần
+            ocr_result = perform_ocr(processed_image_path)         # Hàm thực hiện OCR
 
             if ocr_result:
-                extracted_info = extract_info_from_ocr(ocr_result)
+                extracted_info = extract_info_from_ocr(ocr_result)  # Trích xuất thông tin từ OCR
+            else:
+                extracted_info = "OCR thất bại hoặc không có thông tin."
+
+            face_image_base64 = process_student_id(file_location)    # Cắt khuôn mặt và trả về base64
+
+            if face_image_base64:
                 return {
-                    "Thông báo": "OCR thành công",
-                    "Thông tin trích xuất được": extracted_info
+                    "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
+                    "Thông tin trích xuất được": extracted_info,
+                    "face_image": face_image_base64  # Trả về ảnh khuôn mặt dưới dạng base64
                 }
             else:
-                return {"Thông báo": "OCR thất bại."}
-        else:
-            return {"Thông báo": "Không tìm thấy khuôn mặt.",
-                    "Thông tin trích xuất được": extracted_info}
+                return {
+                    "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
+                    "Thông tin trích xuất được": extracted_info
+                }
+        except Exception as e:
+            logging.error(f"Error processing file: {e}")
+            return {"Thông báo": "Có lỗi xảy ra khi xử lý ảnh."}, 500
     else:
-        return {"Thông báo": "Không có file nào được nhận."}
-
-@app.post("/api/upload-image")
-async def upload_image(file: UploadFile = File(...)):  # Đảm bảo rằng tên là 'file'
-    if file:
-        file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-        
-        with open(file_location, "wb") as f:
-            f.write(file.file.read())
-
-        processed_image_path = preprocess_image(file_location)
-        ocr_result = perform_ocr(processed_image_path)
-
-        if ocr_result:
-            extracted_info = extract_info_from_ocr(ocr_result)
-        else:
-            extracted_info = "OCR thất bại hoặc không có thông tin."
-
-        output_face_path = os.path.join(FACES_FOLDER, f"{file.filename}_face.jpg")
-        if process_student_id(file_location, output_face_path):
-            return {
-                "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
-                "Thông tin trích xuất được": extracted_info
-            }
-        else:
-            return {
-                "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
-                "Thông tin trích xuất được": extracted_info
-            }
-    else:
-        return {"Thông báo": "Không có file nào được nhận."}
+        return {"Thông báo": "Không có file nào được nhận."}, 400
 
 # @app.get("/api/detect-card")
 # async def detect_card():

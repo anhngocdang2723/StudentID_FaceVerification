@@ -1,5 +1,8 @@
 import cv2
 import logging
+import base64
+from PIL import Image
+import io
 
 # Khởi tạo CascadeClassifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -26,7 +29,7 @@ def detect_face(img, scale_percent=50):  # scale_percent = 100 == kích thước
         return img[y:y+h, x:x+w]
     return None
 
-def process_student_id(img_path, output_face_path): # Hàm xử lý ảnh thẻ sinh viên và lưu khuôn mặt
+def process_student_id(img_path):  # Hàm xử lý ảnh thẻ sinh viên và trả về khuôn mặt dưới dạng base64
     try:
         img = cv2.imread(img_path)
         if img is None:
@@ -36,12 +39,16 @@ def process_student_id(img_path, output_face_path): # Hàm xử lý ảnh thẻ 
         face_img = detect_face(img)
 
         if face_img is not None:
-            cv2.imwrite(output_face_path, face_img)
-            logging.info("Đã lưu khuôn mặt.")
-            return True
+            # Chuyển đổi ảnh khuôn mặt thành định dạng base64
+            pil_img = Image.fromarray(cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB))  # Chuyển đổi từ BGR sang RGB
+            buffered = io.BytesIO()
+            pil_img.save(buffered, format="JPEG")
+            img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+            logging.info("Đã cắt và mã hóa khuôn mặt thành công.")
+            return img_str
         else:
             logging.warning("Không tìm thấy khuôn mặt.")
-            return False
+            return None
     except Exception as e:
         logging.error(f"Lỗi trong quá trình xử lý: {e}")
-        return False
+        return None
