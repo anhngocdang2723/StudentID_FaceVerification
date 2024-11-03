@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,11 +8,11 @@ import logging
 from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
-#from camera_detection import detect_card_from_camera
+
 app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\frontend")  # Chỉ định tới thư mục FE
+FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\frontend")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
@@ -41,16 +41,21 @@ async def get_home():
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
-@app.post("/api/upload-image")
+@app.post("/api/upload-image", tags=["Image Processing"])
 async def upload_image(file: UploadFile = File(...)):
     if file:
+        # Kiểm tra định dạng file ảnh
+        if file.content_type not in ["image/jpeg", "image/png"]:
+            raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
+        
         try:
-            file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-
             # Lưu tệp hình ảnh tải lên
+            file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+            contents = await file.read()  # Đọc file không đồng bộ
             with open(file_location, "wb") as f:
-                f.write(file.file.read())
+                f.write(contents)
 
+            # Tiền xử lý và OCR
             processed_image_path = preprocess_image(file_location)  # Hàm xử lý ảnh khác, nếu cần
             ocr_result = perform_ocr(processed_image_path)         # Hàm thực hiện OCR
 
@@ -59,8 +64,10 @@ async def upload_image(file: UploadFile = File(...)):
             else:
                 extracted_info = "OCR thất bại hoặc không có thông tin."
 
-            face_image_base64 = process_student_id(file_location)    # Cắt khuôn mặt và trả về base64
+            # Cắt khuôn mặt và trả về base64
+            face_image_base64 = process_student_id(file_location)
 
+            # Trả kết quả xử lý
             if face_image_base64:
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
@@ -72,32 +79,26 @@ async def upload_image(file: UploadFile = File(...)):
                     "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
                     "Thông tin trích xuất được": extracted_info
                 }
+
+        # Log lỗi chi tiết
+        except FileNotFoundError:
+            logging.error(f"File not found: {file_location}")
+            raise HTTPException(status_code=404, detail="Không tìm thấy file đã tải lên.")
+
         except Exception as e:
             logging.error(f"Error processing file: {e}")
-            return {"Thông báo": "Có lỗi xảy ra khi xử lý ảnh."}, 500
+            raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
+    
+    # Trường hợp không có file tải lên
     else:
-        return {"Thông báo": "Không có file nào được nhận."}, 400
+        raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
-# @app.get("/api/detect-card")
-# async def detect_card():
-#     return await detect_card_from_camera()
-
-# ################# test api ########################
-# from pydantic import BaseModel
-# class TextInput(BaseModel):
-#     text: str
-# @app.post("/api/print")
-# async def print_text(text_input: TextInput):
-#     # Phản hồi lại nội dung nhận được từ frontend
-#     return {"received_text": text_input.text}
-# ###################################################
-
-########################### Các hàm kiểm tra sinh viên #######################
-def read_extracted_list(file_path): ### Sẽ update đọc từ database ###
+# Hàm kiểm tra sinh viên và so sánh thông tin phòng thi (có thể giữ nguyên)
+def read_extracted_list(file_path):  # Sẽ update đọc từ database sau
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             extracted_list = f.readlines()
-        return [entry.strip() for entry in extracted_list]  # Xóa ký tự xuống dòng
+        return [entry.strip() for entry in extracted_list]
     except FileNotFoundError:
         return []
 
@@ -108,7 +109,7 @@ def compare_with_list(student_info, extracted_list):
             return f"Sinh viên: {student_info['Tên']} có mặt trong danh sách phòng thi."
     return f"Sinh viên: {student_info['Tên']} không có mặt trong danh sách phòng thi."
 
-@app.get("/api/check-exam-list")
+@app.get("/api/check-exam-list", tags=["Exam Verification"])
 async def check_exam_list(student_name: str, student_id: str):
     extracted_list = read_extracted_list("extracted_list.txt")
     student_info = {
@@ -116,4 +117,3 @@ async def check_exam_list(student_name: str, student_id: str):
         "MSV": student_id
     }
     return compare_with_list(student_info, extracted_list)
-#######################################################################################
