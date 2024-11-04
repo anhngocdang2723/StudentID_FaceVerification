@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center; /* Căn giữa container chính */
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    width: 90%; /* Chiều rộng cố định cho container */
+    max-width: 1200px; /* Giới hạn tối đa chiều rộng để tránh quá rộng */
+    padding: 20px 0; /* Giảm padding để trông gọn hơn */
+}
+
+.left, .right {
+    width: 48%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.result {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #e9ecef;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.image-preview {
+    width: 100%;
+    max-width: 300px; /* Giới hạn chiều rộng tối đa cho ảnh preview */
+    height: 200px; /* Chiều cao cố định */
+    border: 1px solid #ccc;
+    background-color: #fff;
+    display: flex; /* Sử dụng flexbox để căn giữa ảnh */
+    justify-content: center; /* Căn giữa ảnh theo chiều ngang */
+    align-items: center; /* Căn giữa ảnh theo chiều dọc */
+    overflow: hidden; /* Ẩn các phần ảnh thừa ra */
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.col-preview {
+    width: 48%;
+}
+
+#imagePreview {
+    width: 100%; /* Đặt chiều rộng 100% của khung chứa */
+    height: 200px; /* Đặt chiều cao cố định */
+    overflow: hidden; /* Ẩn các phần ảnh thừa ra */
+    display: flex; /* Sử dụng flexbox để căn giữa ảnh */
+    justify-content: center; /* Căn giữa ảnh theo chiều ngang */
+    align-items: center; /* Căn giữa ảnh theo chiều dọc */
+}
+
+#imagePreview img {
+    max-width: 100%; /* Giới hạn chiều rộng của ảnh không vượt quá khung chứa */
+    max-height: 100%; /* Giới hạn chiều cao của ảnh không vượt quá khung chứa */
+    object-fit: cover; /* Cắt ảnh để không bị biến dạng */
+}

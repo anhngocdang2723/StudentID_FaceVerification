@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận diện thẻ sinh viên</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/api_styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="left">
+        <h1 class="text-center mb-4">Quản lý sinh viên</h1>
+        <form id="uploadExcelForm" enctype="multipart/form-data" class="mb-4">
+            <div class="form-group">
+                <label for="fileExcel">Tải lên file Excel:</label>
+                <input type="file" class="form-control-file" id="fileExcel" name="fileExcel" accept=".xlsx,.xls" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Tải lên</button>
+        </form>
+        <h4>Thông tin sinh viên:</h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Họ tên</th>
+                <th>MSV</th>
+                <th>SĐT</th>
+                <th>Đường dẫn phiếu thi</th>
+            </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+    </div>
+
+    <div class="right">
+        <h1 class="text-center mb-4">Nhận diện khuôn mặt</h1>
+
+        <form id="uploadImageForm" enctype="multipart/form-data" class="mb-4">
+            <div class="form-group">
+                <h4>Chọn ảnh thẻ sinh viên:</h4>
+                <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*" required>
+                <div class="image-preview" id="imagePreview">Ảnh sẽ hiển thị ở đây</div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Gửi ảnh</button>
+        </form>
+
+        <div class="row mb-4">
+            <div class="col-preview">
+                <h4>Ảnh khuôn mặt đã cắt:</h4>
+                <img id="face-image" class="image-preview" style="display:none; max-width: 100%; height: auto;" />
+            </div>
+            <div class="col-preview">
+                <h4>Kết quả OCR:</h4>
+                <div id="result"></div>
+                <table class="table table-bordered" id="ocr-table" style="display: none;">
+                    <thead>
+                    <tr>
+                        <th>Thông tin</th>
+                        <th>Giá trị</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ocrResult">
+                    <!-- Dữ liệu OCR sẽ được thêm vào đây bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-preview">
+                <h4>Tải lên ảnh cá nhân:</h4>
+                <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*" required>
+                <div class="image-preview" id="personalImagePreview">Ảnh cá nhân sẽ hiển thị ở đây</div>
+            </div>
+            <div class="col-preview">
+                <h4>Kết quả đối chiếu:</h4>
+                <div class="result" id="faceMatchResult">Kết quả sẽ hiển thị ở đây</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="/js/api_script.js"></script>
+</body>
+</html>
