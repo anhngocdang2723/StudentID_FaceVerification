@@ -24,7 +24,7 @@ def extract_info_from_ocr(result): #hàm trích xuất thông tin từ kết qu�
     fields = {
         "Tên": "",
         "Ngành": "",
-        "Trường/Khoa/Viện": "",
+        "Đơn vị": "",
         "Khoá": "",
         "MSV": ""
     }
@@ -55,7 +55,7 @@ def extract_info_from_ocr(result): #hàm trích xuất thông tin từ kết qu�
             next_line_is_faculty = True
             continue
         if next_line_is_faculty:
-            fields["Trường/Khoa/Viện"] = text
+            fields["Đơn vị"] = text
             next_line_is_faculty = False
             continue
         if re.search(r"\d{4}-\d{4}", text):
