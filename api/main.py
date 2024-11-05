@@ -4,10 +4,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
+import cv2
 
 from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
+from face_comparison import compare_faces  # Nhập hàm compare_faces từ module mới
 
 app = FastAPI()
 
@@ -67,11 +69,18 @@ async def upload_image(file: UploadFile = File(...)):
             # Cắt khuôn mặt và trả về base64
             face_image_base64 = process_student_id(file_location)
 
+            # So sánh khuôn mặt với ảnh từ base64
+            uploaded_image = cv2.imread(file_location)  # Đọc ảnh đã tải lên để so sánh
+            comparison_result = compare_faces(uploaded_image, face_image_base64)
+            print("Kết quả so sánh:", comparison_result)
+            print(f"Chuỗi Base64 có chiều dài: {len(face_image_base64)}")
+            
             # Trả kết quả xử lý
             if face_image_base64:
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
                     "Thông tin trích xuất được": extracted_info,
+                    "comparison": comparison_result,  # Thêm kết quả so sánh vào phản hồi
                     "face_image": face_image_base64  # Trả về ảnh khuôn mặt dưới dạng base64
                 }
             else:
@@ -79,7 +88,7 @@ async def upload_image(file: UploadFile = File(...)):
                     "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
                     "Thông tin trích xuất được": extracted_info
                 }
-
+                
         # Log lỗi chi tiết
         except FileNotFoundError:
             logging.error(f"File not found: {file_location}")

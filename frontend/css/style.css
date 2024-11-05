@@ -63,3 +63,20 @@ input[type="submit"]:hover {
     padding: 5px;
     border-radius: 5px;
 }
+
+#face-image {
+    margin-top: 15px;
+    max-width: 100px; /* Điều chỉnh kích thước ảnh */
+    display: none;
+}
+
+#comparison-result {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    background-color: #e6ffed;
+    color: #28a745;
+    text-align: center;
+    display: none; /* Mặc định là ẩn */
+}

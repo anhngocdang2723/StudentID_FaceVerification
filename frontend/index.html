@@ -4,40 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nhận diện thẻ sinh viên</title>
-    <link rel="icon" type="image/x-icon" href="/api/static/favicon.ico"> <!-- Tham chiếu đến favicon -->
-    <link rel="stylesheet" href="/api/css/style.css"> <!-- Đã sửa -->
+    <link rel="icon" type="image/x-icon" href="/api/static/favicon.ico">
+    <link rel="stylesheet" href="/api/css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Tải ảnh thẻ sinh viên để nhận diện</h1>
+        <h1>Tải ảnh để nhận diện và so sánh</h1>
+
+        <!-- Form tải cả hai ảnh -->
         <form id="uploadForm" enctype="multipart/form-data">
             <label for="file">Chọn ảnh thẻ sinh viên:</label>
             <input type="file" id="file" name="file" accept="image/*" required><br>
+            <div class="image-preview" id="imagePreview"></div> <!-- Preview ảnh thẻ sinh viên -->
 
-            <div class="image-preview" id="imagePreview"></div>
+            <label for="userFile">Chọn ảnh người dùng:</label>
+            <input type="file" id="userFile" name="userFile" accept="image/*" required><br>
+            <div class="image-preview" id="userImagePreview"></div> <!-- Preview ảnh người dùng -->
 
-            <button type="submit">Tải lên ảnh</button> 
+            <button type="submit">Tải lên ảnh</button>
         </form>
 
         <div id="result-container">
-            <h4>Kết quả:</h4>
-            <div id="result"></div> <!-- Thêm phần tử này -->
-            <!-- Bảng hiển thị thông tin OCR -->
-            <table id="ocr-table" border="1" style="width: 100%; display: none;">
-                <thead>
-                    <tr>
-                        <th>Thông tin</th>
-                        <th>Giá trị</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Dữ liệu OCR sẽ được thêm vào đây bằng JavaScript -->
-                </tbody>
-            </table>
-            <!-- ảnh khuôn mặt -->
-            <img id="face-image" src="" alt="Khuôn mặt" style="display:none;"/> 
-        </div>        
+            <h3>Kết quả OCR:</h3>
+            <p id="result"></p>
+            <div id="result-section">
+                <table id="ocr-table" border="1" style="width: 100%; display: none;">
+                    <thead>
+                        <tr>
+                            <th>Thông tin</th>
+                            <th>Giá trị</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div>
+                    <h4>Ảnh khuôn mặt đã cắt:</h4>
+                    <img id="face-image" src="" alt="Khuôn mặt" style="display:none;"/>
+                </div>
+                <!-- Vùng hiển thị kết quả so sánh -->
+                <div id="comparison-result" style="display:none; margin-top: 15px;">
+                    <h5>Kết quả so sánh khuôn mặt:</h5>
+                    <p id="comparison-text"></p> <!-- Kết quả sẽ được cập nhật tại đây -->
+                </div>
+            </div>
+        </div>       
     </div>
-    <script src="/api/js/script.js"></script> <!-- Chỉ để một lần ở đây -->
+    <script src="/api/js/script.js"></script>
 </body>
 </html>
