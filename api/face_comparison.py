@@ -5,19 +5,17 @@ from io import BytesIO
 from PIL import Image
 import dlib
 
-# Khởi tạo các đối tượng cần thiết (detector, predictor, facerec)
+#khởi tạo và gọi model (detector, predictor, facerec)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\shape_predictor_68_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\dlib_face_recognition_resnet_model_v1.dat")
 
-def decode_base64_image(base64_string):
-    """Giải mã chuỗi base64 thành ảnh."""
+def decode_base64_image(base64_string): # Giải mã ảnh từ chuỗi base64
     image_data = base64.b64decode(base64_string)
     image = Image.open(BytesIO(image_data)).convert("RGB")
     return np.array(image)
 
-def get_face_embedding(image):
-    """Trích xuất vector đặc trưng của khuôn mặt từ ảnh."""
+def get_face_embedding(image): # Trích xuất vector đặc trưng từ khuôn mặt
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
 

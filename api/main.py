@@ -9,7 +9,7 @@ import cv2
 from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
-from face_comparison import compare_faces  # Nhập hàm compare_faces từ module mới
+from face_comparison import compare_faces  
 
 app = FastAPI()
 
@@ -23,16 +23,15 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 os.makedirs(FACES_FOLDER, exist_ok=True)
 
-# Cấu hình CORS cho phép truy cập từ Spring Boot
+#cấu hình CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Cổng chạy Spring Boot
+    allow_origins=["http://localhost:8080"],  #Spring Boot port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount thư mục tĩnh
 app.mount("/api/css", StaticFiles(directory=os.path.join(FE_FOLDER, "css")), name="css")
 app.mount("/api/js", StaticFiles(directory=os.path.join(FE_FOLDER, "js")), name="js")
 app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER, "static")), name="static")
@@ -46,42 +45,36 @@ async def get_home():
 @app.post("/api/upload-image", tags=["Image Processing"])
 async def upload_image(file: UploadFile = File(...)):
     if file:
-        # Kiểm tra định dạng file ảnh
         if file.content_type not in ["image/jpeg", "image/png"]:
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
         
         try:
-            # Lưu tệp hình ảnh tải lên
             file_location = os.path.join(UPLOAD_FOLDER, file.filename)
-            contents = await file.read()  # Đọc file không đồng bộ
+            contents = await file.read()
             with open(file_location, "wb") as f:
                 f.write(contents)
 
-            # Tiền xử lý và OCR
-            processed_image_path = preprocess_image(file_location)  # Hàm xử lý ảnh khác, nếu cần
-            ocr_result = perform_ocr(processed_image_path)         # Hàm thực hiện OCR
+            processed_image_path = preprocess_image(file_location)
+            ocr_result = perform_ocr(processed_image_path)
 
             if ocr_result:
-                extracted_info = extract_info_from_ocr(ocr_result)  # Trích xuất thông tin từ OCR
+                extracted_info = extract_info_from_ocr(ocr_result)
             else:
                 extracted_info = "OCR thất bại hoặc không có thông tin."
 
-            # Cắt khuôn mặt và trả về base64
             face_image_base64 = process_student_id(file_location)
 
-            # So sánh khuôn mặt với ảnh từ base64
-            uploaded_image = cv2.imread(file_location)  # Đọc ảnh đã tải lên để so sánh
+            uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
-            print("Kết quả so sánh:", comparison_result)
-            print(f"Chuỗi Base64 có chiều dài: {len(face_image_base64)}")
+            # print("Kết quả so sánh:", comparison_result) #in ra console để test kết quả so sánh
+            # print(f"Chuỗi Base64 có chiều dài: {len(face_image_base64)}")
             
-            # Trả kết quả xử lý
             if face_image_base64:
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
                     "Thông tin trích xuất được": extracted_info,
-                    "comparison": comparison_result,  # Thêm kết quả so sánh vào phản hồi
-                    "face_image": face_image_base64  # Trả về ảnh khuôn mặt dưới dạng base64
+                    "comparison": comparison_result,
+                    "face_image": face_image_base64
                 }
             else:
                 return {
@@ -89,7 +82,6 @@ async def upload_image(file: UploadFile = File(...)):
                     "Thông tin trích xuất được": extracted_info
                 }
                 
-        # Log lỗi chi tiết
         except FileNotFoundError:
             logging.error(f"File not found: {file_location}")
             raise HTTPException(status_code=404, detail="Không tìm thấy file đã tải lên.")
@@ -98,7 +90,6 @@ async def upload_image(file: UploadFile = File(...)):
             logging.error(f"Error processing file: {e}")
             raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
     
-    # Trường hợp không có file tải lên
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
