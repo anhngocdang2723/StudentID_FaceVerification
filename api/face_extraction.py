@@ -15,7 +15,7 @@ def resize_image(img, scale_percent):
     dim = (width, height)
     return cv2.resize(img, dim)
 
-def detect_face(img, scale_percent=50):  # scale_percent = 100 == kích thước gốc
+def detect_face(img, scale_percent=50, expand_ratio=0.2):  # expand_ratio = 20%
     resized_img = resize_image(img, scale_percent)
     faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
     
@@ -26,8 +26,20 @@ def detect_face(img, scale_percent=50):  # scale_percent = 100 == kích thước
         y = int(y * (100 / scale_percent))
         w = int(w * (100 / scale_percent))
         h = int(h * (100 / scale_percent))
+
+        # Mở rộng kích thước khuôn mặt
+        expand_w = int(w * expand_ratio)
+        expand_h = int(h * expand_ratio)
+        
+        # Cập nhật lại tọa độ với kích thước mở rộng
+        x = max(x - expand_w // 2, 0)  # không để x âm
+        y = max(y - expand_h // 2, 0)  # không để y âm
+        w = min(w + expand_w, img.shape[1] - x)  # không vượt quá chiều rộng ảnh
+        h = min(h + expand_h, img.shape[0] - y)  # không vượt quá chiều cao ảnh
+        
         return img[y:y+h, x:x+w]
     return None
+
 
 def process_student_id(img_path):  # Hàm xử lý ảnh thẻ sinh viên và trả về khuôn mặt dưới dạng base64
     try:

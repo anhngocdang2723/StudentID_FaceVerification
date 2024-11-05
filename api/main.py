@@ -9,7 +9,8 @@ import cv2
 from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
-from face_comparison import compare_faces  
+from face_comparison import compare_faces
+from excel_reader import read_from_excel 
 
 app = FastAPI()
 
@@ -93,6 +94,32 @@ async def upload_image(file: UploadFile = File(...)):
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
+    @app.post("/api/read-excel", tags=["Excel Processing"])
+    async def read_excel(file: UploadFile = File(...)):
+        if file:
+            if file.content_type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                raise HTTPException(status_code=400, detail="Chỉ hỗ trợ định dạng file Excel (XLSX).")
+
+            try:
+                # Lưu file Excel tạm thời
+                file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+                contents = await file.read()
+                with open(file_location, "wb") as f:
+                    f.write(contents)
+                print(f"File đã được lưu tại: {file_location}")
+
+                # Đọc dữ liệu từ file Excel
+                excel_data = read_from_excel(file_location)
+                if excel_data:
+                    return {"students": excel_data}
+                else:
+                    raise HTTPException(status_code=400, detail="Không đọc được dữ liệu từ file Excel. Kiểm tra cấu trúc file.")
+            except Exception as e:
+                logging.error(f"Error processing Excel file: {e}")
+                raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý file Excel.")
+        else:
+            raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
+    
 # Hàm kiểm tra sinh viên và so sánh thông tin phòng thi (có thể giữ nguyên)
 def read_extracted_list(file_path):  # Sẽ update đọc từ database sau
     try:

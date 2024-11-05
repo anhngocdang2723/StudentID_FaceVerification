@@ -51,13 +51,13 @@ def save_students_to_file(students, output_path):
     print(f"Danh sách sinh viên từ Excel đã được lưu vào file '{output_path}'.")
 
 
-if __name__ == "__main__":
-    excel_file_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\students.xlsx"  # Đường dẫn đến file Excel mẫu
-    output_file_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\students.txt"  # Đường dẫn đến file văn bản đầu ra
+# if __name__ == "__main__":
+#     excel_file_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\students.xlsx"  # Đường dẫn đến file Excel mẫu
+#     output_file_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\extracted_list\students.txt"  # Đường dẫn đến file văn bản đầu ra
 
-    # Đọc dữ liệu từ file Excel
-    students = read_from_excel(excel_file_path)
+#     # Đọc dữ liệu từ file Excel
+#     students = read_from_excel(excel_file_path)
 
-    # Nếu có dữ liệu, lưu vào file
-    if students:
-        save_students_to_file(students, output_file_path)
+#     # Nếu có dữ liệu, lưu vào file
+#     if students:
+#         save_students_to_file(students, output_file_path)

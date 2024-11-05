@@ -27,7 +27,7 @@ def get_face_embedding(image): # Trích xuất vector đặc trưng từ khuôn 
 
     return np.array(face_embedding)
 
-def compare_faces(uploaded_image, face_image_base64, threshold=0.6):
+def compare_faces(uploaded_image, face_image_base64, threshold=0.4):
     """So sánh hai khuôn mặt và trả về kết quả so sánh."""
     image1 = cv2.cvtColor(uploaded_image, cv2.COLOR_RGB2BGR)
     image2 = decode_base64_image(face_image_base64)
