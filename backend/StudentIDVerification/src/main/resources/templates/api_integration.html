@@ -10,132 +10,90 @@
 </head>
 <body>
 <div class="container mt-5">
-    <div class="left">
-        <h1 class="text-center mb-4">Quản lý sinh viên</h1>
-        <form id="uploadExcelForm" enctype="multipart/form-data" class="mb-4">
-            <div class="form-group">
-                <label for="fileExcel">Tải lên file Excel:</label>
-                <input type="file" class="form-control-file" id="fileExcel" name="fileExcel" accept=".xlsx,.xls"
-                       title="Chọn file Excel" placeholder="Chọn file Excel" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Tải lên</button>
-        </form>
-        <h4>Thông tin sinh viên:</h4>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Họ tên</th>
-                <th>MSV</th>
-                <th>SĐT</th>
-                <th>Đường dẫn phiếu thi</th>
-            </tr>
-            </thead>
-            <tbody id="studentList"></tbody>
-        </table>
-    </div>
-
-    <div class="right">
-        <h1 class="text-center mb-4">Nhận diện khuôn mặt</h1>
-        <form id="uploadImageForm" enctype="multipart/form-data" class="mb-4">
-            <div class="form-group">
-                <h4>Chọn ảnh thẻ sinh viên:</h4>
-                <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*"
-                       title="Chọn ảnh thẻ sinh viên" placeholder="Chọn ảnh thẻ sinh viên" required>
-                <div class="image-preview" id="imagePreview" aria-label="Ảnh thẻ sinh viên">Ảnh sẽ hiển thị ở đây</div>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Gửi ảnh</button>
-        </form>
-
-        <div class="row mb-4">
-            <div class="col-preview">
-                <h4>Ảnh khuôn mặt đã cắt:</h4>
-                <img id="face-image" class="image-preview" alt="Ảnh khuôn mặt đã cắt" style="display:none; max-width: 100%; height: auto;" />
-            </div>
-            <div class="col-preview" id="result-container">
-                <h4>Kết quả OCR:</h4>
-                <div id="result" aria-label="Kết quả OCR"></div>
-                <table class="table table-bordered" id="ocr-table" style="display: none;">
-                    <thead>
-                    <tr>
-                        <th>Thông tin</th>
-                        <th>Giá trị</th>
-                    </tr>
-                    </thead>
-                    <tbody id="ocrResult">
-                    <!-- Dữ liệu OCR sẽ được thêm vào đây bằng JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+    <div class="row">
+        <!-- Cột trái - Quản lý sinh viên -->
+        <div class="col-md-6">
+            <h1 class="text-center mb-4">Quản lý sinh viên</h1>
+            <form id="uploadExcelForm" enctype="multipart/form-data" class="mb-4">
+                <div class="form-group">
+                    <label for="fileExcel">Tải lên file Excel:</label>
+                    <input type="file" class="form-control-file" id="fileExcel" name="fileExcel" accept=".xlsx,.xls" title="Chọn file Excel" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Tải lên</button>
+            </form>
+            <h4>Thông tin sinh viên:</h4>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Họ tên</th>
+                    <th>MSV</th>
+                    <th>SĐT</th>
+                    <th>Đường dẫn phiếu thi</th>
+                </tr>
+                </thead>
+                <tbody id="studentList"></tbody>
+            </table>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-preview">
-                <h4>Tải lên ảnh cá nhân:</h4>
-                <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*"
-                       title="Chọn ảnh cá nhân" placeholder="Chọn ảnh cá nhân" required>
-                <div class="image-preview" id="personalImagePreview" aria-label="Ảnh cá nhân">Ảnh cá nhân sẽ hiển thị ở đây</div>
+        <!-- Cột phải - Nhận diện khuôn mặt -->
+        <div class="col-md-6">
+            <h1 class="text-center mb-4 section-title">Nhận diện khuôn mặt</h1>
+
+            <!-- Phần tải ảnh và gửi -->
+            <form id="uploadImageForm" enctype="multipart/form-data" class="mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Chọn ảnh thẻ sinh viên:</h5>
+                        <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*"
+                               title="Chọn ảnh thẻ sinh viên" placeholder="Chọn ảnh thẻ sinh viên" required>
+                        <div class="image-preview" id="imagePreview">Ảnh sẽ hiển thị ở đây</div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Chọn ảnh cá nhân:</h5>
+                        <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*"
+                               title="Chọn ảnh cá nhân" placeholder="Chọn ảnh cá nhân" required>
+                        <div class="image-preview" id="personalImagePreview">Ảnh cá nhân sẽ hiển thị ở đây</div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Gửi ảnh</button>
+            </form>
+            
+            <!-- Phần chứa ảnh đã cắt và kết quả OCR -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>Ảnh khuôn mặt đã cắt:</h5>
+                    <img id="face-image" class="image-preview" alt="Ảnh khuôn mặt đã cắt" style="display:none;" />
+                </div>
+                <div class="col-md-6">
+                    <h5>Kết quả OCR:</h5>
+                    <table class="table table-bordered" id="ocr-table" style="display: none;">
+                        <thead>
+                        <tr>
+                            <th>Thông tin</th>
+                            <th>Giá trị</th>
+                        </tr>
+                        </thead>
+                        <tbody id="ocrResult"></tbody>
+                    </table>
+                    <div id="result" aria-label="Kết quả OCR"></div>
+                </div>
             </div>
-            <div class="col-preview">
-                <h4>Kết quả đối chiếu:</h4>
-                <div class="result" id="faceMatchResult" aria-label="Kết quả đối chiếu">Kết quả sẽ hiển thị ở đây</div>
+
+            <!-- Phần chứa kết quả so sánh khuôn mặt và phiếu thi -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>Kết quả so sánh khuôn mặt:</h5>
+                    <div id="comparison-result" style="display:none;">
+                        <p id="comparison-text"></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Phiếu thi được in ra:</h5>
+                    <div id="exam-sheet-preview">Thông tin phiếu thi sẽ được hiển thị ở đây</div>
+                </div>
             </div>
         </div>
     </div>
-<!--    <div class="right">-->
-<!--        <h1 class="text-center mb-4">Nhận diện khuôn mặt</h1>-->
-<!--        <form id="uploadImagesForm" enctype="multipart/form-data" class="mb-4">-->
-<!--            <div class="row">-->
-<!--                &lt;!&ndash; Upload ảnh thẻ sinh viên &ndash;&gt;-->
-<!--                <div class="col">-->
-<!--                    <h4>Upload thẻ SV:</h4>-->
-<!--                    <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*"-->
-<!--                           title="Chọn ảnh thẻ sinh viên" placeholder="Chọn ảnh thẻ sinh viên" required>-->
-<!--                    <div class="image-preview mt-2" id="imagePreview" aria-label="Ảnh thẻ sinh viên">Ảnh sẽ hiển thị ở đây</div>-->
-<!--                </div>-->
-<!--                &lt;!&ndash; Upload ảnh cá nhân &ndash;&gt;-->
-<!--                <div class="col">-->
-<!--                    <h4>Upload ảnh cá nhân:</h4>-->
-<!--                    <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*"-->
-<!--                           title="Chọn ảnh cá nhân" placeholder="Chọn ảnh cá nhân" required>-->
-<!--                    <div class="image-preview mt-2" id="personalImagePreview" aria-label="Ảnh cá nhân">Ảnh cá nhân sẽ hiển thị ở đây</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <button type="submit" class="btn btn-primary btn-block mt-4">Gửi ảnh</button>-->
-<!--        </form>-->
-<!--        &lt;!&ndash; Kết quả OCR và ảnh khuôn mặt đã cắt &ndash;&gt;-->
-<!--        <div class="row mb-4">-->
-<!--            <div class="col">-->
-<!--                <h4>Ảnh khuôn mặt đã cắt:</h4>-->
-<!--                <img id="face-image" class="image-preview" alt="Ảnh khuôn mặt đã cắt" style="display:none; max-width: 100%; height: auto;" />-->
-<!--            </div>-->
-<!--            <div class="col" id="result-container">-->
-<!--                <h4>Kết quả OCR:</h4>-->
-<!--                <div id="result" aria-label="Kết quả OCR"></div>-->
-<!--                <table class="table table-bordered" id="ocr-table" style="display: none;">-->
-<!--                    <thead>-->
-<!--                    <tr>-->
-<!--                        <th>Thông tin</th>-->
-<!--                        <th>Giá trị</th>-->
-<!--                    </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody id="ocrResult">-->
-<!--                    &lt;!&ndash; Dữ liệu OCR sẽ được thêm vào đây bằng JavaScript &ndash;&gt;-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; Kết quả đối chiếu và đường dẫn phiếu thi &ndash;&gt;-->
-<!--        <div class="row mb-4">-->
-<!--            <div class="col">-->
-<!--                <h4>Kết quả đối chiếu:</h4>-->
-<!--                <div class="result" id="faceMatchResult" aria-label="Kết quả đối chiếu">Kết quả sẽ hiển thị ở đây</div>-->
-<!--            </div>-->
-<!--            <div class="col">-->
-<!--                <h4>Đường dẫn phiếu thi:</h4>-->
-<!--                <div class="result" id="examSheetLink">Đường dẫn phiếu thi sẽ hiển thị ở đây</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

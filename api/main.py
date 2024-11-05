@@ -66,7 +66,7 @@ async def upload_image(file: UploadFile = File(...)):
 
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
-            # print("Kết quả so sánh:", comparison_result) #in ra console để test kết quả so sánh
+            print("Kết quả so sánh:", comparison_result) #in ra console để test kết quả so sánh
             # print(f"Chuỗi Base64 có chiều dài: {len(face_image_base64)}")
             
             if face_image_base64:

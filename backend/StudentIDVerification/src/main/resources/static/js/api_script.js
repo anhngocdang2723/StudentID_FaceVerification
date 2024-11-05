@@ -40,14 +40,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 let result = await response.json();
-                if (ocrResult) ocrResult.textContent = "Kết quả OCR:"; // Hiển thị tiêu đề cho kết quả
+                if (ocrResult) ocrResult.textContent = "Kết quả OCR:";
 
                 // Cập nhật bảng OCR
                 const ocrTable = document.getElementById("ocr-table");
                 if (ocrTable) {
                     const tableBody = ocrTable.querySelector("tbody");
-                    tableBody.innerHTML = ""; // Xóa dữ liệu cũ trong bảng
-                    ocrTable.style.display = "table"; // Hiển thị bảng
+                    tableBody.innerHTML = "";
+                    ocrTable.style.display = "table";
 
                     if (result["Thông tin trích xuất được"]) {
                         for (const [key, value] of Object.entries(result["Thông tin trích xuất được"])) {
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     } else {
                         ocrResult.textContent = "Không có dữ liệu OCR.";
-                        ocrTable.style.display = "none"; // Ẩn bảng nếu không có dữ liệu
+                        ocrTable.style.display = "none";
                     }
                 }
 
@@ -77,15 +77,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
 
-                // Hiển thị ảnh đã cắt (nếu có)
-                const croppedFacePreview = document.getElementById('croppedFacePreview');
-                if (croppedFacePreview) {
-                    if (result.cropped_face) {
-                        croppedFacePreview.style.backgroundImage = `url(data:image/jpeg;base64,${result.cropped_face})`;
-                        croppedFacePreview.textContent = ''; // Xóa text nếu có
-                    } else {
-                        croppedFacePreview.style.backgroundImage = '';
-                    }
+                // Hiển thị kết quả so sánh khuôn mặt
+                const comparisonResult = document.getElementById("comparison-result");
+                const comparisonText = document.getElementById("comparison-text");
+                if (result.comparison) {
+                    comparisonText.textContent = result.comparison;
+                    comparisonResult.style.display = "block";
+                } else {
+                    comparisonText.textContent = "Không có kết quả so sánh.";
+                    comparisonResult.style.display = "none";
                 }
 
             } catch (error) {
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const personalImagePreview = document.getElementById('personalImagePreview');
                 if (personalImagePreview) {
                     personalImagePreview.style.backgroundImage = `url(${e.target.result})`;
-                    personalImagePreview.textContent = ''; // Xóa text nếu có
+                    personalImagePreview.textContent = '';
                 }
             };
             if (file) {

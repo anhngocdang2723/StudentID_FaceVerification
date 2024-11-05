@@ -31,26 +31,19 @@ document.getElementById('uploadForm').onsubmit = async function(event) {
     if (response.ok) {
         let result = await response.json();
         document.getElementById('result').textContent = JSON.stringify(result, null, 4);
+
+        // Hiển thị kết quả so sánh khuôn mặt
+        const comparisonText = document.getElementById("comparison-text");
+        const comparisonResult = document.getElementById("comparison-result");
+
+        if (result.comparison) {
+            comparisonText.textContent = result.comparison; // Cập nhật nội dung so sánh
+            comparisonResult.style.display = "block"; // Hiển thị vùng kết quả so sánh
+        } else {
+            comparisonText.textContent = "Không có kết quả so sánh."; // Thêm thông báo nếu không có kết quả
+            comparisonResult.style.display = "none"; // Ẩn nếu không có kết quả
+        }
     } else {
         document.getElementById('result').textContent = "Đã xảy ra lỗi: " + response.statusText;
     }
 };
-
-// //Test api//
-// document.getElementById('textForm').onsubmit = async function(event) {
-//     event.preventDefault();
-//
-//     const text = document.getElementById('inputText').value;
-//     const response = await fetch('http://127.0.0.1:8000/api/print', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ text: text })
-//     });
-//
-//     const result = await response.json();
-//     document.getElementById('resultText').textContent = result.received_text
-//         ? "Đoạn text đã nhận: " + result.received_text
-//         : "Đã xảy ra lỗi: " + response.statusText;
-// };
