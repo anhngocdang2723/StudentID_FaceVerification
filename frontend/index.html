@@ -15,11 +15,11 @@
         <form id="uploadForm" enctype="multipart/form-data">
             <label for="file">Chọn ảnh thẻ sinh viên:</label>
             <input type="file" id="file" name="file" accept="image/*" required><br>
-            <div class="image-preview" id="imagePreview"></div> <!-- Preview ảnh thẻ sinh viên -->
+            <div class="image-preview" id="imagePreview"></div>
 
             <label for="userFile">Chọn ảnh người dùng:</label>
             <input type="file" id="userFile" name="userFile" accept="image/*" required><br>
-            <div class="image-preview" id="userImagePreview"></div> <!-- Preview ảnh người dùng -->
+            <div class="image-preview" id="userImagePreview"></div>
 
             <button type="submit">Tải lên ảnh</button>
         </form>
@@ -37,15 +37,15 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+
                 <div>
                     <h4>Ảnh khuôn mặt đã cắt:</h4>
-                    <img id="face-image" src="" alt="Khuôn mặt" style="display:none;"/>
+                    <img id="face-image" style="display:none; margin-top: 15px;" alt="Khuôn mặt" style="display:none;"/>
                 </div>
                 
-                <!-- Vùng hiển thị kết quả so sánh -->
-                <h5>Kết quả so sánh khuôn mặt:</h5>
                 <div id="comparison-result" style="display:none; margin-top: 15px;">
-                    <p id="comparison-text"></p> <!-- Kết quả sẽ được cập nhật tại đây -->
+                    <h5>Kết quả so sánh khuôn mặt:</h5>
+                    <p id="comparison-text"></p> 
                 </div>
             </div>
         </div>       

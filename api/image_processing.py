@@ -6,7 +6,6 @@ PROCESSED_FOLDER = "processed_images"
 ##### Train model YoloV11 với custom dataset để detect thẻ tự động ####################
 #######################################################################################
 
-
 ##### Đây là hàm tiền xử lý ảnh thẻ sinh viên ################################################################
 # ở đây sẽ sử dụng model Yolo được train để detect thẻ sinh viên, sau đó crop ảnh thẻ và xử lý ảnh
 # sau đó lưu ảnh đã xử lý vào thư mục PROCESSED_FOLDER để module face_extraction.py cắt khuôn mặt khỏi thẻ
