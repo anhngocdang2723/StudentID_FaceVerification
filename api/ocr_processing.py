@@ -6,7 +6,7 @@ ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
 logging.basicConfig(level=logging.INFO)
 
-def perform_ocr(image_path): #hàm ocr và sắp xếp kết quả
+def perform_ocr(image_path): #ocr và sắp xếp kết quả
     try:
         result = ocr.ocr(image_path, cls=True)
         if result and len(result) > 0:
@@ -20,7 +20,7 @@ def perform_ocr(image_path): #hàm ocr và sắp xếp kết quả
         logging.error(f"Lỗi trong quá trình OCR: {e}")
         return None
 
-def extract_info_from_ocr(result): #hàm trích xuất thông tin từ kết quả đã sắp xếp
+def extract_info_from_ocr(result): #trích xuất thông tin từ kết quả đã sắp xếp
     fields = {
         "Tên": "",
         "Ngành": "",
