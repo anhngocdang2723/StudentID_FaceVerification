@@ -113,8 +113,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-
-    // Gửi file Excel và hiển thị kết quả
+    
+// Gửi yêu cầu đến FastAPI và hiển thị thông tin sinh viên
     const uploadExcelForm = document.getElementById('uploadExcelForm');
     if (uploadExcelForm) {
         uploadExcelForm.onsubmit = async function(event) {
@@ -137,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     body: formData
                 });
 
-
                 if (!response.ok) {
                     console.error("Phản hồi không ok:", response);
                     throw new Error('Có lỗi xảy ra khi tải lên file Excel: ' + response.statusText);
@@ -145,16 +144,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 const result = await response.json();
                 console.log("Kết quả nhận được:", result);
-                const studentList = document.getElementById('studentList');
-                studentList.innerHTML = ""; // Xóa nội dung cũ
 
+                const studentList = document.getElementById('studentList');
+                studentList.innerHTML = ""; // Xóa nội dung cũ để cập nhật
+
+                // Kiểm tra và hiển thị thông tin sinh viên
                 if (result.students && result.students.length > 0) {
                     result.students.forEach(student => {
                         const row = document.createElement('tr');
+
+                        // Tách tên và mã sinh viên
+                        const studentInfo = student.split(" - "); // Chia chuỗi tại dấu " - "
+                        const name = studentInfo[0] || "Chưa có tên"; // Phần trước dấu " - "
+                        const msv = studentInfo[1] || "Chưa có mã sinh viên"; // Phần sau dấu " - "
+
                         row.innerHTML = `
-                        <td>${student.name}</td>
-                        <td>${student.msv}</td>
-                        <td><a href="${student.examLink || '#'}" target="_blank">Xem phiếu thi</a></td>
+                        <td>${name}</td>
+                        <td>${msv}</td>
+                        <td>Chưa có</td> <!-- Hiển thị "Chưa có" nếu không có đường dẫn phiếu thi -->
                     `;
                         studentList.appendChild(row);
                     });
@@ -166,4 +173,104 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
     }
+
+// Lấy danh sách sinh viên từ FastAPI
+    async function fetchStudentList() {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/students");
+            if (!response.ok) {
+                throw new Error('Không thể tải danh sách sinh viên.');
+            }
+
+            const data = await response.json();
+            console.log('Danh sách sinh viên:', data);
+
+            // Thêm sinh viên vào bảng
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = ''; // Xóa nội dung cũ
+
+            if (data && data.students && data.students.length > 0) {
+                data.students.forEach(student => {
+                    const row = document.createElement('tr');
+
+                    // Tách tên và mã sinh viên từ chuỗi
+                    const studentInfo = student.split(" - "); // Chia chuỗi tại dấu " - "
+                    const name = studentInfo[0] || "Chưa có tên"; // Phần trước dấu " - "
+                    const msv = studentInfo[1] || "Chưa có mã sinh viên"; // Phần sau dấu " - "
+
+                    row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${msv}</td>
+                    <td>Chưa có</td> <!-- Hiển thị "Chưa có" thay vì đường dẫn phiếu thi -->
+                `;
+                    studentList.appendChild(row);
+                });
+            } else {
+                alert('Không có sinh viên để hiển thị.');
+            }
+
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách sinh viên:", error);
+        }
+    }
+
+// Gọi hàm khi trang tải
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchStudentList(); // Gọi hàm để tải danh sách sinh viên từ FastAPI
+    });
+
+
+
+    // // Gửi file Excel và hiển thị kết quả
+    // const uploadExcelForm = document.getElementById('uploadExcelForm');
+    // if (uploadExcelForm) {
+    //     uploadExcelForm.onsubmit = async function(event) {
+    //         event.preventDefault();
+    //         const fileExcelInput = document.getElementById('fileExcel');
+    //         const file = fileExcelInput.files[0];
+    //
+    //         if (!file) {
+    //             alert("Vui lòng chọn file Excel trước khi tải lên.");
+    //             return;
+    //         }
+    //
+    //         const formData = new FormData();
+    //         formData.append("file", file); // Đảm bảo tên trường trùng với tên trong backend
+    //
+    //         try {
+    //             console.log("Bắt đầu tải lên file Excel");
+    //             const response = await fetch("http://127.0.0.1:8000/api/read-excel", {
+    //                 method: "POST",
+    //                 body: formData
+    //             });
+    //
+    //
+    //             if (!response.ok) {
+    //                 console.error("Phản hồi không ok:", response);
+    //                 throw new Error('Có lỗi xảy ra khi tải lên file Excel: ' + response.statusText);
+    //             }
+    //
+    //             const result = await response.json();
+    //             console.log("Kết quả nhận được:", result);
+    //             const studentList = document.getElementById('studentList');
+    //             studentList.innerHTML = ""; // Xóa nội dung cũ
+    //
+    //             if (result.students && result.students.length > 0) {
+    //                 result.students.forEach(student => {
+    //                     const row = document.createElement('tr');
+    //                     row.innerHTML = `
+    //                     <td>${student.name}</td>
+    //                     <td>${student.msv}</td>
+    //                     <td><a href="${student.examLink || '#'}" target="_blank">Xem phiếu thi</a></td>
+    //                 `;
+    //                     studentList.appendChild(row);
+    //                 });
+    //             } else {
+    //                 alert("Không có thông tin sinh viên trong file Excel.");
+    //             }
+    //         } catch (error) {
+    //             alert("Lỗi: " + error.message);
+    //         }
+    //     };
+    // }
 });
