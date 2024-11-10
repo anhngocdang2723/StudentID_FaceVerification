@@ -18,7 +18,7 @@ def compare_with_student_list(extracted_info, students_list):
         for student in students_data:  # Duyệt từng sinh viên, so sánh MSV
             student_name, student_msv = student[0], student[1]
             if msv_from_ocr == student_msv:
-                print(f"Thông tin sinh viên khớp: {student_name} - {student_msv}")
+                print(f"Thông tin sinh viên khớp: {student_name} - {student_msv}") # Log thông tin sinh viên khớp
                 return True
         print("Không tìm thấy mã sinh viên trong danh sách.")
         return False

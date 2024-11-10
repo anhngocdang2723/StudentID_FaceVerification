@@ -14,6 +14,7 @@ from face_extraction import process_student_id
 from face_comparison import compare_faces
 from excel_reader_byPandas import read_from_excel
 from compare_student import compare_with_student_list
+from generate_exam_ticket import generate_exam_ticket
 #endregion
 
 #region functions
@@ -87,7 +88,7 @@ async def upload_image(file: UploadFile = File(...)):
         if file.content_type not in ["image/jpeg", "image/png"]:
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
         try:
-            file_location = os.path.join(UPLOAD_FOLDER, file.filename) #lưu file tạm thời
+            file_location = os.path.join(UPLOAD_FOLDER, file.filename)  # Lưu file tạm thời
             contents = await file.read()
             with open(file_location, "wb") as f:
                 f.write(contents)
@@ -95,36 +96,48 @@ async def upload_image(file: UploadFile = File(...)):
             ocr_result = perform_ocr(processed_image_path)
             if ocr_result:
                 extracted_info = extract_info_from_ocr(ocr_result)
-                print("Thông tin trích xuất từ OCR:", extracted_info)
+                # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
             else:
-                extracted_info = None  #lỗi k ocr được
+                extracted_info = None  # Lỗi không OCR được
             face_image_base64 = process_student_id(file_location)
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
             # print("Kết quả so sánh:", comparison_result)
-            
-            if isinstance(extracted_info, dict):  #so sánh OCR với students_list
-                # print("Thông tin trích xuất từ OCR:", extracted_info)  #Log giá trị trích xuất
+
+            if isinstance(extracted_info, dict):  # So sánh OCR với students_list
+                # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
                 if compare_with_student_list(extracted_info, students_list):
                     student_verification_status = "Thông tin sinh viên khớp với danh sách."
+                    student_name = extracted_info['Tên']
+                    student_msv = extracted_info['MSV']
+                    exam_name = "Thi giac may tinh"  # Ví dụ, bạn có thể lấy từ cơ sở dữ liệu
+                    exam_code = "62 (2021-2026)"  # Ví dụ
+                    seat_position = 10  # Bạn có thể lấy vị trí ngồi từ cơ sở dữ liệu hoặc tính toán
+
+                    # Gọi hàm tạo phiếu thi
+                    ticket_path = generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_position)
                 else:
                     student_verification_status = "Thông tin sinh viên không khớp với danh sách."
             else:
                 student_verification_status = "Không thể so sánh vì thông tin OCR không hợp lệ."
+            
             if face_image_base64:
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
                     "Thông tin trích xuất được": extracted_info,
-                    "Kết quả so sánh": comparison_result,
+                    # "Kết quả so sánh": comparison_result,
+                    "comparison": comparison_result,
                     "Trạng thái xác thực": student_verification_status,
-                    "face_image": face_image_base64
+                    "face_image": face_image_base64,
+                    "Phiếu thi": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
                 }
             else:
                 return {
                     "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
                     "Thông tin trích xuất được": extracted_info,
-                    "Trạng thái xác thực": student_verification_status
-                }  
+                    "Trạng thái xác thực": student_verification_status,
+                    "Phiếu thi": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
+                }
         except FileNotFoundError:
             logging.error(f"File not found: {file_location}")
             raise HTTPException(status_code=404, detail="Không tìm thấy file đã tải lên.")
