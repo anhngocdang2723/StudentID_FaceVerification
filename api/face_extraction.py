@@ -40,7 +40,6 @@ def detect_face(img, scale_percent=50, expand_ratio=0.2):  # expand_ratio = 20%
         return img[y:y+h, x:x+w]
     return None
 
-
 def process_student_id(img_path):  # Hàm xử lý ảnh thẻ sinh viên và trả về khuôn mặt dưới dạng base64
     try:
         img = cv2.imread(img_path)

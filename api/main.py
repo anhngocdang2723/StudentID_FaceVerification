@@ -10,7 +10,7 @@ from image_processing import preprocess_image
 from ocr_processing import perform_ocr, extract_info_from_ocr
 from face_extraction import process_student_id
 from face_comparison import compare_faces
-from excel_reader import read_from_excel 
+from excel_reader_byPandas import read_from_excel
 
 app = FastAPI()
 
@@ -108,8 +108,9 @@ async def read_excel(file: UploadFile = File(...)):
                 f.write(contents)
             print(f"File đã được lưu tại: {file_location}")
 
-            # Đọc dữ liệu từ file Excel
+            # Đọc dữ liệu từ file Excel bằng module `excel_reader_byPandas`
             excel_data = read_from_excel(file_location)
+            print(excel_data)
             if excel_data:
                 return {"students": excel_data}
             else:
