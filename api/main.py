@@ -28,6 +28,7 @@ FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification
 UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
+# EXAM_TICKET_DIR = os.path.join(BASE_DIR, "tickets")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
@@ -36,6 +37,7 @@ os.makedirs(FACES_FOLDER, exist_ok=True)
 app.mount("/api/css", StaticFiles(directory=os.path.join(FE_FOLDER, "css")), name="css")
 app.mount("/api/js", StaticFiles(directory=os.path.join(FE_FOLDER, "js")), name="js")
 app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER, "static")), name="static")
+app.mount("/tickets", StaticFiles(directory="tickets"), name="tickets")
 #endregion
 
 #region CORS Middleware
@@ -72,7 +74,7 @@ async def read_excel(file: UploadFile = File(...)):
             print(excel_data)
             if excel_data:
                 students_list = excel_data      # Lưu dữ liệu vào biến global students_list
-                print("Dữ liệu sinh viên đã được lưu vào biến tạm thành công.", students_list)
+                # print("Dữ liệu sinh viên đã được lưu vào biến tạm thành công.", students_list) # Log dữ liệu sinh viên
                 return {"students": excel_data}
             else:
                 raise HTTPException(status_code=400, detail="Không đọc được dữ liệu từ file Excel. Kiểm tra cấu trúc file.")
@@ -102,7 +104,7 @@ async def upload_image(file: UploadFile = File(...)):
             face_image_base64 = process_student_id(file_location)
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
-            # print("Kết quả so sánh:", comparison_result)
+            # print("Kết quả so sánh:", comparison_result) # Log kết quả so sánh
 
             if isinstance(extracted_info, dict):  # So sánh OCR với students_list
                 # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
@@ -146,3 +148,20 @@ async def upload_image(file: UploadFile = File(...)):
             raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
+
+@app.get("/api/serve-ticket/{student_msv}")
+async def serve_ticket(student_msv: str):
+    # Xác định thư mục chứa phiếu thi
+    ticket_folder = "tickets"  # Thư mục chứa các phiếu thi đã tạo
+
+    # Tạo tên file phiếu thi tương ứng với mã sinh viên
+    ticket_filename = f"{student_msv}_exam_ticket.txt"
+    ticket_path = os.path.join(ticket_folder, ticket_filename)
+    print(f"Đường dẫn phiếu thi: {ticket_path}")
+
+    # Kiểm tra xem phiếu thi có tồn tại không
+    if not os.path.exists(ticket_path):
+        raise HTTPException(status_code=404, detail="Không tìm thấy phiếu thi cho sinh viên này.")
+
+    # Nếu tìm thấy phiếu thi, trả về đường dẫn đến phiếu thi
+    return {"message": "Phiếu thi đã được tạo", "ticket_url": f"/{ticket_path}"}

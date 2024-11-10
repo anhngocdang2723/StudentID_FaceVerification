@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const uploadImageForm = document.getElementById('uploadImageForm');
     if (uploadImageForm) {
         uploadImageForm.onsubmit = async function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Ngừng reload trang khi submit
             const ocrResult = document.getElementById('ocrResult');
             if (ocrResult) ocrResult.textContent = "Đang xử lý...";
 
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const ocrTable = document.getElementById("ocr-table");
                 if (ocrTable) {
                     const tableBody = ocrTable.querySelector("tbody");
-                    tableBody.innerHTML = "";
+                    tableBody.innerHTML = ""; // Xóa nội dung cũ
                     ocrTable.style.display = "table";
 
                     if (result["Thông tin trích xuất được"]) {
@@ -113,12 +113,12 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-    
+
 // Gửi yêu cầu đến FastAPI và hiển thị thông tin sinh viên
     const uploadExcelForm = document.getElementById('uploadExcelForm');
     if (uploadExcelForm) {
         uploadExcelForm.onsubmit = async function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Ngừng reload trang khi submit
             const fileExcelInput = document.getElementById('fileExcel');
             const file = fileExcelInput.files[0];
 
@@ -158,10 +158,15 @@ document.addEventListener("DOMContentLoaded", function() {
                         const name = studentInfo[0] || "Chưa có tên"; // Phần trước dấu " - "
                         const msv = studentInfo[1] || "Chưa có mã sinh viên"; // Phần sau dấu " - "
 
+                        // Lấy đường dẫn phiếu thi
+                        const examSheetLink = student.exam_sheet_link || "Chưa có"; // Nếu không có đường dẫn thì hiển thị "Chưa có"
+
                         row.innerHTML = `
                         <td>${name}</td>
                         <td>${msv}</td>
-                        <td>Chưa có</td> <!-- Hiển thị "Chưa có" nếu không có đường dẫn phiếu thi -->
+                        <td>
+                            <a href="${examSheetLink}" target="_blank">${examSheetLink === "Chưa có" ? "Chưa có" : "Xem phiếu thi"}</a>
+                        </td> <!-- Hiển thị đường dẫn phiếu thi -->
                     `;
                         studentList.appendChild(row);
                     });
@@ -174,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 
-// Lấy danh sách sinh viên từ FastAPI
+    // Lấy danh sách sinh viên từ FastAPI
     async function fetchStudentList() {
         try {
             const response = await fetch("http://127.0.0.1:8000/api/students");
@@ -214,61 +219,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-// Gọi hàm khi trang tải
-    document.addEventListener('DOMContentLoaded', function() {
-        fetchStudentList(); // Gọi hàm để tải danh sách sinh viên từ FastAPI
-    });
-
-    // // Gửi file Excel và hiển thị kết quả
-    // const uploadExcelForm = document.getElementById('uploadExcelForm');
-    // if (uploadExcelForm) {
-    //     uploadExcelForm.onsubmit = async function(event) {
-    //         event.preventDefault();
-    //         const fileExcelInput = document.getElementById('fileExcel');
-    //         const file = fileExcelInput.files[0];
-    //
-    //         if (!file) {
-    //             alert("Vui lòng chọn file Excel trước khi tải lên.");
-    //             return;
-    //         }
-    //
-    //         const formData = new FormData();
-    //         formData.append("file", file); // Đảm bảo tên trường trùng với tên trong backend
-    //
-    //         try {
-    //             console.log("Bắt đầu tải lên file Excel");
-    //             const response = await fetch("http://127.0.0.1:8000/api/read-excel", {
-    //                 method: "POST",
-    //                 body: formData
-    //             });
-    //
-    //
-    //             if (!response.ok) {
-    //                 console.error("Phản hồi không ok:", response);
-    //                 throw new Error('Có lỗi xảy ra khi tải lên file Excel: ' + response.statusText);
-    //             }
-    //
-    //             const result = await response.json();
-    //             console.log("Kết quả nhận được:", result);
-    //             const studentList = document.getElementById('studentList');
-    //             studentList.innerHTML = ""; // Xóa nội dung cũ
-    //
-    //             if (result.students && result.students.length > 0) {
-    //                 result.students.forEach(student => {
-    //                     const row = document.createElement('tr');
-    //                     row.innerHTML = `
-    //                     <td>${student.name}</td>
-    //                     <td>${student.msv}</td>
-    //                     <td><a href="${student.examLink || '#'}" target="_blank">Xem phiếu thi</a></td>
-    //                 `;
-    //                     studentList.appendChild(row);
-    //                 });
-    //             } else {
-    //                 alert("Không có thông tin sinh viên trong file Excel.");
-    //             }
-    //         } catch (error) {
-    //             alert("Lỗi: " + error.message);
-    //         }
-    //     };
-    // }
+    // Gọi hàm khi trang tải
+    fetchStudentList(); // Gọi hàm để tải danh sách sinh viên từ FastAPI
 });
