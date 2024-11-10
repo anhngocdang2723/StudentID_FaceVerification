@@ -219,8 +219,6 @@ document.addEventListener("DOMContentLoaded", function() {
         fetchStudentList(); // Gọi hàm để tải danh sách sinh viên từ FastAPI
     });
 
-
-
     // // Gửi file Excel và hiển thị kết quả
     // const uploadExcelForm = document.getElementById('uploadExcelForm');
     // if (uploadExcelForm) {
