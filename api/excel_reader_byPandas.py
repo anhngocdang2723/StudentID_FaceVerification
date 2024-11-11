@@ -1,7 +1,7 @@
 import pandas as pd
 from unidecode import unidecode
 
-def read_from_excel(excel_path):
+def read_from_excel(excel_path): #hàm đọc tt từ file Excel
     try:
         df = pd.read_excel(excel_path)
         name_col = None
@@ -27,7 +27,7 @@ def read_from_excel(excel_path):
         print(f"Lỗi khi đọc file Excel: {e}")
         return []
 
-# # Ví dụ sử dụng
+#TEST FUNCTION
 # excel_file_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\List of candidates\students.xlsx"
 # students = read_from_excel(excel_file_path)
 # print(students)

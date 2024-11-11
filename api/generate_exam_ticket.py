@@ -28,7 +28,7 @@ def generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_p
     ticket_filename = f"{student_msv}_exam_ticket.txt"
     ticket_path = os.path.join(output_dir, ticket_filename)
     
-    with open(ticket_path, "w", encoding="utf-8") as f:  # Thêm encoding="utf-8"
+    with open(ticket_path, "w", encoding="utf-8") as f:
         ticket_info_txt = f"""
         ---------------------------------------------------------
                               PHIẾU DỰ THI
@@ -44,14 +44,9 @@ def generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_p
     
     print(f"Phiếu thi đã được tạo và lưu tại: {ticket_path}")
     
-    # Trả về thông tin phiếu thi dưới dạng JSON
     return {
         "status": "success",
         "message": "Phiếu thi đã được tạo thành công",
         "ticket_info": ticket_info,
         "ticket_file": ticket_path
     }
-
-# Ví dụ gọi hàm
-# ticket_data = generate_exam_ticket("Nguyễn Văn A", "215748020110001", "Toán học", "2024", 10)
-# print(json.dumps(ticket_data, ensure_ascii=False, indent=4))

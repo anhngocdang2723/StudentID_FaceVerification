@@ -1,6 +1,4 @@
-# student_verification.py
-
-def compare_with_student_list(extracted_info, students_list):
+def compare_with_student_list(extracted_info, students_list):  
     """
     So sánh mã sinh viên từ thông tin OCR với danh sách sinh viên.
 

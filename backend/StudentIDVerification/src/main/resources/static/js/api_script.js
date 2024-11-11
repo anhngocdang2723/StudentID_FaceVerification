@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 let result = await response.json();
+                console.log(result);
                 if (ocrResult) ocrResult.textContent = "Kết quả OCR:";
 
                 // Cập nhật bảng OCR
@@ -93,14 +94,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 const ticketContainer = document.getElementById("ticket-container");
                 const ticketContent = document.getElementById("ticket-content");
                 if (ticketContent) {
-                    if (result["Phiếu thi"]) {
-                        const ticketData = result["Phiếu thi"];
+                    if (result["ticket_info"]) {
+                        const ticketData = result["ticket_info"];
 
                         // In ra console để kiểm tra dữ liệu phiếu thi
                         console.log("Dữ liệu phiếu thi: ", ticketData);
 
                         // Kiểm tra xem dữ liệu phiếu thi có đầy đủ trường cần thiết không
-                        if (ticketData && ticketData["Tên sinh viên"] && ticketData["Mã sinh viên"] && ticketData["Tên môn thi"] && ticketData["Mã khóa"] && ticketData["Vị trí ngồi"]) {
+                        if (ticketData &&
+                            ticketData["Tên sinh viên"] &&
+                            ticketData["Mã sinh viên"] &&
+                            ticketData["Tên môn thi"] &&
+                            ticketData["Mã khóa"] &&
+                            ticketData["Vị trí ngồi"]) {
+
                             ticketContainer.style.display = "block";  // Hiển thị div phiếu thi
                             const ticketHtml = `
                                 <strong>Phiếu Dự Thi</strong><br><br>
@@ -117,18 +124,17 @@ document.addEventListener("DOMContentLoaded", function() {
                             ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu thiếu dữ liệu
                         }
                     } else {
+                        console.log("Không có phiếu thi trong dữ liệu trả về.");
                         ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu không có
                     }
                 } else {
                     console.error("Không tìm thấy phần tử với ID 'ticket-content'.");
                 }
-
             } catch (error) {
                 if (ocrResult) ocrResult.textContent = 'Lỗi: ' + error.message;
             }
         };
     }
-
 
     // Sự kiện xem trước ảnh cá nhân (nếu cần)
     const filePersonalImage = document.getElementById('filePersonalImage');

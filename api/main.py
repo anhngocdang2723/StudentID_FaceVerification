@@ -90,7 +90,7 @@ async def upload_image(file: UploadFile = File(...)):
         if file.content_type not in ["image/jpeg", "image/png"]:
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
         try:
-            file_location = os.path.join(UPLOAD_FOLDER, file.filename)  # Lưu file tạm thời
+            file_location = os.path.join(UPLOAD_FOLDER, file.filename)
             contents = await file.read()
             with open(file_location, "wb") as f:
                 f.write(contents)
@@ -100,7 +100,7 @@ async def upload_image(file: UploadFile = File(...)):
                 extracted_info = extract_info_from_ocr(ocr_result)
                 # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
             else:
-                extracted_info = None  # Lỗi không OCR được
+                extracted_info = None  
             face_image_base64 = process_student_id(file_location)
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
@@ -112,11 +112,10 @@ async def upload_image(file: UploadFile = File(...)):
                     student_verification_status = "Thông tin sinh viên khớp với danh sách."
                     student_name = extracted_info['Tên']
                     student_msv = extracted_info['MSV']
-                    exam_name = "Thi giac may tinh"  # Ví dụ, bạn có thể lấy từ cơ sở dữ liệu
-                    exam_code = "62 (2021-2026)"  # Ví dụ
-                    seat_position = 10  # Bạn có thể lấy vị trí ngồi từ cơ sở dữ liệu hoặc tính toán
+                    exam_name = "Thi giac may tinh"  #test case
+                    exam_code = "62 (2021-2026)"  #test case
+                    seat_position = 10  #test case
 
-                    # Gọi hàm tạo phiếu thi
                     ticket_path = generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_position)
                 else:
                     student_verification_status = "Thông tin sinh viên không khớp với danh sách."
@@ -131,7 +130,7 @@ async def upload_image(file: UploadFile = File(...)):
                     "comparison": comparison_result,
                     "Trạng thái xác thực": student_verification_status,
                     "face_image": face_image_base64,
-                    "Phiếu thi": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
+                    "ticket_info": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
                 }
             else:
                 return {
@@ -149,8 +148,9 @@ async def upload_image(file: UploadFile = File(...)):
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
-@app.get("/api/serve-ticket/{student_msv}")
-async def serve_ticket(student_msv: str):
+### Get phiếu thi về UI
+# @app.get("/api/serve-ticket/{student_msv}")
+# async def serve_ticket(student_msv: str):
     # Xác định thư mục chứa phiếu thi
     ticket_folder = "tickets"  # Thư mục chứa các phiếu thi đã tạo
 
