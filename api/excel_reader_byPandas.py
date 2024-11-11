@@ -6,13 +6,11 @@ def read_from_excel(excel_path):
         df = pd.read_excel(excel_path)
         name_col = None
         msv_col = None
-
         for col in df.columns:
             if "họ tên" in col.lower():
                 name_col = col
             elif "mã sinh viên" in col.lower():
                 msv_col = col
-
         if name_col and msv_col:
             excel_data = []
             for index, row in df.iterrows():

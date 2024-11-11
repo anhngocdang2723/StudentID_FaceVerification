@@ -71,7 +71,7 @@ async def read_excel(file: UploadFile = File(...)):
             print(f"File đã được lưu tại: {file_location}")
 
             excel_data = read_from_excel(file_location)
-            print(excel_data)
+            # print(excel_data) # Log dữ liệu sinh viên
             if excel_data:
                 students_list = excel_data      # Lưu dữ liệu vào biến global students_list
                 # print("Dữ liệu sinh viên đã được lưu vào biến tạm thành công.", students_list) # Log dữ liệu sinh viên

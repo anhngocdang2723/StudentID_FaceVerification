@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Gửi ảnh và hiển thị kết quả sau khi xử lý
+// Gửi ảnh và hiển thị kết quả sau khi xử lý
     const uploadImageForm = document.getElementById('uploadImageForm');
     if (uploadImageForm) {
         uploadImageForm.onsubmit = async function(event) {
@@ -89,11 +89,46 @@ document.addEventListener("DOMContentLoaded", function() {
                     comparisonResult.style.display = "none";
                 }
 
+                // Hiển thị phiếu thi nếu có
+                const ticketContainer = document.getElementById("ticket-container");
+                const ticketContent = document.getElementById("ticket-content");
+                if (ticketContent) {
+                    if (result["Phiếu thi"]) {
+                        const ticketData = result["Phiếu thi"];
+
+                        // In ra console để kiểm tra dữ liệu phiếu thi
+                        console.log("Dữ liệu phiếu thi: ", ticketData);
+
+                        // Kiểm tra xem dữ liệu phiếu thi có đầy đủ trường cần thiết không
+                        if (ticketData && ticketData["Tên sinh viên"] && ticketData["Mã sinh viên"] && ticketData["Tên môn thi"] && ticketData["Mã khóa"] && ticketData["Vị trí ngồi"]) {
+                            ticketContainer.style.display = "block";  // Hiển thị div phiếu thi
+                            const ticketHtml = `
+                                <strong>Phiếu Dự Thi</strong><br><br>
+                                <strong>Tên sinh viên:</strong> ${ticketData["Tên sinh viên"]}<br>
+                                <strong>Mã sinh viên:</strong> ${ticketData["Mã sinh viên"]}<br>
+                                <strong>Tên môn thi:</strong> ${ticketData["Tên môn thi"]}<br>
+                                <strong>Mã khóa:</strong> ${ticketData["Mã khóa"]}<br>
+                                <strong>Vị trí ngồi:</strong> ${ticketData["Vị trí ngồi"]}<br>
+                                <hr>
+                            `;
+                            ticketContent.innerHTML = ticketHtml;  // Sử dụng innerHTML để chèn HTML
+                        } else {
+                            console.error("Dữ liệu phiếu thi không đầy đủ.");
+                            ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu thiếu dữ liệu
+                        }
+                    } else {
+                        ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu không có
+                    }
+                } else {
+                    console.error("Không tìm thấy phần tử với ID 'ticket-content'.");
+                }
+
             } catch (error) {
                 if (ocrResult) ocrResult.textContent = 'Lỗi: ' + error.message;
             }
         };
     }
+
 
     // Sự kiện xem trước ảnh cá nhân (nếu cần)
     const filePersonalImage = document.getElementById('filePersonalImage');
@@ -114,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-// Gửi yêu cầu đến FastAPI và hiển thị thông tin sinh viên
+    // Gửi yêu cầu đến FastAPI và hiển thị thông tin sinh viên
     const uploadExcelForm = document.getElementById('uploadExcelForm');
     if (uploadExcelForm) {
         uploadExcelForm.onsubmit = async function(event) {
@@ -179,46 +214,31 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 
-    // Lấy danh sách sinh viên từ FastAPI
-    async function fetchStudentList() {
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/students");
-            if (!response.ok) {
-                throw new Error('Không thể tải danh sách sinh viên.');
-            }
+    // function fetchExamTicket(studentMsv) {
+    //     const previewElement = document.getElementById('exam-sheet-preview');
+    //     previewElement.textContent = "Đang tải..."; // Hiển thị thông báo khi đang tải
+    //
+    //     fetch(`http://127.0.0.1:8000/api/serve-ticket/${studentMsv}`)
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error(`HTTP error! Status: ${response.status}`);
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             if (data.ticket_content) {
+    //                 previewElement.textContent = data.ticket_content; // Hiển thị nội dung phiếu thi
+    //             } else {
+    //                 previewElement.textContent = "Không tìm thấy phiếu thi."; // Thông báo nếu không có dữ liệu
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Lỗi:', error);
+    //             previewElement.textContent = "Có lỗi xảy ra khi tải phiếu thi."; // Hiển thị lỗi
+    //         });
+    // }
 
-            const data = await response.json();
-            console.log('Danh sách sinh viên:', data);
-
-            // Thêm sinh viên vào bảng
-            const studentList = document.getElementById('studentList');
-            studentList.innerHTML = ''; // Xóa nội dung cũ
-
-            if (data && data.students && data.students.length > 0) {
-                data.students.forEach(student => {
-                    const row = document.createElement('tr');
-
-                    // Tách tên và mã sinh viên từ chuỗi
-                    const studentInfo = student.split(" - "); // Chia chuỗi tại dấu " - "
-                    const name = studentInfo[0] || "Chưa có tên"; // Phần trước dấu " - "
-                    const msv = studentInfo[1] || "Chưa có mã sinh viên"; // Phần sau dấu " - "
-
-                    row.innerHTML = `
-                    <td>${name}</td>
-                    <td>${msv}</td>
-                    <td>Chưa có</td> <!-- Hiển thị "Chưa có" thay vì đường dẫn phiếu thi -->
-                `;
-                    studentList.appendChild(row);
-                });
-            } else {
-                alert('Không có sinh viên để hiển thị.');
-            }
-
-        } catch (error) {
-            console.error("Lỗi khi tải danh sách sinh viên:", error);
-        }
-    }
-
-    // Gọi hàm khi trang tải
-    fetchStudentList(); // Gọi hàm để tải danh sách sinh viên từ FastAPI
+    // Ví dụ sử dụng MSV để lấy phiếu thi
+    // const studentMsv = "215748020110333";  // MSV của sinh viên
+    // fetchExamTicket(studentMsv);
 });

@@ -86,10 +86,12 @@
                         <p id="comparison-text"></p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <h5>Phiếu thi được in ra:</h5>
-                    <div id="exam-sheet-preview">Thông tin phiếu thi sẽ được hiển thị ở đây</div>
-                </div>
+                    <div class="col-md-6">
+                        <div id="ticket-container" style="display: none;">
+                            <h3>Phiếu Thi</h3>
+                            <pre id="ticket-content" style="white-space: pre-wrap; font-family: monospace;"></pre>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -99,31 +101,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="/js/api_script.js"></script>
-<script>
-    // Hàm gọi API và hiển thị phiếu thi
-    function fetchExamTicket(studentMsv) {
-        fetch(`/api/serve-ticket/${studentMsv}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.ticket_url) {
-                    // Nếu có đường dẫn phiếu thi, hiển thị nó
-                    document.getElementById('exam-sheet-preview').innerHTML = `
-                    <a href="${data.ticket_url}" target="_blank">Tải phiếu thi tại đây</a>
-                `;
-                } else {
-                    // Nếu không có, hiển thị thông báo lỗi
-                    document.getElementById('exam-sheet-preview').textContent = "Không tìm thấy phiếu thi.";
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                document.getElementById('exam-sheet-preview').textContent = "Có lỗi xảy ra khi tải phiếu thi.";
-            });
-    }
-
-    // Ví dụ sử dụng MSV để lấy phiếu thi
-    const studentMsv = "215748020110333";  // MSV của sinh viên
-    fetchExamTicket(studentMsv);
-</script>
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function() {-->
+<!--        // Mã JavaScript sẽ chạy khi trang đã được tải xong-->
+<!--        const studentMsv = "215748020110333";  // MSV của sinh viên-->
+<!--        fetchExamTicket(studentMsv);-->
+<!--    });-->
+<!--</script>-->
 </body>
 </html>

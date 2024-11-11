@@ -1,5 +1,5 @@
-# generate_exam_ticket.py
 import os
+import json
 
 def generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_position, output_dir="tickets"):
     """
@@ -15,24 +15,43 @@ def generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_p
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    ticket_info = f"""
-    ---------------------------------
-           PHIẾU DỰ THI
-    ---------------------------------
-    Tên sinh viên: {student_name}
-    Mã sinh viên: {student_msv}
-    Tên môn thi: {exam_name}
-    Mã khóa: {exam_code}
-    Vị trí ngồi: {seat_position} (1-20)
-    ---------------------------------
-    """
-    
+    # Tạo thông tin phiếu thi
+    ticket_info = {
+        "Tên sinh viên": student_name,
+        "Mã sinh viên": student_msv,
+        "Tên môn thi": exam_name,
+        "Mã khóa": exam_code,
+        "Vị trí ngồi": seat_position
+    }
+
     # Lưu phiếu thi vào file txt với mã hóa utf-8
     ticket_filename = f"{student_msv}_exam_ticket.txt"
     ticket_path = os.path.join(output_dir, ticket_filename)
     
     with open(ticket_path, "w", encoding="utf-8") as f:  # Thêm encoding="utf-8"
-        f.write(ticket_info)
+        ticket_info_txt = f"""
+        ---------------------------------------------------------
+                              PHIẾU DỰ THI
+        ---------------------------------------------------------
+        Tên sinh viên   : {student_name}
+        Mã sinh viên    : {student_msv}
+        Tên môn thi     : {exam_name}
+        Mã khóa         : {exam_code}
+        Vị trí ngồi     : {seat_position} (1-20)
+        ---------------------------------------------------------
+        """
+        f.write(ticket_info_txt)
     
     print(f"Phiếu thi đã được tạo và lưu tại: {ticket_path}")
-    return ticket_path
+    
+    # Trả về thông tin phiếu thi dưới dạng JSON
+    return {
+        "status": "success",
+        "message": "Phiếu thi đã được tạo thành công",
+        "ticket_info": ticket_info,
+        "ticket_file": ticket_path
+    }
+
+# Ví dụ gọi hàm
+# ticket_data = generate_exam_ticket("Nguyễn Văn A", "215748020110001", "Toán học", "2024", 10)
+# print(json.dumps(ticket_data, ensure_ascii=False, indent=4))
