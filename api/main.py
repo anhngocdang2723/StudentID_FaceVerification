@@ -58,13 +58,13 @@ async def get_home():
 
 @app.post("/api/read-excel", tags=["Excel Processing"])
 async def read_excel(file: UploadFile = File(...)):
-    global students_list  # Khai báo biến global
+    global students_list
     
     if file:
         if file.content_type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ định dạng file Excel (XLSX).")
         try:
-            file_location = os.path.join(UPLOAD_FOLDER, file.filename) # Lưu file tạm thời
+            file_location = os.path.join(UPLOAD_FOLDER, file.filename)
             contents = await file.read()
             with open(file_location, "wb") as f:
                 f.write(contents)
@@ -73,7 +73,7 @@ async def read_excel(file: UploadFile = File(...)):
             excel_data = read_from_excel(file_location)
             # print(excel_data) # Log dữ liệu sinh viên
             if excel_data:
-                students_list = excel_data      # Lưu dữ liệu vào biến global students_list
+                students_list = excel_data
                 # print("Dữ liệu sinh viên đã được lưu vào biến tạm thành công.", students_list) # Log dữ liệu sinh viên
                 return {"students": excel_data}
             else:
@@ -112,9 +112,9 @@ async def upload_image(file: UploadFile = File(...)):
                     student_verification_status = "Thông tin sinh viên khớp với danh sách."
                     student_name = extracted_info['Tên']
                     student_msv = extracted_info['MSV']
-                    exam_name = "Thi giac may tinh"  #test case
-                    exam_code = "62 (2021-2026)"  #test case
-                    seat_position = 10  #test case
+                    exam_name = "Thi giac may tinh"
+                    exam_code = "62 (2021-2026)"
+                    seat_position = 10
 
                     ticket_path = generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_position)
                 else:
@@ -126,7 +126,6 @@ async def upload_image(file: UploadFile = File(...)):
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
                     "Thông tin trích xuất được": extracted_info,
-                    # "Kết quả so sánh": comparison_result,
                     "comparison": comparison_result,
                     "Trạng thái xác thực": student_verification_status,
                     "face_image": face_image_base64,

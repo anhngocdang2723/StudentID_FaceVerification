@@ -5,7 +5,6 @@ from io import BytesIO
 from PIL import Image
 import dlib
 
-#khởi tạo và gọi model (detector, predictor, facerec)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\shape_predictor_68_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\dlib_face_recognition_resnet_model_v1.dat")
@@ -22,7 +21,7 @@ def get_face_embedding(image): #hàm trích xuất vector đặc trưng từ ả
     if len(faces) == 0:
         return None
 
-    shape = predictor(gray, faces[0])  #chỉ lấy khuôn mặt đầu tiên
+    shape = predictor(gray, faces[0])
     face_embedding = facerec.compute_face_descriptor(image, shape)  #trích xuất vector đặc trưng
 
     return np.array(face_embedding)
@@ -40,7 +39,7 @@ def compare_faces(uploaded_image, face_image_base64, threshold=0.6): #hàm so s�
     if embedding2 is None:
         return "Ảnh khuôn mặt từ thẻ không tìm thấy khuôn mặt"
 
-    distance = np.linalg.norm(embedding1 - embedding2)  #tính khoảng cách Euclidean giữa 2 vector đặc trưng
+    distance = np.linalg.norm(embedding1 - embedding2)
 
     if distance < threshold:
         return f"Cùng 1 người (Khoảng cách Euclidean: {distance:.2f})"

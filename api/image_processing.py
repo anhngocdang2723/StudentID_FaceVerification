@@ -11,7 +11,6 @@ PROCESSED_FOLDER = "processed_images"
 # sau đó lưu ảnh đã xử lý vào thư mục PROCESSED_FOLDER để module face_extraction.py cắt khuôn mặt khỏi thẻ
 ##############################################################################################################
 
-##### Cải tiến hàm preprocess_image
 def preprocess_image(image_path: str) -> str:
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
