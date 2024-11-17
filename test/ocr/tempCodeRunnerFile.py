@@ -100,7 +100,7 @@ def process_image(img_path, save_path):
         print(f"Văn bản nhận diện được với VietOCR: {recognized_text}")
 
 # Đường dẫn đến ảnh thẻ sinh viên
-img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\NgocPhuongIDCard.jpg"
+img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\ThaiTuanIDCard.jpg"
 output_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\ocr\resultOCR'
 
 # Gọi hàm xử lý ảnh
