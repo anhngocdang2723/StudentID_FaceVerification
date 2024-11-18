@@ -6,18 +6,15 @@ from vietocr.tool.config import Cfg
 from paddleocr import PaddleOCR
 from PIL import Image
 
-# Khởi tạo PaddleOCR và VietOCR
 ocr = PaddleOCR(use_angle_cls=True, lang='vi', use_gpu=True)
 config = Cfg.load_config_from_name('vgg_transformer')
 predictor = Predictor(config)
 
-# Hàm tiền xử lý ảnh cho VietOCR
 def preprocess_for_vietocr(img):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray_img = cv2.resize(gray_img, (256, 32))
     return gray_img
 
-# Hàm phát hiện và vẽ bounding boxes xung quanh các văn bản
 def detect_text_and_draw(img_path, save_path):
     if not os.path.exists(img_path):
         print("Không tìm thấy ảnh, kiểm tra lại đường dẫn.")
@@ -45,20 +42,17 @@ def detect_text_and_draw(img_path, save_path):
 
     return result
 
-# Hàm trích xuất khu vực văn bản từ bounding box
 def extract_text_region(img, bounding_box):
     pts = np.array(bounding_box, dtype=np.int32)
     rect = cv2.boundingRect(pts)
     x, y, w, h = rect
     return img[y:y+h, x:x+w]
 
-# Hàm nhận diện văn bản với VietOCR
 def recognize_text_with_vietocr(img):
     pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     result = predictor.predict(pil_img)
     return result
 
-# Hàm xử lý toàn bộ ảnh và nhận diện văn bản
 def process_image(img_path, save_path):
     result = detect_text_and_draw(img_path, save_path)
     if not result:
@@ -72,9 +66,7 @@ def process_image(img_path, save_path):
         recognized_text = recognize_text_with_vietocr(preprocessed_img)
         print(f"Văn bản nhận diện được với VietOCR: {recognized_text}")
 
-# Đường dẫn ảnh và nơi lưu kết quả
 img_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\ThaiTuanIDCard.jpg"
 output_path = r'D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\ocr\resultOCR'
 
-# Gọi hàm chính để xử lý ảnh
 process_image(img_path, output_path)

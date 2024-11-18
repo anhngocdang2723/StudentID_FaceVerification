@@ -6,13 +6,10 @@ import logging
 from paddleocr import PaddleOCR
 import re
 
-# Khởi tạo OCR
 ocr = PaddleOCR(use_angle_cls=True, lang='vi')
 
-# Đường dẫn đến mô hình YOLO
 model = YOLO(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\best.pt")
 
-# Đường dẫn video
 video_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\5974983164661.mp4"
 cap = cv2.VideoCapture(video_path)
 
@@ -20,19 +17,16 @@ if not cap.isOpened():
     print("Không thể mở video.")
     exit()
 
-# Ngưỡng confidence tối thiểu để lưu ảnh
-confidence_threshold = 0.94  # Chỉ lưu ảnh khi confidence cao hơn ngưỡng này
-padding = 10  # Ngưỡng pixel để mở rộng bounding box
+confidence_threshold = 0.94 #ngưỡng xác nhận thẻ SV
+padding = 10
 
-# Thiết lập logging
 logging.basicConfig(level=logging.INFO)
 
-# Hàm OCR
-def perform_ocr(image_path):
+def perform_ocr(image_path): #ocr text từ ảnh
     try:
         result = ocr.ocr(image_path, cls=True)
         if result and len(result) > 0:
-            sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  # Sắp xếp theo y tăng dần 
+            sorted_result = sorted(result[0], key=lambda x: x[0][0][1])
             logging.info(f"OCR thành công với {len(sorted_result)} dòng.")
             return sorted_result
         else:
@@ -42,8 +36,7 @@ def perform_ocr(image_path):
         logging.error(f"Lỗi trong quá trình OCR: {e}")
         return None
 
-# Hàm trích xuất thông tin từ kết quả OCR
-def extract_info_from_ocr(result):
+def extract_info_from_ocr(result): #trích xuất thông tin từ kết quả OCR
     fields = {
         "Tên": "",
         "Ngành": "",
@@ -95,35 +88,29 @@ while True:
 
     results = model.predict(source=frame, show=False, conf=0.25)
 
-    # Khởi tạo biến để lưu đối tượng có độ tương đồng cao nhất
     max_confidence = 0
     best_box = None
 
-    # Tìm bounding box có độ confidence cao nhất
     for box in results[0].boxes:
         confidence = box.conf[0]
         if confidence > max_confidence and confidence > confidence_threshold:
             max_confidence = confidence
             best_box = box
 
-    # Nếu có box với confidence cao nhất, lưu ảnh đối tượng
     if best_box is not None:
         x1, y1, x2, y2 = map(int, best_box.xyxy[0])
 
-        # Mở rộng bounding box
-        x1 = max(x1 - padding, 0)  # Đảm bảo không ra ngoài biên
+        x1 = max(x1 - padding, 0)
         y1 = max(y1 - padding, 0)
-        x2 = min(x2 + padding, frame.shape[1])  # Đảm bảo không ra ngoài biên
+        x2 = min(x2 + padding, frame.shape[1])
         y2 = min(y2 + padding, frame.shape[0])
 
         detected_object = frame[y1:y2, x1:x2]
 
-        # Tạo tên file với thời gian hiện tại để tránh trùng lặp
         filename = time.strftime(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\output\best_detected_object_%Y%m%d%H%M%S.jpg")
         cv2.imwrite(filename, detected_object)
         print(f"Ảnh đã được lưu tại: {filename} với độ tương đồng {max_confidence:.2f}")
 
-        # Thực hiện OCR và trích xuất thông tin
         ocr_result = perform_ocr(filename)
         if ocr_result:
             extracted_info = extract_info_from_ocr(ocr_result)
@@ -135,10 +122,10 @@ while True:
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
-    elif key == ord('p'):  # Dừng lại khi nhấn 'p'
-        print("Đang dừng video... Nhấn phím bất kỳ để tiếp tục.")
-        cv2.waitKey(0)  # Dừng video lại cho đến khi nhấn phím
-        cv2.imshow("OCR Result", frame)  # Hiển thị ảnh hiện tại cùng kết quả OCR
+    elif key == ord('p'):
+        print("dừng video")
+        cv2.waitKey(0)
+        cv2.imshow("OCR Result", frame)
 
 cap.release()
 cv2.destroyAllWindows()
