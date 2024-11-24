@@ -83,7 +83,7 @@ cv2.createTrackbar("Canny Upper", "TrackBars", 100, 255, empty)
 cv2.createTrackbar("Threshold1", "TrackBars", 150, 255, empty)
 cv2.createTrackbar("Threshold2", "TrackBars", 255, 255, empty)
 
-img = cv2.imread(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\output\best_detected_object_20241028132406_upscaled_x4.jpg")
+img = cv2.imread(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\(delete)img\z6064540688786_088a21a3c0e51a9ecb159a202d08253e.jpg")
 img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
 
 while True:
