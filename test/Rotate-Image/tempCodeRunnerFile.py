@@ -6,7 +6,7 @@ from detectAndCropCard import detect_and_crop_student_card
 from preprocess import preprocess
 
 # Load the image
-image_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\(delete)img\z6064540687987_233d13005fcf206b079f54a25a4f0ed1.jpg"
+image_path = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\(delete)img\z6064540674209_d2867f1b56ed095258b42b3cc840cd0a.jpg"
 model_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\api\\models\\best.pt"
 
 # Step 1: Detect and crop the student card
