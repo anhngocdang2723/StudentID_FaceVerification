@@ -76,7 +76,6 @@ def preprocess(imgOriginal, debug=False):
     if debug:
         windowName = "Step 1: Grayscale Image (Value Channel)"
         cv2.imshow(windowName, imgGrayscale)
-        setWindowProperties(windowName, 600, 400, 50, 50)
 
     # Step 2: Maximize contrast
     imgMaxContrastGrayscale = maximizeContrast(imgGrayscale)
@@ -84,7 +83,6 @@ def preprocess(imgOriginal, debug=False):
     if debug:
         windowName = "Step 2: Maximized Contrast"
         cv2.imshow(windowName, imgMaxContrastGrayscale)
-        setWindowProperties(windowName, 600, 400, 700, 50)
 
     # Step 3: Gaussian Blur
     imgBlurred = cv2.GaussianBlur(imgMaxContrastGrayscale, GAUSSIAN_SMOOTH_FILTER_SIZE, 0)
@@ -92,7 +90,6 @@ def preprocess(imgOriginal, debug=False):
     if debug:
         windowName = "Step 3: Gaussian Blurred"
         cv2.imshow(windowName, imgBlurred)
-        setWindowProperties(windowName, 600, 400, 50, 500)
 
     # Step 4: Adaptive Thresholding
     imgThresh = cv2.adaptiveThreshold(
@@ -107,7 +104,6 @@ def preprocess(imgOriginal, debug=False):
     if debug:
         windowName = "Step 4: Thresholded Binary Image"
         cv2.imshow(windowName, imgThresh)
-        setWindowProperties(windowName, 600, 400, 700, 500)
 
     # Combine all images into one for display
     if step_images:
@@ -132,7 +128,6 @@ def findCorners(imgThresh, debug=False):
     if debug:
         windowName = "Edges Detected"
         cv2.imshow(windowName, edges)
-        setWindowProperties(windowName, 600, 400, 1000, 50)
 
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -147,7 +142,6 @@ def findCorners(imgThresh, debug=False):
                 cv2.drawContours(imgContours, [approx], -1, (0, 255, 0), 2)
                 windowName = "Detected Contour with Four Corners"
                 cv2.imshow(windowName, imgContours)
-                setWindowProperties(windowName, 600, 400, 1000, 500)
 
             return approx.reshape(4, 2)
 
@@ -155,7 +149,7 @@ def findCorners(imgThresh, debug=False):
 
 # Testing the Corner Detection Pipeline
 if __name__ == "__main__":
-    imgPath = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\(delete)img\z6064540688786_088a21a3c0e51a9ecb159a202d08253e.jpg"
+    imgPath = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\imgTest\z5903394151288_49235aed016f400877949e1d25163e52.jpg"
     imgOriginal = cv2.imread(imgPath)
 
     if imgOriginal is None:
