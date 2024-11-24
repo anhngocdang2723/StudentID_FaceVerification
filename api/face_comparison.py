@@ -6,8 +6,8 @@ from PIL import Image
 import dlib
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(r"C:\\university\\CNPM\\StudentID_FaceVerification\\api\\models\\shape_predictor_68_face_landmarks.dat")
-facerec = dlib.face_recognition_model_v1(r"C:\\university\\CNPM\\StudentID_FaceVerification\\api\\models\\dlib_face_recognition_resnet_model_v1.dat")
+predictor = dlib.shape_predictor(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\shape_predictor_68_face_landmarks.dat")
+facerec = dlib.face_recognition_model_v1(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\dlib_face_recognition_resnet_model_v1.dat")
 
 def decode_base64_image(base64_string): #hàm giải mã ảnh từ base64
     image_data = base64.b64decode(base64_string)
@@ -30,7 +30,7 @@ def compare_faces(uploaded_image, face_image_base64, threshold=0.6): #hàm so s�
     """So sánh hai khuôn mặt và trả về kết quả so sánh."""
     image1 = cv2.cvtColor(uploaded_image, cv2.COLOR_RGB2BGR)
     image2 = decode_base64_image(face_image_base64)
-        
+
     embedding1 = get_face_embedding(image1)
     embedding2 = get_face_embedding(image2)
 
