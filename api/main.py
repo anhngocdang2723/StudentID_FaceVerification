@@ -24,9 +24,9 @@ students_list: List[dict] = []
 
 #region folder path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FE_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\frontend")
-UPLOAD_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\uploads\\user_uploads")
-RESULTS_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\results")
+FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\frontend")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
+RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
 # EXAM_TICKET_DIR = os.path.join(BASE_DIR, "tickets")
 
@@ -59,7 +59,7 @@ async def get_home():
 @app.post("/api/read-excel", tags=["Excel Processing"])
 async def read_excel(file: UploadFile = File(...)):
     global students_list
-    
+
     if file:
         if file.content_type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ định dạng file Excel (XLSX).")
@@ -100,7 +100,7 @@ async def upload_image(file: UploadFile = File(...)):
                 extracted_info = extract_info_from_ocr(ocr_result)
                 # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
             else:
-                extracted_info = None  
+                extracted_info = None
             face_image_base64 = process_student_id(file_location)
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
@@ -121,7 +121,7 @@ async def upload_image(file: UploadFile = File(...)):
                     student_verification_status = "Thông tin sinh viên không khớp với danh sách."
             else:
                 student_verification_status = "Không thể so sánh vì thông tin OCR không hợp lệ."
-            
+
             if face_image_base64:
                 return {
                     "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
