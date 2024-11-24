@@ -24,9 +24,9 @@ students_list: List[dict] = []
 
 #region folder path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FE_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\frontend")
-UPLOAD_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\uploads\\user_uploads")
-RESULTS_FOLDER = os.path.join(BASE_DIR, r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results")
+FE_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\frontend")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\uploads\\user_uploads")
+RESULTS_FOLDER = os.path.join(BASE_DIR, r"C:\\university\\CNPM\\StudentID_FaceVerification\\results")
 FACES_FOLDER = os.path.join(RESULTS_FOLDER, "student_card_faces")
 # EXAM_TICKET_DIR = os.path.join(BASE_DIR, "tickets")
 

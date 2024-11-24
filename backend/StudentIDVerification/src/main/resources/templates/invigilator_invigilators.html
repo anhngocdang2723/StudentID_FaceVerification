@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý giám thị</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h2 class="mt-4">Danh sách giám thị</h2>
+  <a href="/invigilator_invigilators/new" class="btn btn-primary mb-2">Thêm mới giám thị</a>
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Mã giám thị</th>
+      <th>Họ Tên</th>
+      <th>Số điện thoại</th>
+      <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="invigilator : ${listInvigilator}">
+      <td th:text="${invigilator.invigilatorId}"></td>
+      <td th:text="${invigilator.invigilatorName}"></td> 
+       <td th:text="${invigilator.invigilatorPhone}"></td>
+      <td th:text="${invigilator.invigilatorEmail}"></td>
+      <td>
+        <a th:href="@{/invigilator_invigilators/edit/{id}(id=${invigilator.id})}" class="btn btn-warning">Sửa</a>
+        <a th:href="@{/invigilator_invigilators/delete/{id}(id=${invigilator.id})}" class="btn btn-danger">Xoá</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

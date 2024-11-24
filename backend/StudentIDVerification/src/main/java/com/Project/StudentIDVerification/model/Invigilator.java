@@ -17,6 +17,7 @@ public class Invigilator {
     @Field("invigilator_email")
     private String invigilatorEmail; // Email
 
+
     // Getters và Setters
     public String getId() {
         return id;
@@ -57,4 +58,10 @@ public class Invigilator {
     public void setInvigilatorEmail(String invigilatorEmail) {
         this.invigilatorEmail = invigilatorEmail;
     }
+
+    public Invigilator get() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
+
 }
