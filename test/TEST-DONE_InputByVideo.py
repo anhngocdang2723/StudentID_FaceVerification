@@ -17,13 +17,12 @@ if not cap.isOpened():
     print("Không thể mở video.")
     exit()
 
-# Ngưỡng confidence tối thiểu để lưu ảnh
-confidence_threshold = 0.94
+confidence_threshold = 0.94 #ngưỡng xác nhận thẻ SV
 padding = 10
 
 logging.basicConfig(level=logging.INFO)
 
-def perform_ocr(image_path):
+def perform_ocr(image_path): #ocr text từ ảnh
     try:
         result = ocr.ocr(image_path, cls=True)
         if result and len(result) > 0:
@@ -37,7 +36,7 @@ def perform_ocr(image_path):
         logging.error(f"Lỗi trong quá trình OCR: {e}")
         return None
 
-def extract_info_from_ocr(result):
+def extract_info_from_ocr(result): #trích xuất thông tin từ kết quả OCR
     fields = {
         "Tên": "",
         "Ngành": "",
@@ -124,7 +123,7 @@ while True:
     if key == ord('q'):
         break
     elif key == ord('p'):
-        print("Đang dừng video... Nhấn phím bất kỳ để tiếp tục.")
+        print("dừng video")
         cv2.waitKey(0)
         cv2.imshow("OCR Result", frame)
 

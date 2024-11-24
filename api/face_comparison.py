@@ -6,8 +6,8 @@ from PIL import Image
 import dlib
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\shape_predictor_68_face_landmarks.dat")
-facerec = dlib.face_recognition_model_v1(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\dlib_face_recognition_resnet_model_v1.dat")
+predictor = dlib.shape_predictor(r"C:\\university\\CNPM\\StudentID_FaceVerification\\api\\models\\shape_predictor_68_face_landmarks.dat")
+facerec = dlib.face_recognition_model_v1(r"C:\\university\\CNPM\\StudentID_FaceVerification\\api\\models\\dlib_face_recognition_resnet_model_v1.dat")
 
 def decode_base64_image(base64_string): #hàm giải mã ảnh từ base64
     image_data = base64.b64decode(base64_string)

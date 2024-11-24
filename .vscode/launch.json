@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-StudentIdVerificationApplication<StudentIDVerification>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.Project.StudentIDVerification.StudentIdVerificationApplication",
+      "projectName": "StudentIDVerification",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
-public class HomeController {
-
-
-    
-    @GetMapping("/")
-    public String home() {
-        return "login";
+public class AdminController {
+    @GetMapping("/admin")
+    public String adminboar() {
+        return "admin";
     }
+    
 }
