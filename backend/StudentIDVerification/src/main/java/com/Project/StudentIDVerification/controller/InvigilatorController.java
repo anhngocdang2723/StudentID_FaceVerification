@@ -3,6 +3,7 @@ package com.Project.StudentIDVerification.controller;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class InvigilatorController {
     @Autowired
     private InvigilatorService invigilatorService;
+
     @Autowired
     private InvigilatorRepository invigilatorRepository;
 
@@ -33,22 +35,29 @@ public class InvigilatorController {
         return "invigilator_invigilators"; 
     }
 
-
-
     @PostMapping("/login")
     public String login(@RequestParam("invigilatorId") String maGiamThi,
                         @RequestParam("invigilatorEmail") String email,
+                        HttpSession session,
                         Model model) {
+        // Kiểm tra nếu là tài khoản admin
+        if ("admin".equals(maGiamThi) && "admin".equals(email)) {
+            session.setAttribute("userRole", "admin");
+            return "redirect:/admin_dashboard"; // Đường dẫn đến trang quản trị
+        }
+
+        // Kiểm tra giám thị thông thường
         Invigilator userId = invigilatorRepository.findByInvigilatorId(maGiamThi);
         Invigilator userEmail = invigilatorRepository.findByInvigilatorEmail(email);
-        if (userId != null && userEmail !=null) {
-            // Xử lý khi đăng nhập thành công (ví dụ: chuyển hướng đến trang chủ)
-            return "index";
+        if (userId != null && userEmail != null) {
+            session.setAttribute("userRole", "invigilator");
+            return "index"; // Trang chính sau khi đăng nhập thành công
         } else {
             model.addAttribute("error", "Mã giám thị hoặc email không đúng.");
-            return "login";
+            return "login"; // Trang đăng nhập lại nếu thất bại
         }
     }
+
 
     @GetMapping("/new")
     public String addnewInvigilator(Model model) {
@@ -83,9 +92,4 @@ public class InvigilatorController {
         invigilatorService.deleteInvigilator(id);
         return "redirect:/invigilator_invigilators";
     }
-    
-    
-    
-    
-
 }

@@ -1,11 +1,16 @@
 package com.Project.StudentIDVerification.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+@Getter
+@Setter
 @Document(collection = "Invigilators")
 public class Invigilator {
+    // Getters và Setters
     @Id
     private String id; // _id trong MongoDB
     @Field("invigilator_id")
@@ -17,47 +22,6 @@ public class Invigilator {
     @Field("invigilator_email")
     private String invigilatorEmail; // Email
 
-
-    // Getters và Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getInvigilatorId() {
-        return invigilatorId;
-    }
-
-    public void setInvigilatorId(String invigilatorId) {
-        this.invigilatorId = invigilatorId;
-    }
-
-    public String getInvigilatorName() {
-        return invigilatorName;
-    }
-
-    public void setInvigilatorName(String invigilatorName) {
-        this.invigilatorName = invigilatorName;
-    }
-
-    public String getInvigilatorPhone() {
-        return invigilatorPhone;
-    }
-
-    public void setInvigilatorPhone(String invigilatorPhone) {
-        this.invigilatorPhone = invigilatorPhone;
-    }
-
-    public String getInvigilatorEmail() {
-        return invigilatorEmail;
-    }
-
-    public void setInvigilatorEmail(String invigilatorEmail) {
-        this.invigilatorEmail = invigilatorEmail;
-    }
 
     public Invigilator get() {
         // TODO Auto-generated method stub

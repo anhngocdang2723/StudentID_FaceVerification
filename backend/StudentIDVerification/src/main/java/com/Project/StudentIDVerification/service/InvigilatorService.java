@@ -19,8 +19,6 @@ public class InvigilatorService {
         return invigilatorRepository.findAll();
     }
 
-  
-
     public Optional<Invigilator> getInvigilatorByid(String id){
         Optional<Invigilator> invigilator= invigilatorRepository.findById(id);
         return invigilator;
@@ -41,12 +39,10 @@ public class InvigilatorService {
             return invigilatorRepository.save(giamThi);
         } else {
             throw new RuntimeException("Giám thị không tồn tại với ID: " + id);
-        } 
-
+        }
     }
     
     public void deleteInvigilator(String id){
         invigilatorRepository.deleteById(id);
     }
-   
 }
