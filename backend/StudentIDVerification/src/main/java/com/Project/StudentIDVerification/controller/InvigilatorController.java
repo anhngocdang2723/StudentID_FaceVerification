@@ -19,7 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-@RequestMapping("/invigilator_invigilators")
+@RequestMapping("/invigilator")
 public class InvigilatorController {
     @Autowired
     private InvigilatorService invigilatorService;
@@ -27,59 +27,92 @@ public class InvigilatorController {
     @Autowired
     private InvigilatorRepository invigilatorRepository;
 
-    @GetMapping
-    public String viewHomepage(Model model) {
-        model.addAttribute("listInvigilator", invigilatorService.getAllgiamthi());
-        return "invigilator_invigilators";
+    // Hiển thị trang đăng nhập
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
     }
 
-    // Xử lý đăng nhập cho giám thị
+    // Kiểm tra đăng nhập
     @PostMapping("/login")
-    public String login(@RequestParam("invigilatorId") String maGiamThi,
+    public String login(@RequestParam("invigilatorId") String invigilatorId,
                         @RequestParam("invigilatorEmail") String email,
                         HttpSession session,
                         Model model) {
-        // Kiểm tra nếu là tài khoản admin
-        if ("admin".equalsIgnoreCase(maGiamThi) && "admin".equalsIgnoreCase(email)) {
+
+        if ("admin".equalsIgnoreCase(invigilatorId) && "admin".equalsIgnoreCase(email)) {
             session.setAttribute("userRole", "admin");
-            return "redirect:/admin_dashboard"; // Đường dẫn đến trang quản trị
+            System.out.println("Admin logged in");
+            return "redirect:/admin_dashboard";
         }
 
-        // Kiểm tra giám thị
-        Invigilator invigilator = invigilatorRepository.findByInvigilatorIdAndInvigilatorEmail(maGiamThi, email);
+        Invigilator invigilator = invigilatorRepository.findByInvigilatorIdAndInvigilatorEmail(invigilatorId, email);
         if (invigilator != null) {
             session.setAttribute("userRole", "invigilator");
-            session.setAttribute("invigilatorId", maGiamThi);
-            return "home"; // Trang chính sau khi đăng nhập thành công
+            session.setAttribute("invigilatorId", invigilatorId);
+            session.setAttribute("invigilatorName", invigilator.getInvigilatorName());
+            System.out.println("invigilatorId: " + session.getAttribute("invigilatorId") + "/userRole: "+ session.getAttribute("userRole") + "/Name: "+ session.getAttribute("invigilatorName"));
+            //return "redirect:/invigilator/home"; // Điều hướng đến trang chủ giám thị  ???????? ĐANG LỖI Ở VIỆC KHÔNG LẤY ĐƯỢC SESSION
+            return "invigilator";
         }
 
-        // Trường hợp đăng nhập thất bại
         model.addAttribute("error", "Mã giám thị hoặc email không đúng.");
         return "login";
     }
 
-    // Xử lý hiển thị thông tin giám thị
-    @GetMapping("/invigilator-info")
-    public String showPersonalInfo(HttpSession session, Model model) {
-        String userRole = (String) session.getAttribute("userRole");
-        if (!"invigilator".equals(userRole)) {
-            System.out.println("Người dùng không có quyền truy cập");
-            return "redirect:/login"; // Chuyển hướng nếu không phải giám thị
+    //Lấy trang chủ giám thị ???????? ĐANG LỖI Ở VIỆC KHÔNG LẤY ĐƯỢC SESSION
+    @GetMapping("/home")
+    public String invigilatorHome(HttpSession session, Model model) {
+        // Kiểm tra xem người dùng đã đăng nhập chưa (kiểm tra session)
+        if (!checkAccess(session, "invigilator")) {
+            return "redirect:/invigilator/login"; // Nếu chưa đăng nhập, chuyển về trang login
         }
 
-        // Lấy invigilatorId từ session (không hardcode nữa)
+        // Nếu đã đăng nhập, lấy thông tin giám thị
         String invigilatorId = (String) session.getAttribute("invigilatorId");
-        if (invigilatorId != null) {
+        Optional<Invigilator> invigilatorOpt = invigilatorRepository.findById(invigilatorId);
+        if (invigilatorOpt.isPresent()) {
+            Invigilator invigilator = invigilatorOpt.get();
+            model.addAttribute("invigilatorName", invigilator.getInvigilatorName());
+            return "invigilator"; // Trả về trang chủ giám thị
+        }
+
+        return "redirect:/invigilator/login"; // Nếu không tìm thấy giám thị, chuyển về trang login
+    }
+
+    @GetMapping("/info")
+    public String showPersonalInfo(HttpSession session, Model model) {
+        if (!checkAccess(session, "invigilator")) {
+            return "redirect:/invigilator/login";
+        }
+        String invigilatorId = (String) session.getAttribute("invigilatorId");
+
+        System.out.println("Searching for invigilator with id: " + invigilatorId);
+        try {
             Invigilator invigilator = invigilatorRepository.findByInvigilatorId(invigilatorId);
             if (invigilator != null) {
-                System.out.println("Tìm thấy thông tin giám thị: " + invigilator.toString());
                 model.addAttribute("invigilator", invigilator);
-                return "invigilator-info"; // Trả về trang thông tin giám thị
+                return "invigilator-info";
+            } else {
+                model.addAttribute("error", "Không tìm thấy thông tin giám thị.");
+                return "error";
             }
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi truy xuất dữ liệu giám thị.");
+            return "error";
         }
+    }
 
-        model.addAttribute("error", "Không tìm thấy thông tin giám thị.");
-        return "error"; // Trường hợp không tìm thấy giám thị
+    // Đăng xuất
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // Xóa toàn bộ session
+        return "redirect:/invigilator/login"; // Quay lại trang đăng nhập
+    }
+
+    private boolean checkAccess(HttpSession session, String role) {
+        String userRole = (String) session.getAttribute("userRole");
+        return role.equalsIgnoreCase(userRole); // Kiểm tra xem quyền trong session có khớp với quyền yêu cầu không
     }
 
     @GetMapping("/new")
@@ -98,7 +131,7 @@ public class InvigilatorController {
 
     @GetMapping("/edit/{id}")
     public String showFormForUpdate(@PathVariable("id") String id, Model model) {
-        Optional<Invigilator> invigilator= invigilatorService.getInvigilatorByid(id);
+        Optional<Invigilator> invigilator= invigilatorService.getInvigilatorById(id);
         model.addAttribute("invigilator", invigilator);
         return "invigilator_edit";
     }

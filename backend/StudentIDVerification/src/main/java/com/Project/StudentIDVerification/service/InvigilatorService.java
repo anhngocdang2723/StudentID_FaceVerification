@@ -3,7 +3,6 @@ package com.Project.StudentIDVerification.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,34 +14,41 @@ public class InvigilatorService {
     @Autowired
     private InvigilatorRepository invigilatorRepository;
 
-    public List<Invigilator> getAllgiamthi(){
+    // Lấy tất cả giám thị
+    public List<Invigilator> getAllInvigilators() {
         return invigilatorRepository.findAll();
     }
 
-    public Optional<Invigilator> getInvigilatorByid(String id){
-        Optional<Invigilator> invigilator= invigilatorRepository.findById(id);
-        return invigilator;
+    // Lấy giám thị theo ID
+    public Optional<Invigilator> getInvigilatorById(String id) {
+        return invigilatorRepository.findById(id);
     }
 
-    public Invigilator addInvigilator(Invigilator invigilator){
+    // Thêm giám thị mới
+    public Invigilator addInvigilator(Invigilator invigilator) {
         return invigilatorRepository.save(invigilator);
     }
 
-    public Invigilator updateInvigilator(String id, Invigilator updatedGiamThi) {
-         Invigilator existingGiamThi = invigilatorRepository.findByInvigilatorId(id);
-        if (existingGiamThi != null) {
-            Invigilator giamThi = existingGiamThi.get();
-            giamThi.setInvigilatorName(updatedGiamThi.getInvigilatorName());
-            giamThi.setInvigilatorEmail(updatedGiamThi.getInvigilatorEmail());
-            giamThi.setInvigilatorId(updatedGiamThi.getInvigilatorId());
-            giamThi.setInvigilatorPhone(updatedGiamThi.getInvigilatorPhone());
-            return invigilatorRepository.save(giamThi);
+    // Cập nhật thông tin giám thị
+    public Invigilator updateInvigilator(String id, Invigilator updatedInvigilator) {
+        Optional<Invigilator> existingInvigilatorOpt = invigilatorRepository.findById(id);
+        if (existingInvigilatorOpt.isPresent()) {
+            Invigilator existingInvigilator = existingInvigilatorOpt.get();
+            existingInvigilator.setInvigilatorName(updatedInvigilator.getInvigilatorName());
+            existingInvigilator.setInvigilatorEmail(updatedInvigilator.getInvigilatorEmail());
+            existingInvigilator.setInvigilatorPhone(updatedInvigilator.getInvigilatorPhone());
+            return invigilatorRepository.save(existingInvigilator);
         } else {
             throw new RuntimeException("Giám thị không tồn tại với ID: " + id);
         }
     }
-    
-    public void deleteInvigilator(String id){
-        invigilatorRepository.deleteById(id);
+
+    // Xóa giám thị theo ID
+    public void deleteInvigilator(String id) {
+        if (invigilatorRepository.existsById(id)) {
+            invigilatorRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Không thể xóa vì giám thị không tồn tại với ID: " + id);
+        }
     }
 }
