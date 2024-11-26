@@ -66,15 +66,15 @@ button:hover {
 <body>
     
     <form th:action="@{invigilator_invigilators/login}" method="post">
-        <h3>Trang đăng nhập cho giám thị</h3>
-        <label for="invigilatorId">Mã giám thị:</label>
+        <h3>Trang đăng nhập</h3>
+        <label for="invigilatorId">Mã đăng nhập</label>
         <input type="text" id="invigilatorId" name="invigilatorId" required>
         <br>
-        <label for="invigilatorEmail">Email giám thị:</label>
+        <label for="invigilatorEmail">Email xác thực</label>
         <input type="text" id="invigilatorEmail" name="invigilatorEmail" required>
         <br>
         <button type="submit">Đăng nhập</button>
-        <p th:if="${error}" th:text="${error}"></p>
+        <p th:if="${error}" th:text="${error}" style="color: red; font-size: 14px; margin-top: 10px;"></p>
     </form>
 </body>
 </html>

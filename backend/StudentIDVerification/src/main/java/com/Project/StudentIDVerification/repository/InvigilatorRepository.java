@@ -7,9 +7,10 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-@Repository // Thêm annotation @Repository
+@Repository
 public interface InvigilatorRepository extends MongoRepository<Invigilator, String> {
-    Invigilator findByInvigilatorEmail(String invigilatorEmail);
-    Invigilator findByInvigilatorId(String invigilatorId); // Tìm giám thị theo ID
+    Invigilator findByInvigilatorIdAndInvigilatorEmail(String invigilatorId, String invigilatorEmail); // Gộp ID và Email
 
+    Invigilator findByInvigilatorId(String invigilatorId);
 }
+

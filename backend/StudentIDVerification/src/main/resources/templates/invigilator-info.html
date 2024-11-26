@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thông tin cá nhân</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+        div {
+            width: 60%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Thông tin cá nhân</h1>
+<div th:if="${invigilator != null}">
+    <p><strong>Mã giám thị:</strong> <span th:text="${invigilator.invigilatorId}"></span></p>
+    <p><strong>Họ tên:</strong> <span th:text="${invigilator.invigilatorName}"></span></p>
+    <p><strong>Số điện thoại:</strong> <span th:text="${invigilator.invigilatorPhone}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${invigilator.invigilatorEmail}"></span></p>
+</div>
+<div th:if="${invigilator == null}">
+    <p>Lỗi: Không tìm thấy thông tin giám thị.</p>
+</div>
+<a href="/home">Quay lại trang chủ</a>
+</body>
+</html>
