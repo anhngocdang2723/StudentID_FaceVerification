@@ -26,25 +26,20 @@ public class AdminStudentController {
         this.studentRepository = studentRepository;
     }
 
-    // Danh sách SV
     @GetMapping()
     public String getStudents(@RequestParam(value = "page", defaultValue = "0") int page,
                               @RequestParam(value = "size", defaultValue = "10") int size,
                               @RequestParam(value = "search", required = false) String search,
                               Model model) {
 
-        // Tạo đối tượng Pageable cho việc phân trang
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        // Kiểm tra nếu có từ khóa tìm kiếm
         Page<Student> studentsPage;
         if (search != null && !search.isEmpty()) {
-            // Tìm kiếm sinh viên theo từ khóa
             List<Student> students = studentService.searchStudents(search);
-            studentsPage = new PageImpl<>(students);  // Chuyển danh sách sang Page (cần chỉnh sửa để phân trang nếu cần)
-            model.addAttribute("searchTerm", search);  // Thêm từ khóa tìm kiếm vào model để hiển thị trong ô tìm kiếm
+            studentsPage = new PageImpl<>(students);
+            model.addAttribute("searchTerm", search);
         } else {
-            // Nếu không tìm kiếm, lấy toàn bộ sinh viên
             studentsPage = studentService.getStudents(pageRequest);
         }
 
@@ -52,7 +47,6 @@ public class AdminStudentController {
         int currentPage = studentsPage.getNumber();
         int totalPages = studentsPage.getTotalPages();
 
-        // Thêm các giá trị vào model
         model.addAttribute("studentsPage", studentsPage);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", totalPages);
@@ -60,7 +54,6 @@ public class AdminStudentController {
 
         return "admin/student_students";
     }
-
 
     @GetMapping("/new")
     public String showNewStudentForm(Model model) {

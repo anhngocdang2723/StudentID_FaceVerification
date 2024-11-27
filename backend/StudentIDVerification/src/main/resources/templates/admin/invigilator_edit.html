@@ -7,7 +7,7 @@
 <body>
 <div class="container">
   <h2 class="mt-4">Thay đổi thông tin giám thị</h2>
-  <form th:action="@{/invigilator_invigilators/update/{id}(id=${invigilator.id})}" th:object="${invigilator}" method="post">
+  <form th:action="@{/invigilators/update/{id}(id=${invigilator.id})}" th:object="${invigilator}" method="post">
     <div class="form-group">
       <label>Mã Giám thị</label>
       <input type="text" th:field="*{invigilatorId}" class="form-control" required>

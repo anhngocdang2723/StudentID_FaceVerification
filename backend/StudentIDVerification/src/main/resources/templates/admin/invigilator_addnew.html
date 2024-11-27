@@ -8,7 +8,7 @@
 <body>
 <div class="container">
   <h2 class="mt-4">Thêm giám thị mới</h2>
-  <form th:action="@{/invigilator_invigilators/save}" th:object="${invigilator}" method="post">
+  <form th:action="@{/invigilators/save}" th:object="${invigilator}" method="post">
     <div class="form-group">
       <label>Mã Giám Thị</label>
       <input type="text" th:field="*{invigilatorId}" class="form-control" required>
