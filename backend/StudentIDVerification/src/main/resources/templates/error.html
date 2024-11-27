@@ -31,8 +31,8 @@
     </style>
 </head>
 <body>
-<h1>Lỗi: Không đủ quyền truy cập</h1>
-<p>Chỉ có <strong>quản trị viên</strong> mới được phép vào trang này.</p>
+<h1 th:text="${errorTitle}">Lỗi: Không đủ quyền truy cập</h1>
+<p th:text="${errorMessage}">Chỉ có <strong>quản trị viên</strong> mới được phép vào trang này.</p>
 <a href="/invigilator/login">Đăng nhập lại</a>
 <a href="/invigilator/invigilator-home">Quay lại trang chủ</a>
 </body>

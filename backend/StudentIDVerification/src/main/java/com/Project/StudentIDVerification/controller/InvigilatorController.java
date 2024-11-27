@@ -37,7 +37,6 @@ public class InvigilatorController {
                         @RequestParam("invigilatorEmail") String email,
                         HttpSession session,
                         Model model) {
-        // Check admin
         if ("admin".equalsIgnoreCase(invigilatorId) && "admin".equalsIgnoreCase(email)) {
             session.setAttribute("userRole", "admin");
             return "redirect:/admin_dashboard";
@@ -48,13 +47,11 @@ public class InvigilatorController {
             session.setAttribute("userRole", "invigilator");
             session.setAttribute("invigilatorId", invigilatorId);
             session.setAttribute("invigilatorName", invigilator.getInvigilatorName());
-
-            // log console
+            // log console truy vấn dữ liệu
 //            System.out.println("Login successful for invigilator: ");
 //            System.out.println("ID: " + invigilatorId);
 //            System.out.println("Name: " + invigilator.getInvigilatorName());
 //            System.out.println("Role: invigilator");
-
 //          return "redirect:/invigilator/home"; //Lỗi vẫn ở trang login
             return "invigilator/invigilator-dashboard";
         }
@@ -71,7 +68,7 @@ public class InvigilatorController {
         String invigilatorId = (String) session.getAttribute("invigilatorId");
         Optional<Invigilator> invigilatorOpt = invigilatorRepository.findById(invigilatorId);
 
-        //log console
+        //log console nhận session
 //        System.out.println("Invigilator ID: " + invigilatorId);
 //        System.out.println("User Role: " + session.getAttribute("userRole"));
 
@@ -99,6 +96,11 @@ public class InvigilatorController {
         }
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/invigilator/login";
+    }
     private boolean checkAccess(HttpSession session) {
         String sessionRole = (String) session.getAttribute("userRole");
 

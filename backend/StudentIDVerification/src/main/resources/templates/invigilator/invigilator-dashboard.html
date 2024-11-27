@@ -46,7 +46,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link active" href="/home">Trang chủ</a>
+              <a class="nav-link active" href="/invigilator/login">Trang chủ</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="">Thông báo</a>
@@ -55,7 +55,7 @@
               <a class="nav-link" href="/invigilator/info">Thông tin cá nhân</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/logout">Đăng xuất</a>
+              <a class="nav-link" href="/invigilator/logout">Đăng xuất</a>
             </li>
           </ul>
         </div>
@@ -71,7 +71,9 @@
 
   <!-- Notification Section -->
   <div class="notification">
-    <p class="greeting">Chào mừng bạn, Giám thị <span th:text="${invigilatorName}"></span>!</p>
+    <p class="greeting">
+      Chào mừng, Giám thị <span th:text="${session.invigilatorName}">Tên giám thị</span>!
+    </p>
     <p>Hãy nhập mã phòng để xem danh sách sinh viên hoặc thực hiện các chức năng khác.</p>
   </div>
 
@@ -94,7 +96,6 @@
   <div class="mt-5">
     <h2 class="fw-bold">Sơ bộ thông tin hệ thống</h2>
     <p>Hệ thống được thiết kế nhằm hỗ trợ giám thị và ban tổ chức trong việc quản lý thi trắc nghiệm một cách chính xác và hiệu quả. Dưới đây là quy trình vận hành của hệ thống:</p>
-
     <h4 class="fw-bold">Quy trình vận hành hệ thống</h4>
     <ol>
       <li><strong>Đăng nhập hệ thống:</strong> Giám thị sẽ đăng nhập vào hệ thống thông qua thông tin cá nhân như mã giám thị và email. Sau khi đăng nhập thành công, giám thị sẽ được chuyển đến trang chủ quản lý thi.</li>
@@ -105,7 +106,6 @@
     </ol>
     <p>Hệ thống đảm bảo tính bảo mật cao, khả năng mở rộng và hỗ trợ giám thị trong việc giám sát, quản lý thi và cung cấp kết quả thi một cách nhanh chóng và chính xác.</p>
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

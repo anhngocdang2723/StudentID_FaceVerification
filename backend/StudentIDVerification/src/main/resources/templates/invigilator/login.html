@@ -64,24 +64,18 @@
 </head>
 <body>
 
-<!-- Form đăng nhập giám thị -->
 <form th:action="@{/invigilator/login}" method="post">
     <h3>Đăng nhập</h3>
 
-    <!-- Mã giám thị -->
     <label for="invigilatorId">Mã đăng nhập</label>
     <input type="text" id="invigilatorId" name="invigilatorId" required>
 
-    <!-- Email giám thị -->
     <label for="invigilatorEmail">Email xác thực</label>
     <input type="text" id="invigilatorEmail" name="invigilatorEmail" required>
 
-    <!-- Nút đăng nhập -->
     <button type="submit">Đăng nhập</button>
 
-    <!-- Thông báo lỗi -->
     <p class="error" th:if="${error}" th:text="${error}"></p>
 </form>
-
 </body>
 </html>
