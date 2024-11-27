@@ -14,5 +14,7 @@ public interface StudentRepository extends MongoRepository<Student, String> {
     long countByStatus(boolean status);
 
     List<Student> findByStatus(Boolean status);
+
+    List<Student> findByStdNameContainingIgnoreCaseOrStdEmailContainingIgnoreCase(String name, String email);
 }
 

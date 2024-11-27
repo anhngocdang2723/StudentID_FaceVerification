@@ -9,6 +9,19 @@
 <div class="container">
   <h2 class="mt-4">Danh sách sinh viên</h2>
   <a href="/students/new" class="btn btn-primary mb-2">Thêm mới sinh viên</a>
+
+  <!-- Form tìm kiếm sinh viên -->
+  <form th:action="@{/students}" method="get" class="mb-3">
+    <div class="input-group">
+      <label>
+        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sinh viên theo tên, email..." th:value="${searchTerm}">
+      </label>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+      </div>
+    </div>
+  </form>
+
   <p>Tổng số sinh viên: <span th:text="${totalStudents}"></span></p>
 
   <table class="table table-bordered">
@@ -35,34 +48,34 @@
     </tr>
     </tbody>
   </table>
-
-  <!-- Phân trang -->
+<!--  Chia trang-->
   <nav>
     <ul class="pagination justify-content-center">
-      <!-- Trang đầu -->
-      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/students?page=0&size=10}">Đầu</a>
-      </li>
+<!--      &lt;!&ndash; Trang đầu &ndash;&gt;-->
+<!--      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">-->
+<!--        <a class="page-link" th:href="@{/students?page=1&size=10}">Đầu tiên</a>-->
+<!--      </li>-->
 
-      <!-- Trang trước -->
-      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/students?page=${currentPage - 1}&size=10}">Trước</a>
-      </li>
+<!--      &lt;!&ndash; Trang trước &ndash;&gt;-->
+<!--      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">-->
+<!--        <a class="page-link" th:href="@{/students?page=${currentPage - 1}&size=10}">Trước</a>-->
+<!--      </li>-->
 
       <!-- Các số trang -->
-      <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}" th:class="${pageNum == currentPage ? 'active' : ''}">
-        <a class="page-link" th:href="@{/students?page=${pageNum}&size=10}" th:text="${pageNum + 1}"></a>
+      <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+          th:class="${pageNum == currentPage ? 'active' : ''}">
+        <a class="page-link" th:href="@{'/students?page=' + ${pageNum} + '&size=10'}" th:text="${pageNum + 1}"></a>
       </li>
 
-      <!-- Trang sau -->
-      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/students?page=${currentPage + 1}&size=10}">Sau</a>
-      </li>
+<!--      &lt;!&ndash; Trang sau &ndash;&gt;-->
+<!--      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">-->
+<!--        <a class="page-link" th:href="@{/students?page=${currentPage + 1}&size=10}">Sau</a>-->
+<!--      </li>-->
 
-      <!-- Trang cuối -->
-      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/students?page=${totalPages - 1}&size=10}">Cuối</a>
-      </li>
+<!--      &lt;!&ndash; Trang cuối &ndash;&gt;-->
+<!--      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">-->
+<!--        <a class="page-link" th:href="@{/students?page=${totalPages - 1}&size=10}">Cuối</a>-->
+<!--      </li>-->
     </ul>
   </nav>
 </div>

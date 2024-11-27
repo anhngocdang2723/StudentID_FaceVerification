@@ -58,4 +58,9 @@ public class StudentService {
     public Page<Student> getStudents(PageRequest pageRequest) {
         return studentRepository.findAll(pageRequest);
     }
+
+    public List<Student> searchStudents(String searchTerm) {
+        return studentRepository.findByStdNameContainingIgnoreCaseOrStdEmailContainingIgnoreCase(searchTerm, searchTerm);
+    }
+
 }

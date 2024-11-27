@@ -6,12 +6,14 @@ import com.Project.StudentIDVerification.repository.StudentRepository;
 import com.Project.StudentIDVerification.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -24,18 +26,29 @@ public class AdminStudentController {
         this.studentRepository = studentRepository;
     }
 
-    // Danh sách sinh viên
+    // Danh sách SV
     @GetMapping()
     public String getStudents(@RequestParam(value = "page", defaultValue = "0") int page,
                               @RequestParam(value = "size", defaultValue = "10") int size,
+                              @RequestParam(value = "search", required = false) String search,
                               Model model) {
 
+        // Tạo đối tượng Pageable cho việc phân trang
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        Page<Student> studentsPage = studentService.getStudents(pageRequest);
+        // Kiểm tra nếu có từ khóa tìm kiếm
+        Page<Student> studentsPage;
+        if (search != null && !search.isEmpty()) {
+            // Tìm kiếm sinh viên theo từ khóa
+            List<Student> students = studentService.searchStudents(search);
+            studentsPage = new PageImpl<>(students);  // Chuyển danh sách sang Page (cần chỉnh sửa để phân trang nếu cần)
+            model.addAttribute("searchTerm", search);  // Thêm từ khóa tìm kiếm vào model để hiển thị trong ô tìm kiếm
+        } else {
+            // Nếu không tìm kiếm, lấy toàn bộ sinh viên
+            studentsPage = studentService.getStudents(pageRequest);
+        }
 
         long totalStudents = studentsPage.getTotalElements();
-
         int currentPage = studentsPage.getNumber();
         int totalPages = studentsPage.getTotalPages();
 
@@ -47,6 +60,7 @@ public class AdminStudentController {
 
         return "admin/student_students";
     }
+
 
     @GetMapping("/new")
     public String showNewStudentForm(Model model) {
