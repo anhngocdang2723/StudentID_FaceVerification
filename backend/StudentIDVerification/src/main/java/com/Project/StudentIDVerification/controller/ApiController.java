@@ -2,11 +2,19 @@ package com.Project.StudentIDVerification.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/api")
 public class ApiController {
+
     @GetMapping("/Api_Integration")
-    public String index() {
-        return "api_integration";
+    public String apiIntegrationPage() {
+        return "invigilator/api_integration";
+    }
+
+    @GetMapping("/uploadImage")
+    public String uploadImagePage() {
+        return "invigilator/uploadImage";
     }
 }

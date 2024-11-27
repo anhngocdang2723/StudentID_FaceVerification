@@ -8,7 +8,7 @@
 <body>
 <div class="container">
   <h2 class="mt-4">Danh sách giám thị</h2>
-  <a href="/invigilator_invigilators/new" class="btn btn-primary mb-2">Thêm mới giám thị</a>
+  <a href="/invigilators/new" class="btn btn-primary mb-2">Thêm mới giám thị</a>
   <table class="table table-bordered">
     <thead>
     <tr>
@@ -19,14 +19,15 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="invigilator : ${listInvigilator}">
+    <!-- Đảm bảo rằng tên biến trong th:each trùng với tên trong model -->
+    <tr th:each="invigilator : ${invigilators}">
       <td th:text="${invigilator.invigilatorId}"></td>
-      <td th:text="${invigilator.invigilatorName}"></td> 
-       <td th:text="${invigilator.invigilatorPhone}"></td>
+      <td th:text="${invigilator.invigilatorName}"></td>
+      <td th:text="${invigilator.invigilatorPhone}"></td>
       <td th:text="${invigilator.invigilatorEmail}"></td>
       <td>
-        <a th:href="@{/invigilator_invigilators/edit/{id}(id=${invigilator.id})}" class="btn btn-warning">Sửa</a>
-        <a th:href="@{/invigilator_invigilators/delete/{id}(id=${invigilator.id})}" class="btn btn-danger">Xoá</a>
+        <a th:href="@{/invigilators/edit/{id}(id=${invigilator.id})}" class="btn btn-warning">Sửa</a>
+        <a th:href="@{/invigilators/delete/{id}(id=${invigilator.id})}" class="btn btn-danger">Xoá</a>
       </td>
     </tr>
     </tbody>

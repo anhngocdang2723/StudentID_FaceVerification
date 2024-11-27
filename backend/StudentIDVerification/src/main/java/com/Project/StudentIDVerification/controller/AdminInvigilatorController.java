@@ -1,0 +1,67 @@
+package com.Project.StudentIDVerification.controller;
+
+import com.Project.StudentIDVerification.model.Invigilator;
+import com.Project.StudentIDVerification.service.InvigilatorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@Controller
+@RequestMapping("/invigilators")
+public class AdminInvigilatorController {
+
+    @Autowired
+    private InvigilatorService invigilatorService;
+
+    // Hiển thị danh sách giám thị
+    @GetMapping
+    public String listAllInvigilators(Model model) {
+        List<Invigilator> invigilators = invigilatorService.getAllInvigilators();
+        model.addAttribute("invigilators", invigilators);
+        return "admin/invigilator_invigilators"; // Trang hiển thị danh sách giám thị
+    }
+
+    // Hiển thị form thêm mới giám thị
+    @GetMapping("/new")
+    public String addNewInvigilator(Model model) {
+        model.addAttribute("invigilator", new Invigilator());
+        return "admin/invigilator_addnew";  // Trang thêm giám thị mới
+    }
+
+    // Lưu giám thị mới
+    @PostMapping("/save")
+    public String saveInvigilator(@ModelAttribute("invigilator") Invigilator invigilator) {
+        invigilatorService.addInvigilator(invigilator);
+        return "redirect:/invigilators"; // Chuyển hướng sau khi lưu thành công
+    }
+
+    // Hiển thị form chỉnh sửa giám thị
+    @GetMapping("/edit/{id}")
+    public String showFormForUpdate(@PathVariable("id") String id, Model model) {
+        Optional<Invigilator> invigilator = invigilatorService.getInvigilatorById(id);
+        if (invigilator.isPresent()) {
+            model.addAttribute("invigilator", invigilator.get());
+            return "admin/invigilator_edit"; // Trang chỉnh sửa giám thị
+        } else {
+            return "redirect:/invigilators"; // Nếu không tìm thấy, chuyển hướng về danh sách
+        }
+    }
+
+    // Cập nhật giám thị
+    @PostMapping("/update/{id}")
+    public String updateInvigilator(@PathVariable("id") String id, @ModelAttribute("invigilator") Invigilator invigilatorDetails) {
+        invigilatorService.updateInvigilator(id, invigilatorDetails);
+        return "redirect:/invigilators"; // Chuyển hướng sau khi cập nhật
+    }
+
+    // Xóa giám thị
+    @GetMapping("/delete/{id}")
+    public String deleteInvigilator(@PathVariable("id") String id) {
+        invigilatorService.deleteInvigilator(id);
+        return "redirect:/invigilators"; // Chuyển hướng sau khi xóa
+    }
+}

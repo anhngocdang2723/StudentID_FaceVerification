@@ -11,8 +11,11 @@ import com.Project.StudentIDVerification.repository.InvigilatorRepository;
 
 @Service
 public class InvigilatorService {
-    @Autowired
-    private InvigilatorRepository invigilatorRepository;
+    private final InvigilatorRepository invigilatorRepository;
+
+    public InvigilatorService(InvigilatorRepository invigilatorRepository) {
+        this.invigilatorRepository = invigilatorRepository;
+    }
 
     // Lấy tất cả giám thị
     public List<Invigilator> getAllInvigilators() {

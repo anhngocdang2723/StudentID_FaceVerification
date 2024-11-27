@@ -5,27 +5,26 @@ import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/admin_dashboard")
 public class AdminController {
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Kiểm tra role từ session
+        // Kiểm tra role và in log role
         String userRole = (String) session.getAttribute("userRole");
+        System.out.println("role: " + userRole);
         if ("admin".equals(userRole)) {
-            return "admin_dashboard"; // Hiển thị trang quản trị nếu là admin
+            return "admin/admin_dashboard";
         } else {
             model.addAttribute("error", "Bạn không có quyền truy cập vào trang này.");
-            return "error"; // Trang lỗi nếu không phải admin
+            return "error";
         }
     }
-
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate(); // Xóa toàn bộ session
-        return "redirect:/login"; // Quay lại trang đăng nhập
+        session.invalidate();
+        return "redirect:/invigilator/login";
     }
 }
 

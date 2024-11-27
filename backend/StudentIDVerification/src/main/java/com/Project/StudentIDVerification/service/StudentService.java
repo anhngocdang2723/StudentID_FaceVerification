@@ -3,7 +3,9 @@ package com.Project.StudentIDVerification.service;
 
 import com.Project.StudentIDVerification.model.Student;
 import com.Project.StudentIDVerification.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +14,11 @@ import java.util.Optional;
 @Service
 public class StudentService {
 
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     public List<Student> getAllStudents(Boolean status) {
         return studentRepository.findByStatus(status);
@@ -27,11 +32,11 @@ public class StudentService {
         return studentRepository.findById(id);
     }
 
-    public Student createStudent(Student student) {
-        return studentRepository.save(student);
+    public void createStudent(Student student) {
+        studentRepository.save(student);
     }
 
-    public Student updateStudent(String id, Student studentDetails) {
+    public void updateStudent(String id, Student studentDetails) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
         student.setStdId(studentDetails.getStdId());
         student.setStdName(studentDetails.getStdName());
@@ -43,10 +48,14 @@ public class StudentService {
         student.setStdPhone(studentDetails.getStdPhone());
         student.setExamResults(studentDetails.getExamResults());
         student.setStatus(studentDetails.isStatus());
-        return studentRepository.save(student);
+        studentRepository.save(student);
     }
 
     public void deleteStudent(String id) {
         studentRepository.deleteById(id);
+    }
+
+    public Page<Student> getStudents(PageRequest pageRequest) {
+        return studentRepository.findAll(pageRequest);
     }
 }
