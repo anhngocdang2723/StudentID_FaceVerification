@@ -17,11 +17,12 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/students")
 public class AdminStudentController {
-
-    @Autowired
-    private StudentService studentService;
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentService studentService;
+    private final StudentRepository studentRepository;
+    public AdminStudentController(StudentService studentService, StudentRepository studentRepository) {
+        this.studentService = studentService;
+        this.studentRepository = studentRepository;
+    }
 
     // Danh sách sinh viên
     @GetMapping()
@@ -50,7 +51,7 @@ public class AdminStudentController {
     @GetMapping("/new")
     public String showNewStudentForm(Model model) {
         Student student = new Student();
-//        student.setExamResults(new ArrayList<Student.ExamResults>());
+//      student.setExamResults(new ArrayList<Student.ExamResults>());
         student.setStatus(true);
         model.addAttribute("student", student);
         return "admin/student_addNew";

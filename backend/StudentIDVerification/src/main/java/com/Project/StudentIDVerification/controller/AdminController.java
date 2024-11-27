@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Kiểm tra role và in log role
+        // Kiểm tra nhận roll
         String userRole = (String) session.getAttribute("userRole");
-        System.out.println("role: " + userRole);
+//      System.out.println("role: " + userRole);
         if ("admin".equals(userRole)) {
             return "admin/admin_dashboard";
         } else {
@@ -21,6 +21,7 @@ public class AdminController {
             return "error";
         }
     }
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

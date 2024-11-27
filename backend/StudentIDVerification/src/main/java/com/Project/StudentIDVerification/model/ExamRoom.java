@@ -1,65 +1,33 @@
 package com.Project.StudentIDVerification.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
+@Setter
+@Getter
 @Document(collection = "ExamRooms")
 public class ExamRoom {
     @Id
-    private String id; // _id trong MongoDB
+    private String id;
+
     @Field("room_id")
-    private String roomId; // Mã phòng thi
+    private String roomId;
+
     @Field("invigilator_id")
-    private String invigilatorId; // Mã giám thị
+    private String invigilatorId;
+
     @Field("students")
     private List<StudentReference> students; // Danh sách sinh viên tham gia
 
-    // Getters và Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-    }
-
-    public String getInvigilatorId() {
-        return invigilatorId;
-    }
-
-    public void setInvigilatorId(String invigilatorId) {
-        this.invigilatorId = invigilatorId;
-    }
-
-    public List<StudentReference> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<StudentReference> students) {
-        this.students = students;
-    }
-
+    @Setter
+    @Getter
     public static class StudentReference {
         @Field("std_id")
-        private String stdId; // Mã sinh viên
-
-        public String getStdId() {
-            return stdId;
-        }
-
-        public void setStdId(String stdId) {
-            this.stdId = stdId;
-        }
+        private String stdId;
     }
 }

@@ -19,27 +19,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @RequestMapping("/invigilator")
 public class InvigilatorController {
-    @Autowired
-    private InvigilatorService invigilatorService;
-    @Autowired
-    private InvigilatorRepository invigilatorRepository;
-
-    // Trang đăng nhập
-    @GetMapping("/login")
-    public String showLoginPage() {
-        return "invigilator/login";  // Điều chỉnh lại đường dẫn
+    private final InvigilatorService invigilatorService;
+    private final InvigilatorRepository invigilatorRepository;
+    public InvigilatorController(InvigilatorService invigilatorService, InvigilatorRepository invigilatorRepository) {
+        this.invigilatorService = invigilatorService;
+        this.invigilatorRepository = invigilatorRepository;
     }
 
-    // Trang dashboard giám thị sau khi đăng nhập thành công
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "invigilator/login";
+    }
+
+    // Dashboard giám thị
     @PostMapping("/login")
     public String login(@RequestParam("invigilatorId") String invigilatorId,
                         @RequestParam("invigilatorEmail") String email,
                         HttpSession session,
                         Model model) {
-        // Kiểm tra tài khoản admin
+        // Check admin
         if ("admin".equalsIgnoreCase(invigilatorId) && "admin".equalsIgnoreCase(email)) {
             session.setAttribute("userRole", "admin");
-            return "redirect:/admin_dashboard"; // Điều hướng đến trang admin dashboard
+            return "redirect:/admin_dashboard";
         }
 
         Invigilator invigilator = invigilatorRepository.findByInvigilatorIdAndInvigilatorEmail(invigilatorId, email);
@@ -54,21 +55,18 @@ public class InvigilatorController {
 //            System.out.println("Name: " + invigilator.getInvigilatorName());
 //            System.out.println("Role: invigilator");
 
-            // Sau khi đăng nhập thành công, chuyển đến trang dashboard giám thị
-//            return "redirect:/invigilator/home";
-            return "invigilator/invigilator_dashboard";
+//          return "redirect:/invigilator/home"; //Lỗi vẫn ở trang login
+            return "invigilator/invigilator-dashboard";
         }
-
         model.addAttribute("error", "Mã giám thị hoặc email không đúng.");
         return "invigilator/login";
     }
 
     @GetMapping("/home")
     public String invigilatorHome(HttpSession session, Model model) {
-
-//        if (!checkAccess(session)) {
-//            return "redirect:/invigilator/login";
-//        }
+        if (!checkAccess(session)) {
+            return "redirect:/invigilator/login";
+        }
 
         String invigilatorId = (String) session.getAttribute("invigilatorId");
         Optional<Invigilator> invigilatorOpt = invigilatorRepository.findById(invigilatorId);
@@ -79,13 +77,12 @@ public class InvigilatorController {
 
         if (invigilatorOpt.isPresent()) {
             model.addAttribute("invigilatorName", invigilatorOpt.get().getInvigilatorName());
-            return "invigilator/invigilator_dashboard";
+            return "invigilator/invigilator-dashboard";
         }
-
         return "redirect:/invigilator/login";
     }
 
-    // Hiển thị thông tin cá nhân
+    // Xem tt cá nhân
     @GetMapping("/info")
     public String showPersonalInfo(HttpSession session, Model model) {
 //        if (checkAccess(session)) {
@@ -107,5 +104,4 @@ public class InvigilatorController {
 
         return sessionRole != null && sessionRole.equals("invigilator");
     }
-
 }

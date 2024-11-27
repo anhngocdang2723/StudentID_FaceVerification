@@ -10,18 +10,20 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Setter
 @Document(collection = "Invigilators")
 public class Invigilator {
-    // Getters và Setters
     @Id
-    private String id; // _id trong MongoDB
-    @Field("invigilator_id")
-    private String invigilatorId; // Mã giám thị
-    @Field("invigilator_name")
-    private String invigilatorName; // Tên giám thị
-    @Field("invigilator_phone")
-    private String invigilatorPhone; // Số điện thoại
-    @Field("invigilator_email")
-    private String invigilatorEmail; // Email
+    private String id;
 
+    @Field("invigilator_id")
+    private String invigilatorId;
+
+    @Field("invigilator_name")
+    private String invigilatorName;
+
+    @Field("invigilator_phone")
+    private String invigilatorPhone;
+
+    @Field("invigilator_email")
+    private String invigilatorEmail;
 
     public Invigilator get() {
         // TODO Auto-generated method stub

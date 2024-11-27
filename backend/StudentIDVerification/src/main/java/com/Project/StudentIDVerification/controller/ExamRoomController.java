@@ -24,16 +24,17 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/examroom")
 public class ExamRoomController {
+    private final ExamRoomRepository examRoomRepository;
+    private final StudentRepository studentRepository;
+    private final InvigilatorRepository invigilatorRepository;
 
-    @Autowired
-    private ExamRoomRepository examRoomRepository;
+    public ExamRoomController(ExamRoomRepository examRoomRepository, StudentRepository studentRepository, InvigilatorRepository invigilatorRepository) {
+        this.examRoomRepository = examRoomRepository;
+        this.studentRepository = studentRepository;
+        this.invigilatorRepository = invigilatorRepository;
+    }
 
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private InvigilatorRepository invigilatorRepository;
-
+    // Lấy dữ liệu phòng thi
     @GetMapping("/{roomId}/students")
     public String getStudentsByRoomId(@PathVariable String roomId, Model model) {
         Optional<ExamRoom> examRoomOptional = examRoomRepository.findByRoomId(roomId);
@@ -63,6 +64,7 @@ public class ExamRoomController {
         }
     }
 
+    // Xuất file excel
     @PostMapping("/{roomId}/export")
     @ResponseBody
     public void exportStudentsToExcel(@PathVariable String roomId, HttpServletResponse response) throws IOException {
@@ -71,7 +73,6 @@ public class ExamRoomController {
         if (examRoomOptional.isPresent()) {
             ExamRoom examRoom = examRoomOptional.get();
             ArrayList<StudentInfoDTO> studentsInfo = new ArrayList<>();
-
             for (ExamRoom.StudentReference studentReference : examRoom.getStudents()) {
                 String stdId = studentReference.getStdId();
                 Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId));
