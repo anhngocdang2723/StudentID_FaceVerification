@@ -38,7 +38,7 @@ public class Student {
     private String stdPhone;
 
     @Field("exam_results")
-    private ExamResults examResults; // Đối tượng điểm thi
+    private ExamResults examResults;
 
     @Field("status")
     private boolean status;

@@ -10,10 +10,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")  // Đường dẫn mà bạn muốn áp dụng CORS
-                .allowedOrigins("http://127.0.0.1:8000")  // Địa chỉ FastAPI
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Các phương thức cho phép
-                .allowedHeaders("*")  // Cho phép tất cả header
-                .allowCredentials(true);  // Nếu cần thiết
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://127.0.0.1:8000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

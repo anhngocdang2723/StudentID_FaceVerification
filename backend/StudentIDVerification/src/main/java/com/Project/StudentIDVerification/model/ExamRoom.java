@@ -22,7 +22,7 @@ public class ExamRoom {
     private String invigilatorId;
 
     @Field("students")
-    private List<StudentReference> students; // Danh sách sinh viên tham gia
+    private List<StudentReference> students;
 
     @Setter
     @Getter
