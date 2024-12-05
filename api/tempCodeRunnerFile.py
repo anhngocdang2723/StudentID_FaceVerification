@@ -59,5 +59,5 @@ def generate_exam_ticket_pdf(student_name, student_msv, exam_name, exam_code, se
     }
 
 # Ví dụ chạy:
-result = generate_exam_ticket_pdf("Nguyễn Văn Ẻ", "215748020110022", "Lập trình Python", "PY123", 5)
+result = generate_exam_ticket_pdf("Nguyễn Văn Ẻ", "215748020110021", "Lập trình Python", "PY123", 5)
 print(result)

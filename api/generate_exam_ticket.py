@@ -6,7 +6,7 @@ def generate_exam_ticket_pdf(student_name, student_msv, exam_name, exam_code, se
 
     # Thư mục chứa font trong 'tickets'
     FONT_DIR = os.path.join(BASE_DIR, "tickets")  # Đảm bảo thư mục fonts đúng
-    print(f"FONT_DIR: {FONT_DIR}")
+    # print(f"FONT_DIR: {FONT_DIR}")
 
     font_path_regular = os.path.join(FONT_DIR, "Roboto-Regular.ttf")
     font_path_bold = os.path.join(FONT_DIR, "Roboto-Bold.ttf")
@@ -18,11 +18,11 @@ def generate_exam_ticket_pdf(student_name, student_msv, exam_name, exam_code, se
 
     TICKET_DIR = os.path.join(BASE_DIR, "tickets")
     os.makedirs(TICKET_DIR, exist_ok=True)
-    print(f"TICKET_DIR: {TICKET_DIR}")
+    # print(f"TICKET_DIR: {TICKET_DIR}")
 
     ticket_filename = f"{student_msv}_exam_ticket.pdf"
     ticket_path = os.path.join(TICKET_DIR, ticket_filename)
-    print(f"Ticket Path: {ticket_path}")
+    # print(f"Ticket Path: {ticket_path}")
 
     pdf = FPDF()
     pdf.add_page()
@@ -59,5 +59,5 @@ def generate_exam_ticket_pdf(student_name, student_msv, exam_name, exam_code, se
     }
 
 # Ví dụ chạy:
-result = generate_exam_ticket_pdf("Nguyễn Văn Ẻ", "215748020110022", "Lập trình Python", "PY123", 5)
-print(result)
+# result = generate_exam_ticket_pdf("Nguyễn Văn Ẻ", "215748020110021", "Lập trình Python", "PY123", 5)
+# print(result)
