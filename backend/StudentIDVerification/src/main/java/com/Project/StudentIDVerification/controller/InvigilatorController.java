@@ -106,4 +106,14 @@ public class InvigilatorController {
 
         return sessionRole != null && sessionRole.equals("invigilator");
     }
+
+    @GetMapping("/api-integration")
+    public String apiIntegrationPage() {
+        return "invigilator/api_integration";
+    }
+
+    @GetMapping("/upload-image")
+    public String uploadImagePage() {
+        return "invigilator/uploadImage";
+    }
 }

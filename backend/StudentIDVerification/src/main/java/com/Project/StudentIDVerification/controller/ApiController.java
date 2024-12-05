@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api")
 public class ApiController {
-    @GetMapping("/api-integration")
-    public String apiIntegrationPage() {
-        return "invigilator/api_integration";
-    }
-
-    @GetMapping("/upload-image")
-    public String uploadImagePage() {
-        return "invigilator/uploadImage";
-    }
+//    @GetMapping("/api-integration")
+//    public String apiIntegrationPage() {
+//        return "invigilator/api_integration";
+//    }
+//
+//    @GetMapping("/upload-image")
+//    public String uploadImagePage() {
+//        return "invigilator/uploadImage";
+//    }
 }
