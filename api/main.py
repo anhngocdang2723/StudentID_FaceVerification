@@ -14,7 +14,7 @@ from face_extraction import process_student_id
 from face_comparison import compare_faces
 from excel_reader_byPandas import read_from_excel
 from compare_student import compare_with_student_list
-from generate_exam_ticket import generate_exam_ticket
+from generate_exam_ticket import generate_exam_ticket_pdf
 #endregion
 
 #region functions
@@ -37,7 +37,7 @@ os.makedirs(FACES_FOLDER, exist_ok=True)
 app.mount("/api/css", StaticFiles(directory=os.path.join(FE_FOLDER, "css")), name="css")
 app.mount("/api/js", StaticFiles(directory=os.path.join(FE_FOLDER, "js")), name="js")
 app.mount("/api/static", StaticFiles(directory=os.path.join(FE_FOLDER, "static")), name="static")
-app.mount("/tickets", StaticFiles(directory="tickets"), name="tickets")
+# app.mount("/tickets", StaticFiles(directory="tickets"), name="tickets")
 #endregion
 
 #region CORS Middleware
@@ -96,71 +96,41 @@ async def upload_image(file: UploadFile = File(...)):
                 f.write(contents)
             processed_image_path = preprocess_image(file_location)
             ocr_result = perform_ocr(processed_image_path)
-            if ocr_result:
-                extracted_info = extract_info_from_ocr(ocr_result)
-                # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
-            else:
-                extracted_info = None
+            extracted_info = extract_info_from_ocr(ocr_result) if ocr_result else None
             face_image_base64 = process_student_id(file_location)
             uploaded_image = cv2.imread(file_location)
             comparison_result = compare_faces(uploaded_image, face_image_base64)
-            # print("Kết quả so sánh:", comparison_result) # Log kết quả so sánh
 
-            if isinstance(extracted_info, dict):  # So sánh OCR với students_list
-                # print("Thông tin trích xuất từ OCR:", extracted_info)  # Log giá trị trích xuất
-                if compare_with_student_list(extracted_info, students_list):
-                    student_verification_status = "Thông tin sinh viên khớp với danh sách."
-                    student_name = extracted_info['Tên']
-                    student_msv = extracted_info['MSV']
-                    exam_name = "Thi giac may tinh"
-                    exam_code = "62 (2021-2026)"
-                    seat_position = 10
-
-                    ticket_path = generate_exam_ticket(student_name, student_msv, exam_name, exam_code, seat_position)
-                else:
-                    student_verification_status = "Thông tin sinh viên không khớp với danh sách."
+            if isinstance(extracted_info, dict) and compare_with_student_list(extracted_info, students_list):
+                student_verification_status = "Thông tin sinh viên khớp với danh sách."
+                ticket_result = generate_exam_ticket_pdf(
+                    extracted_info['Tên'], extracted_info['MSV'], "Thi giac may tinh", "62 (2021-2026)", 10
+                )
+                ticket_path = ticket_result["ticket_file"]
             else:
-                student_verification_status = "Không thể so sánh vì thông tin OCR không hợp lệ."
+                student_verification_status = "Thông tin sinh viên không khớp với danh sách."
+                ticket_path = None
 
-            if face_image_base64:
-                return {
-                    "Thông báo": "Khuôn mặt và OCR được xử lý thành công.",
-                    "Thông tin trích xuất được": extracted_info,
-                    "comparison": comparison_result,
-                    "Trạng thái xác thực": student_verification_status,
-                    "face_image": face_image_base64,
-                    "ticket_info": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
-                }
-            else:
-                return {
-                    "Thông báo": "Không tìm thấy khuôn mặt, nhưng đã thực hiện OCR.",
-                    "Thông tin trích xuất được": extracted_info,
-                    "Trạng thái xác thực": student_verification_status,
-                    "Phiếu thi": ticket_path if student_verification_status == "Thông tin sinh viên khớp với danh sách." else None
-                }
-        except FileNotFoundError:
-            logging.error(f"File not found: {file_location}")
-            raise HTTPException(status_code=404, detail="Không tìm thấy file đã tải lên.")
+            return {
+                "Thông báo": "Xử lý ảnh thành công.",
+                "Thông tin trích xuất được": extracted_info,
+                "Trạng thái xác thực": student_verification_status,
+                "Phiếu thi": ticket_path,
+                "comparison": comparison_result,
+                "face_image": face_image_base64
+            }
         except Exception as e:
             logging.error(f"Error processing file: {e}")
             raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
-### Get phiếu thi về UI
-# @app.get("/api/serve-ticket/{student_msv}")
-# async def serve_ticket(student_msv: str):
-    # Xác định thư mục chứa phiếu thi
-    ticket_folder = "tickets"  # Thư mục chứa các phiếu thi đã tạo
+@app.get("/api/serve-ticket/{student_msv}")
+async def serve_ticket(student_msv: str):
+    ticket_filename = f"{student_msv}_exam_ticket.pdf"
+    ticket_path = os.path.join("tickets", ticket_filename)
 
-    # Tạo tên file phiếu thi tương ứng với mã sinh viên
-    ticket_filename = f"{student_msv}_exam_ticket.txt"
-    ticket_path = os.path.join(ticket_folder, ticket_filename)
-    print(f"Đường dẫn phiếu thi: {ticket_path}")
-
-    # Kiểm tra xem phiếu thi có tồn tại không
     if not os.path.exists(ticket_path):
         raise HTTPException(status_code=404, detail="Không tìm thấy phiếu thi cho sinh viên này.")
 
-    # Nếu tìm thấy phiếu thi, trả về đường dẫn đến phiếu thi
-    return {"message": "Phiếu thi đã được tạo", "ticket_url": f"/{ticket_path}"}
+    return {"message": "Phiếu thi đã được tạo", "ticket_url": f"/tickets/{ticket_filename}"}
