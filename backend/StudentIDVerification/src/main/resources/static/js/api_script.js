@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Hiển thị ảnh khuôn mặt nếu có
                 const faceImage = document.getElementById('face-image');
                 if (faceImage) {
-                    if (result.face_image) {
-                        faceImage.src = 'data:image/jpeg;base64,' + result.face_image;
+                    if (result["Hình ảnh khuôn mặt (base64)"]) {
+                        faceImage.src = 'data:image/jpeg;base64,' + result["Hình ảnh khuôn mặt (base64)"];
                         faceImage.style.display = 'block';
                     } else {
                         faceImage.style.display = 'none';
@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Hiển thị kết quả so sánh khuôn mặt
                 const comparisonResult = document.getElementById("comparison-result");
                 const comparisonText = document.getElementById("comparison-text");
-                if (result.comparison) {
-                    comparisonText.textContent = result.comparison;
+                if (result["Kết quả so sánh khuôn mặt"]) {
+                    comparisonText.textContent = result["Kết quả so sánh khuôn mặt"];
                     comparisonResult.style.display = "block";
                 } else {
                     comparisonText.textContent = "Không có kết quả so sánh.";
@@ -94,37 +94,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 const ticketContainer = document.getElementById("ticket-container");
                 const ticketContent = document.getElementById("ticket-content");
                 if (ticketContent) {
-                    if (result["ticket_info"]) {
-                        const ticketData = result["ticket_info"];
-
-                        // In ra console để kiểm tra dữ liệu phiếu thi
-                        console.log("Dữ liệu phiếu thi: ", ticketData);
-
-                        // Kiểm tra xem dữ liệu phiếu thi có đầy đủ trường cần thiết không
-                        if (ticketData &&
-                            ticketData["Tên sinh viên"] &&
-                            ticketData["Mã sinh viên"] &&
-                            ticketData["Tên môn thi"] &&
-                            ticketData["Mã khóa"] &&
-                            ticketData["Vị trí ngồi"]) {
-
-                            ticketContainer.style.display = "block";  // Hiển thị div phiếu thi
-                            const ticketHtml = `
-                                <strong>Phiếu Dự Thi</strong><br><br>
-                                <strong>Tên sinh viên:</strong> ${ticketData["Tên sinh viên"]}<br>
-                                <strong>Mã sinh viên:</strong> ${ticketData["Mã sinh viên"]}<br>
-                                <strong>Tên môn thi:</strong> ${ticketData["Tên môn thi"]}<br>
-                                <strong>Mã khóa:</strong> ${ticketData["Mã khóa"]}<br>
-                                <strong>Vị trí ngồi:</strong> ${ticketData["Vị trí ngồi"]}<br>
-                                <hr>
-                            `;
-                            ticketContent.innerHTML = ticketHtml;  // Sử dụng innerHTML để chèn HTML
-                        } else {
-                            console.error("Dữ liệu phiếu thi không đầy đủ.");
-                            ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu thiếu dữ liệu
-                        }
+                    if (result["Phiếu thi"] && result["Phiếu thi"]["ticket_info"]) {
+                        const ticketInfo = result["Phiếu thi"]["ticket_info"];
+                        ticketContainer.style.display = "block"; // Hiển thị div phiếu thi
+                        ticketContent.innerHTML = `
+                        <strong>Phiếu Dự Thi</strong><br><br>
+                        <strong>Tên sinh viên:</strong> ${ticketInfo["Tên sinh viên"]}<br>
+                        <strong>Mã sinh viên:</strong> ${ticketInfo["Mã sinh viên"]}<br>
+                        <strong>Tên môn thi:</strong> ${ticketInfo["Tên môn thi"]}<br>
+                        <strong>Mã khóa:</strong> ${ticketInfo["Mã khóa"]}<br>
+                        <strong>Vị trí ngồi:</strong> ${ticketInfo["Vị trí ngồi"]}<br>
+                        <br>
+                        <strong>Đường dẫn phiếu thi:</strong> 
+                        <a href="${result["Phiếu thi"]["file_path"]}" target="_blank">Tải về tại đây</a>
+                        <hr>
+                    `;
                     } else {
-                        console.log("Không có phiếu thi trong dữ liệu trả về.");
+                        console.log("Không có thông tin phiếu thi trong dữ liệu trả về.");
                         ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu không có
                     }
                 } else {

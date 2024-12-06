@@ -4,17 +4,18 @@ import java.util.Optional;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.Project.StudentIDVerification.model.Invigilator;
 import com.Project.StudentIDVerification.repository.InvigilatorRepository;
 import com.Project.StudentIDVerification.service.InvigilatorService;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping("/invigilator")
@@ -115,5 +116,24 @@ public class InvigilatorController {
     @GetMapping("/upload-image")
     public String uploadImagePage() {
         return "invigilator/uploadImage";
+    }
+
+    @GetMapping("/view-exam-paper/{filename}")
+    public ResponseEntity<FileSystemResource> viewExamPaper(@PathVariable String filename) {
+        // Đường dẫn gốc nơi lưu file PDF
+        String fileBasePath = "C:/exam-papers/";  // Thay thế bằng đường dẫn thật của bạn
+
+        FileSystemResource fileResource = new FileSystemResource(fileBasePath + filename);
+        if (!fileResource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + filename);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(fileResource);
     }
 }

@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+from werkzeug.utils import secure_filename
 import os
 import logging
 import cv2
@@ -84,8 +85,8 @@ async def read_excel(file: UploadFile = File(...)):
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
 
-@app.post("/api/upload-image", tags=["Image Processing"])
-async def upload_image(file: UploadFile = File(...)):
+# @app.post("/api/upload-image", tags=["Image Processing"])
+# async def upload_image(file: UploadFile = File(...)):
     if file:
         if file.content_type not in ["image/jpeg", "image/png"]:
             raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
@@ -114,7 +115,7 @@ async def upload_image(file: UploadFile = File(...)):
             return {
                 "Thông báo": "Xử lý ảnh thành công.",
                 "Thông tin trích xuất được": extracted_info,
-                "Trạng thái xác thực": student_verification_status,
+                # "Trạng thái xác thực": student_verification_status,
                 "Phiếu thi": ticket_path,
                 "comparison": comparison_result,
                 "face_image": face_image_base64
@@ -124,6 +125,66 @@ async def upload_image(file: UploadFile = File(...)):
             raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
     else:
         raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
+
+@app.post("/api/upload-image", tags=["Processing"])
+async def upload_image(file: UploadFile = File(...)):
+    if not file:
+        raise HTTPException(status_code=400, detail="Không có file nào được nhận.")
+
+    if file.content_type not in ["image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="Chỉ hỗ trợ các định dạng file JPEG và PNG.")
+
+    file.filename = secure_filename(file.filename)
+    file_location = os.path.join(UPLOAD_FOLDER, file.filename)
+
+    try:
+        # Lưu file tạm thời
+        contents = await file.read()
+        with open(file_location, "wb") as f:
+            f.write(contents)
+
+        # Xử lý ảnh và OCR
+        processed_image_path = preprocess_image(file_location)
+        ocr_result = perform_ocr(processed_image_path)
+        extracted_info = extract_info_from_ocr(ocr_result) if ocr_result else None
+
+        # So sánh khuôn mặt
+        face_image_base64 = process_student_id(file_location)
+        uploaded_image = cv2.imread(file_location)
+        comparison_result = compare_faces(uploaded_image, face_image_base64)
+
+        # Xác thực sinh viên
+        if isinstance(extracted_info, dict) and compare_with_student_list(extracted_info, students_list):
+            student_verification_status = "Thông tin sinh viên khớp với danh sách."
+            ticket_result = generate_exam_ticket_pdf(
+                extracted_info['Tên'], extracted_info['MSV'], "Thi giac may tinh", "62 (2021-2026)", 10
+            )
+            ticket_path = ticket_result["ticket_file"]
+            ticket_info = ticket_result.get("ticket_info", {})
+        else:
+            student_verification_status = "Thông tin sinh viên không khớp với danh sách."
+            ticket_path = None
+            ticket_info = {}
+
+        # Trả kết quả
+        return {
+            "Thông báo": "Xử lý ảnh thành công.",
+            "Thông tin trích xuất được": extracted_info,
+            "Trạng thái xác thực": student_verification_status,
+            "Kết quả so sánh khuôn mặt": comparison_result,
+            "Phiếu thi": {
+                "file_path": ticket_path,
+                "ticket_info": ticket_info
+            },
+            "Hình ảnh khuôn mặt (base64)": face_image_base64
+        }
+    except Exception as e:
+        logging.error(f"Error processing file {file.filename}: {e}")
+        raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
+    finally:
+        # Xóa file tạm
+        if os.path.exists(file_location):
+            os.remove(file_location)
 
 @app.get("/api/serve-ticket/{student_msv}")
 async def serve_ticket(student_msv: str):
