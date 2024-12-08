@@ -6,5 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface ExamRoomRepository extends MongoRepository<ExamRoom, String> {
-    Optional<ExamRoom> findByRoomId(String roomId);
+    // Custom query nếu cần (VD: tìm theo roomId)
+    ExamRoom findByRoomId(String roomId);
 }

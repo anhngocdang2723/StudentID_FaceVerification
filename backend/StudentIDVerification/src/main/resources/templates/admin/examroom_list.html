@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách phòng thi</title>
+</head>
+<body>
+<h1>Danh sách phòng thi</h1>
+<a href="/exam-rooms/new">Thêm phòng thi mới</a>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Mã phòng</th>
+        <th>Số lượng</th>
+        <th>Tên bài thi</th>
+        <th>Tên giám thị</th>
+        <th>Mã sinh viên</th> <!-- Thêm cột Mã sinh viên -->
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="room : ${examRooms}">
+        <td th:text="${room.roomId}"></td>
+        <td th:text="${room.capacity}"></td>
+        <td th:text="${room.examName}"></td>
+        <td th:text="${room.invigilatorName}"></td>
+        <td>
+            <!-- Hiển thị mã sinh viên trong phòng thi, mỗi sinh viên trên một dòng -->
+            <ul>
+                <li th:each="student : ${room.students}" th:text="${student.stdId}"></li>
+            </ul>
+        </td>
+        <td>
+            <a th:href="@{/exam-rooms/edit/{id}(id=${room.id})}">Sửa</a>
+            <a th:href="@{/exam-rooms/delete/{id}(id=${room.id})}" onclick="return confirm('Bạn có chắc chắn muốn xoá?')">Xoá</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

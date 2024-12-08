@@ -1,5 +1,6 @@
 package com.Project.StudentIDVerification.controller;
 
+import ch.qos.logback.core.model.Model;
 import com.Project.StudentIDVerification.DTO.StudentInfoDTO;
 import com.Project.StudentIDVerification.model.ExamRoom;
 import com.Project.StudentIDVerification.model.Invigilator;
@@ -12,10 +13,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/examroom")
 public class ExamRoomController {
+
     private final ExamRoomRepository examRoomRepository;
     private final StudentRepository studentRepository;
     private final InvigilatorRepository invigilatorRepository;
@@ -34,49 +35,59 @@ public class ExamRoomController {
         this.invigilatorRepository = invigilatorRepository;
     }
 
-    // Lấy dữ liệu phòng thi
     @GetMapping("/{roomId}/students")
-    public String getStudentsByRoomId(@PathVariable String roomId, Model model) {
-        Optional<ExamRoom> examRoomOptional = examRoomRepository.findByRoomId(roomId);
-        ArrayList<Object> studentsInfo = new ArrayList<>();
+    public ModelAndView getStudentsByRoomId(@PathVariable String roomId) {
+        ModelAndView modelAndView = new ModelAndView();
+
+        Optional<ExamRoom> examRoomOptional = Optional.ofNullable(examRoomRepository.findByRoomId(roomId));
 
         if (examRoomOptional.isPresent()) {
             ExamRoom examRoom = examRoomOptional.get();
-            for (ExamRoom.StudentReference studentReference : examRoom.getStudents()) {
+            ArrayList<StudentInfoDTO> studentsInfo = new ArrayList<>();
+
+            for (ExamRoom.StudentRef studentReference : examRoom.getStudents()) {
                 String stdId = studentReference.getStdId();
-                Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId)); // Tìm sinh viên theo stdId
-
-                Invigilator invigilator = invigilatorRepository.findByInvigilatorId(examRoom.getInvigilatorId());
-
-                model.addAttribute("invigilatorName", invigilator != null ? invigilator.getInvigilatorName() : "Chưa có thông tin");
-
+                Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId));
                 studentOptional.ifPresent(student -> {
                     StudentInfoDTO studentInfoDTO = new StudentInfoDTO(student.getStdName(), student.getStdId(), student.getStdPhone());
                     studentsInfo.add(studentInfoDTO);
                 });
             }
-            model.addAttribute("students", studentsInfo);
-            model.addAttribute("roomId", roomId);
-            return "examRoom";
+
+            Invigilator invigilator = invigilatorRepository.findByInvigilatorId(examRoom.getInvigilatorId());
+            String invigilatorName = invigilator != null ? invigilator.getInvigilatorName() : "Chưa có thông tin";
+
+            // Thêm dữ liệu vào ModelAndView
+            modelAndView.addObject("students", studentsInfo);
+            modelAndView.addObject("invigilatorName", invigilatorName);
+            modelAndView.addObject("roomId", roomId);
+            modelAndView.addObject("cameras", examRoom.getCameras());
+            modelAndView.addObject("computers", examRoom.getComputers());
+
+            // Đặt View
+            modelAndView.setViewName("examRoom");
         } else {
-            model.addAttribute("message", "Không tìm thấy phòng thi với ID: " + roomId);
-            return "error";
+            modelAndView.addObject("message", "Không tìm thấy phòng thi với ID: " + roomId);
+            modelAndView.setViewName("error");
         }
+
+        return modelAndView;
     }
 
-    // Xuất file excel
+    // Xuất file Excel danh sách sinh viên
     @PostMapping("/{roomId}/export")
     @ResponseBody
     public void exportStudentsToExcel(@PathVariable String roomId, HttpServletResponse response) throws IOException {
-        Optional<ExamRoom> examRoomOptional = examRoomRepository.findByRoomId(roomId);
+        Optional<ExamRoom> examRoomOptional = Optional.ofNullable(examRoomRepository.findByRoomId(roomId));
 
         if (examRoomOptional.isPresent()) {
             ExamRoom examRoom = examRoomOptional.get();
             ArrayList<StudentInfoDTO> studentsInfo = new ArrayList<>();
-            for (ExamRoom.StudentReference studentReference : examRoom.getStudents()) {
+
+            // Lấy danh sách sinh viên
+            for (ExamRoom.StudentRef studentReference : examRoom.getStudents()) {
                 String stdId = studentReference.getStdId();
                 Optional<Student> studentOptional = Optional.ofNullable(studentRepository.findByStdId(stdId));
-
                 studentOptional.ifPresent(student -> {
                     StudentInfoDTO studentInfoDTO = new StudentInfoDTO(student.getStdName(), student.getStdId(), student.getStdPhone());
                     studentsInfo.add(studentInfoDTO);
@@ -87,13 +98,13 @@ public class ExamRoomController {
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("Students");
 
-            // Tạo header
+            // Header
             Row headerRow = sheet.createRow(0);
             headerRow.createCell(0).setCellValue("Student ID");
             headerRow.createCell(1).setCellValue("Student Name");
             headerRow.createCell(2).setCellValue("Phone");
 
-            // Thêm dữ liệu vào sheet
+            // Ghi dữ liệu vào sheet
             int rowNum = 1;
             for (StudentInfoDTO student : studentsInfo) {
                 Row row = sheet.createRow(rowNum++);

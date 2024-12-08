@@ -13,4 +13,3 @@ public interface InvigilatorRepository extends MongoRepository<Invigilator, Stri
 
     Invigilator findByInvigilatorId(String invigilatorId);
 }
-

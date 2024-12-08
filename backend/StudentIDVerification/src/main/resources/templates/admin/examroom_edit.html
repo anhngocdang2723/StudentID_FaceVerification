@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Chỉnh sửa phòng thi</title>
+</head>
+<body>
+<h1>Chỉnh sửa phòng thi</h1>
+<form th:action="@{/exam-rooms/{id}(id=${examRoom.id})}" method="post">
+  <label>Mã phòng:</label>
+  <input type="text" name="roomId" th:value="${examRoom.roomId}" required><br>
+  <label>Mã bài thi:</label>
+  <input type="text" name="examId" th:value="${examRoom.examId}" required><br>
+  <label>Mã giám thị:</label>
+  <input type="text" name="invigilatorId" th:value="${examRoom.invigilatorId}" required><br>
+  <button type="submit">Cập nhật</button>
+</form>
+</body>
+</html>
