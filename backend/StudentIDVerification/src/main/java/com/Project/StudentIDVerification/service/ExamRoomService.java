@@ -30,6 +30,15 @@ public class ExamRoomService {
     @Autowired
     private StudentRepository studentRepository;
 
+    // Phương thức chuyển đổi List<String> (studentIds) thành List<StudentRef>
+    private List<ExamRoom.StudentRef> convertToStudentRefs(List<String> studentIds) {
+        List<ExamRoom.StudentRef> studentRefs = new ArrayList<>();
+        for (String id : studentIds) {
+            studentRefs.add(new ExamRoom.StudentRef(id)); // Tạo đối tượng StudentRef từ std_id
+        }
+        return studentRefs;
+    }
+
     public List<ExamRoom> getAllExamRooms() {
         List<ExamRoom> examRooms = examRoomRepository.findAll();
 
@@ -37,24 +46,24 @@ public class ExamRoomService {
         for (ExamRoom room : examRooms) {
             // Xử lý thông tin bài thi
             if (room.getExamId() != null) {
-                System.out.println("[DEBUG] Exam ID: " + room.getExamId());
+//                System.out.println("[DEBUG] Exam ID: " + room.getExamId());
                 Optional<Exam> exam = examRepository.findByExamId(room.getExamId());
                 if (exam.isPresent()) {
                     room.setExamName(exam.get().getExamName());
                 } else {
-                    System.out.println("[ERROR] Exam not found for ID: " + room.getExamId());
+//                    System.out.println("[ERROR] Exam not found for ID: " + room.getExamId());
                     room.setExamName("Unknown Exam");
                 }
             }
 
             // Xử lý thông tin giám thị
             if (room.getInvigilatorId() != null) {
-                System.out.println("[DEBUG] Invigilator ID: " + room.getInvigilatorId());
+//                System.out.println("[DEBUG] Invigilator ID: " + room.getInvigilatorId());
                 Invigilator invigilator = invigilatorRepository.findByInvigilatorId(room.getInvigilatorId());
                 if (invigilator != null) {
                     room.setInvigilatorName(invigilator.getInvigilatorName());
                 } else {
-                    System.out.println("[ERROR] Invigilator not found for ID: " + room.getInvigilatorId());
+//                    System.out.println("[ERROR] Invigilator not found for ID: " + room.getInvigilatorId());
                     room.setInvigilatorName("Unknown Invigilator");
                 }
             }
@@ -66,7 +75,7 @@ public class ExamRoomService {
                     String studentId = studentRef.getStdId();
 
                     if (studentId != null && !studentId.trim().isEmpty()) {
-                        System.out.println("[DEBUG] Student ID in room: " + studentId);
+//                        System.out.println("[DEBUG] Student ID in room: " + studentId);
                         Student student = studentRepository.findByStdId(studentId);
                         if (student != null) {
                             studentIds.add(student.getStdId());
@@ -82,13 +91,13 @@ public class ExamRoomService {
         }
 
         // Log thông tin chi tiết về phòng thi
-        System.out.println("[INFO] Fetching all exam rooms: " + examRooms.size() + " rooms found.");
-        for (ExamRoom room : examRooms) {
-            System.out.println("[INFO] Room ID: " + room.getRoomId());
-            System.out.println("[INFO] Exam Name: " + room.getExamName());
-            System.out.println("[INFO] Invigilator Name: " + room.getInvigilatorName());
-            System.out.println("[INFO] Student IDs: " + room.getStudentIds());
-        }
+//        System.out.println("[INFO] Fetching all exam rooms: " + examRooms.size() + " rooms found.");
+//        for (ExamRoom room : examRooms) {
+//            System.out.println("[INFO] Room ID: " + room.getRoomId());
+//            System.out.println("[INFO] Exam Name: " + room.getExamName());
+//            System.out.println("[INFO] Invigilator Name: " + room.getInvigilatorName());
+//            System.out.println("[INFO] Student IDs: " + room.getStudentIds());
+//        }
 
         return examRooms;
     }

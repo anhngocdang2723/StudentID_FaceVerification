@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Phòng Thi</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Tạo Phòng Thi</h2>
+    <form action="/examroom/create" method="POST">
+        <div class="form-group">
+            <label for="examId">Chọn Bài Thi:</label>
+            <select class="form-control" id="examId" name="examId" required>
+                <option value="" disabled selected>Chọn Bài Thi</option>
+                <!-- Duyệt danh sách bài thi với Thymeleaf -->
+                <th:block th:each="exam : ${exams}">
+                    <option th:value="${exam.examId}" th:text="${exam.examName}"></option>
+                </th:block>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chọn Phòng Thi:</label><br>
+            <!-- Duyệt danh sách phòng thi với Thymeleaf và sử dụng checkbox -->
+            <th:block th:each="room : ${rooms}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="roomId" name="roomIds[]"
+                           th:value="${room.roomId}" th:id="'room_' + ${room.roomId}">
+                    <label class="form-check-label" th:for="'room_' + ${room.roomId}">
+                        <span th:text="${room.roomId} + ' - Sức chứa: ' + ${room.capacity}"></span>
+                    </label>
+                </div>
+            </th:block>
+        </div>
+
+        <div class="form-group">
+            <label>Chọn Giám Thị:</label><br>
+            <!-- Duyệt danh sách giám thị với Thymeleaf và sử dụng checkbox -->
+            <th:block th:each="invigilator : ${invigilators}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="invigilatorId" name="invigilatorIds[]"
+                           th:value="${invigilator.invigilatorId}" th:id="'invigilator_' + ${invigilator.invigilatorId}">
+                    <label class="form-check-label" th:for="'invigilator_' + ${invigilator.invigilatorId}">
+                        <span th:text="${invigilator.invigilatorName}"></span>
+                    </label>
+                </div>
+            </th:block>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Tạo Phòng Thi</button>
+    </form>
+
+    <!-- Hiển thị thông báo lỗi -->
+    <div class="mt-3">
+        <div th:if="${error != null}">
+            <div class="alert alert-danger" th:text="${error}"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.5/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
