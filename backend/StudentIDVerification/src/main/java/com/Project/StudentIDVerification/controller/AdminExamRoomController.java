@@ -41,7 +41,7 @@ public class AdminExamRoomController {
     public String listExamRooms(Model model) {
         List<ExamRoom> examRooms = examRoomService.getAllExamRooms();
         model.addAttribute("examRooms", examRooms);
-        return "admin/examroom_list"; // View hiển thị danh sách phòng thi
+        return "admin/examroom_list";
     }
 
     // Hiển thị form tạo phòng thi
@@ -133,7 +133,6 @@ public class AdminExamRoomController {
         return "admin/examroom_success";
     }
 
-
     // Phương thức chuyển đổi từ List<String> (mã sinh viên) thành List<StudentRef>
     private List<ExamRoom.StudentRef> convertToStudentRefs(List<String> studentIds) {
         List<ExamRoom.StudentRef> studentRefs = new ArrayList<>();
@@ -166,53 +165,6 @@ public class AdminExamRoomController {
         }
         return computers;
     }
-
-//    @GetMapping("/new")
-//    public String createExamRoomForm(Model model) {
-//        // Lấy tất cả bài thi và giám thị để hiển thị trên form
-//        List<Exam> exams = examRepository.findAll();
-//        List<Invigilator> invigilators = invigilatorRepository.findAll();
-//
-//        // Lấy 20 sinh viên đầu tiên từ collection Students
-//        List<Student> students = studentRepository.findAll().stream()
-//                .limit(20)
-//                .collect(Collectors.toList());
-//
-//        model.addAttribute("exams", exams);
-//        model.addAttribute("invigilators", invigilators);
-//        model.addAttribute("students", students); // Chuyển danh sách sinh viên vào form
-//
-//        return "admin/examroom_new";
-//    }
-//
-//    @PostMapping
-//    public String createExamRoom(@RequestParam String roomId,
-//                                 @RequestParam String examId,
-//                                 @RequestParam String invigilatorId,
-//                                 @RequestParam List<String> students) {
-//
-//        // Tạo đối tượng ExamRoom mới
-//        ExamRoom examRoom = new ExamRoom();
-//        examRoom.setRoomId(roomId);
-//        examRoom.setExamId(examId);
-//        examRoom.setInvigilatorId(invigilatorId);
-//
-//        // Chọn sinh viên từ danh sách và gán vào phòng thi
-//        List<ExamRoom.StudentRef> studentRefs = students.stream()
-//                .map(ExamRoom.StudentRef::new)  // Tạo đối tượng StudentRef cho mỗi sinh viên
-//                .collect(Collectors.toList());
-//        examRoom.setStudents(studentRefs);
-//
-//        // Gán các giá trị mặc định
-//        examRoom.setDefaultCamerasAndComputers();  // Thiết lập giá trị mặc định cho cameras và computers
-//        examRoom.setCapacity(20); // Gán số lượng sinh viên mặc định là 20
-//
-//        // Lưu phòng thi vào cơ sở dữ liệu
-//        examRoomService.createExamRoom(examRoom);
-//
-//        // Chuyển hướng về danh sách phòng thi sau khi thêm
-//        return "redirect:/examrooms";
-//    }
 
     // Hiển thị form chỉnh sửa phòng thi
     @GetMapping("/edit/{id}")
