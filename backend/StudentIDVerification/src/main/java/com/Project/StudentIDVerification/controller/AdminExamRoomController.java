@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,8 +35,6 @@ public class AdminExamRoomController {
 
     @Autowired
     private RoomRepository roomRepository;
-
-//    private static final Logger logger = LoggerFactory.getLogger(AdminExamRoomController.class);
 
     // Hiển thị danh sách tất cả các phòng thi
     @GetMapping
