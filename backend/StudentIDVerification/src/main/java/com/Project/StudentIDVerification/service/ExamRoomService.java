@@ -170,14 +170,10 @@ public class ExamRoomService {
 
     // Xoá phòng thi
     public void deleteExamRoom(String id) {
-        if (examRoomRepository.existsById(id)) {
-            examRoomRepository.deleteById(id);
-            System.out.println("[INFO] Deleted exam room with ID: " + id);
-        } else {
-            String errorMsg = "Không tìm thấy phòng thi với ID: " + id;
-            System.out.println("[ERROR] " + errorMsg);
-            throw new IllegalArgumentException(errorMsg);
+        if (!examRoomRepository.existsById(id)) {
+            throw new IllegalArgumentException("Không tìm thấy phòng thi với ID: " + id);
         }
+        examRoomRepository.deleteById(id);
     }
 
     // Gán giá trị mặc định cho phòng thi nếu cần

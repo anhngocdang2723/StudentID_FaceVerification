@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/examrooms")
@@ -35,103 +34,6 @@ public class AdminExamRoomController {
 
     @Autowired
     private RoomRepository roomRepository;
-
-    // Hiển thị danh sách tất cả các phòng thi
-    @GetMapping
-    public String listExamRooms(Model model) {
-        List<ExamRoom> examRooms = examRoomService.getAllExamRooms();
-        model.addAttribute("examRooms", examRooms);
-        return "admin/examroom_list";
-    }
-
-    // Hiển thị form tạo phòng thi
-    @GetMapping("/create")
-    public String showCreateExamRoomForm(Model model) {
-        List<Room> rooms = roomRepository.findAll();
-        model.addAttribute("rooms", rooms);
-
-        List<Invigilator> invigilators = invigilatorRepository.findAll();
-        model.addAttribute("invigilators", invigilators);
-
-        List<Exam> exams = examRepository.findAll();
-        model.addAttribute("exams", exams);
-
-        return "admin/examroom_create";
-    }
-    @PostMapping("/create")
-    public String createExamRoom(@RequestParam String examId,
-                                 @RequestParam List<String> roomIds,
-                                 @RequestParam List<String> invigilatorIds,
-                                 Model model) {
-
-        // In thông tin nhận được từ form
-        System.out.println("Received request to create ExamRoom with the following data:");
-        System.out.println("examId: " + examId);
-        System.out.println("roomIds: " + roomIds);
-        System.out.println("invigilatorIds: " + invigilatorIds);
-
-        // Kiểm tra nếu không có dữ liệu được gửi
-        if (examId == null || roomIds == null || invigilatorIds == null) {
-            System.out.println("One or more parameters are missing!");
-            model.addAttribute("error", "Dữ liệu không đầy đủ!");
-            return "admin/examroom_create";
-        }
-
-        // Lấy danh sách Rooms từ roomIds đã chọn
-        List<Room> selectedRooms = roomRepository.findByRoomIdIn(roomIds);
-        System.out.println("Selected Rooms: " + selectedRooms);
-
-        // Kiểm tra số lượng Room và Invigilator có khớp không
-        if (selectedRooms.size() != invigilatorIds.size()) {
-            model.addAttribute("error", "Số lượng phòng và giám thị không khớp!");
-            return "admin/examroom_create";
-        }
-
-        // Lấy toàn bộ danh sách sinh viên
-        List<Student> allStudents = studentRepository.findAll();
-        if (allStudents.isEmpty()) {
-            model.addAttribute("error", "Không đủ sinh viên để phân chia!");
-            return "admin/examroom_create";
-        }
-
-        // Phân chia sinh viên vào từng phòng
-        int studentIndex = 0;
-        List<ExamRoom> examRooms = new ArrayList<>();
-        for (int i = 0; i < selectedRooms.size(); i++) {
-            Room room = selectedRooms.get(i);
-            String invigilatorId = invigilatorIds.get(i);
-
-            // Phân bổ sinh viên vào phòng thi
-            List<String> assignedStudents = new ArrayList<>();
-            for (int j = 0; j < room.getCapacity() && studentIndex < allStudents.size(); j++) {
-                assignedStudents.add(allStudents.get(studentIndex).getStdId());
-                studentIndex++;
-            }
-
-            System.out.println("Assigned Students for room " + room.getRoomId() + ": " + assignedStudents);
-
-            // Chuyển danh sách ID sinh viên thành danh sách StudentRef
-            List<ExamRoom.StudentRef> studentRefs = convertToStudentRefs(assignedStudents);
-
-            // Tạo đối tượng ExamRoom
-            ExamRoom examRoom = new ExamRoom();
-            examRoom.setRoomId(room.getRoomId());
-            examRoom.setCapacity(room.getCapacity());
-            examRoom.setExamId(examId);
-            examRoom.setInvigilatorId(invigilatorId);
-            examRoom.setStudents(studentRefs);
-
-            examRoom.setDefaultCamerasAndComputers();
-            System.out.println("Created ExamRoom: " + examRoom);
-
-            // Lưu vào database
-            examRoomRepository.save(examRoom);
-            examRooms.add(examRoom);
-        }
-
-        model.addAttribute("examRooms", examRooms);
-        return "admin/examroom_success";
-    }
 
     // Phương thức chuyển đổi từ List<String> (mã sinh viên) thành List<StudentRef>
     private List<ExamRoom.StudentRef> convertToStudentRefs(List<String> studentIds) {
@@ -166,6 +68,112 @@ public class AdminExamRoomController {
         return computers;
     }
 
+    // Hiển thị danh sách tất cả các phòng thi
+    @GetMapping
+    public String listExamRooms(Model model) {
+        List<ExamRoom> examRooms = examRoomService.getAllExamRooms();
+        model.addAttribute("examRooms", examRooms);
+        return "admin/examroom_list";
+    }
+
+    // Hiển thị form tạo phòng thi
+    @GetMapping("/create")
+    public String showCreateExamRoomForm(Model model) {
+        List<Room> rooms = roomRepository.findAll();
+        model.addAttribute("rooms", rooms);
+
+        List<Invigilator> invigilators = invigilatorRepository.findAll();
+        model.addAttribute("invigilators", invigilators);
+
+        List<Exam> exams = examRepository.findAll();
+        model.addAttribute("exams", exams);
+
+        return "admin/examroom_create";
+    }
+
+    // Kiểm tra và phân bổ sinh viên vào phòng thi
+    private List<ExamRoom> assignStudentsToRooms(List<Room> selectedRooms, List<String> invigilatorIds, List<Student> allStudents, String examId) {
+        int studentIndex = 0;
+        List<ExamRoom> examRooms = new ArrayList<>();
+
+        for (int i = 0; i < selectedRooms.size(); i++) {
+            Room room = selectedRooms.get(i);
+            String invigilatorId = invigilatorIds.get(i);
+
+            // Phân bổ sinh viên vào phòng thi
+            List<String> assignedStudents = new ArrayList<>();
+            for (int j = 0; j < room.getCapacity() && studentIndex < allStudents.size(); j++) {
+                assignedStudents.add(allStudents.get(studentIndex).getStdId());
+                studentIndex++;
+            }
+
+            System.out.println("Assigned Students for room " + room.getRoomId() + ": " + assignedStudents);
+
+            // Chuyển danh sách ID sinh viên thành danh sách StudentRef
+            List<ExamRoom.StudentRef> studentRefs = convertToStudentRefs(assignedStudents);
+
+            // Tạo đối tượng ExamRoom
+            ExamRoom examRoom = new ExamRoom();
+            examRoom.setRoomId(room.getRoomId());
+            examRoom.setCapacity(room.getCapacity());
+            examRoom.setExamId(examId);
+            examRoom.setInvigilatorId(invigilatorId);
+            examRoom.setStudents(studentRefs);
+
+            examRoom.setDefaultCamerasAndComputers();
+            System.out.println("Created ExamRoom: " + examRoom);
+
+            // Lưu vào database
+            examRoomRepository.save(examRoom);
+            examRooms.add(examRoom);
+        }
+
+        return examRooms;
+    }
+
+    @PostMapping("/create")
+    public String createExamRoom(@RequestParam String examId,
+                                 @RequestParam List<String> roomIds,
+                                 @RequestParam List<String> invigilatorIds,
+                                 Model model, RedirectAttributes redirectAttributes) {
+
+        // In thông tin nhận được từ form
+        System.out.println("Received request to create ExamRoom with the following data:");
+        System.out.println("examId: " + examId);
+        System.out.println("roomIds: " + roomIds);
+        System.out.println("invigilatorIds: " + invigilatorIds);
+
+        // Kiểm tra nếu không có dữ liệu được gửi
+        if (examId == null || roomIds == null || invigilatorIds == null || roomIds.isEmpty() || invigilatorIds.isEmpty()) {
+            System.out.println("One or more parameters are missing!");
+            model.addAttribute("error", "Dữ liệu không đầy đủ!");
+            return "admin/examroom_create";
+        }
+
+        // Lấy danh sách Rooms từ roomIds đã chọn
+        List<Room> selectedRooms = roomRepository.findByRoomIdIn(roomIds);
+        System.out.println("Selected Rooms: " + selectedRooms);
+
+        // Kiểm tra số lượng Room và Invigilator có khớp không
+        if (selectedRooms.size() != invigilatorIds.size()) {
+            model.addAttribute("error", "Số lượng phòng và giám thị không khớp!");
+            return "admin/examroom_create";
+        }
+
+        // Lấy toàn bộ danh sách sinh viên
+        List<Student> allStudents = studentRepository.findAll();
+        if (allStudents.isEmpty()) {
+            model.addAttribute("error", "Không đủ sinh viên để phân chia!");
+            return "admin/examroom_create";
+        }
+
+        // Phân chia sinh viên vào từng phòng
+        List<ExamRoom> examRooms = assignStudentsToRooms(selectedRooms, invigilatorIds, allStudents, examId);
+
+        model.addAttribute("examRooms", examRooms);
+        return "redirect:/examrooms";
+    }
+
     // Hiển thị form chỉnh sửa phòng thi
     @GetMapping("/edit/{id}")
     public String showEditExamRoomForm(@PathVariable String id, Model model) {
@@ -192,6 +200,7 @@ public class AdminExamRoomController {
     @GetMapping("/delete/{id}")
     public String deleteExamRoom(@PathVariable String id) {
         examRoomService.deleteExamRoom(id);
-        return "redirect:/examrooms";
+        return "redirect:/examrooms";  // Sau khi xóa, chuyển hướng lại danh sách phòng thi
     }
+
 }
