@@ -10,7 +10,7 @@ def perform_ocr(image_path): #ocr, sắp xếp kq
     try:
         result = ocr.ocr(image_path, cls=True)
         if result and len(result) > 0:
-            sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  #sắp xếp theo y tăng dần 
+            sorted_result = sorted(result[0], key=lambda x: x[0][0][1])  #sắp xếp theo y tăng dần
             logging.info(f"OCR thành công với {len(sorted_result)} dòng.")
             return sorted_result
         else:
