@@ -138,22 +138,18 @@ async def upload_image(file: UploadFile = File(...)):
     file_location = os.path.join(UPLOAD_FOLDER, file.filename)
 
     try:
-        # Lưu file tạm thời
         contents = await file.read()
         with open(file_location, "wb") as f:
             f.write(contents)
 
-        # Xử lý ảnh và OCR
         processed_image_path = preprocess_image(file_location)
         ocr_result = perform_ocr(processed_image_path)
         extracted_info = extract_info_from_ocr(ocr_result) if ocr_result else None
 
-        # So sánh khuôn mặt
         face_image_base64 = process_student_id(file_location)
         uploaded_image = cv2.imread(file_location)
         comparison_result = compare_faces(uploaded_image, face_image_base64)
 
-        # Xác thực sinh viên
         if isinstance(extracted_info, dict) and compare_with_student_list(extracted_info, students_list):
             student_verification_status = "Thông tin sinh viên khớp với danh sách."
             ticket_result = generate_exam_ticket_pdf(
@@ -166,7 +162,6 @@ async def upload_image(file: UploadFile = File(...)):
             ticket_path = None
             ticket_info = {}
 
-        # Trả kết quả
         return {
             "Thông báo": "Xử lý ảnh thành công.",
             "Thông tin trích xuất được": extracted_info,
@@ -182,7 +177,6 @@ async def upload_image(file: UploadFile = File(...)):
         logging.error(f"Error processing file {file.filename}: {e}")
         raise HTTPException(status_code=500, detail="Có lỗi xảy ra khi xử lý ảnh.")
     finally:
-        # Xóa file tạm
         if os.path.exists(file_location):
             os.remove(file_location)
 
