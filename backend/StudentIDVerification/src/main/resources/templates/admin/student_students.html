@@ -1,21 +1,130 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Quản lý sinh viên</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Thanh điều hướng */
+    .navbar {
+      background-color: #007bff; /* Màu xanh chủ đạo */
+    }
+    .navbar .navbar-brand, .navbar .nav-link {
+      color: white;
+      font-weight: bold;
+    }
+    .navbar .nav-link:hover {
+      color: #ffc107; /* Màu vàng khi hover */
+    }
+
+    /* Cải thiện căn chỉnh các mục trong navbar */
+    .navbar-nav {
+      margin-left: auto;
+    }
+
+    /* Cải thiện bảng */
+    .table th, .table td {
+      padding: 12px;
+      text-align: center;
+    }
+    .table-bordered {
+      border: 1px solid #ddd;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      color: #007bff; /* Màu xanh chủ đạo cho header */
+    }
+
+    /* Các nút trong bảng */
+    .btn {
+      margin: 5px;
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      color: white;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-info:hover, .btn-warning:hover, .btn-danger:hover {
+      opacity: 0.8;
+    }
+
+    /* Form tìm kiếm */
+    .input-group {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .input-group input {
+      border-radius: 4px;
+    }
+    .pagination .page-link {
+      border-radius: 4px;
+      padding: 8px 16px;
+    }
+    .pagination .page-item.active .page-link {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    /* Khoảng cách các phần tử */
+    .container {
+      margin-top: 20px;
+    }
+    .container h2 {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
+<!-- Thanh điều hướng -->
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand" href="#">Admin Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/admin_dashboard">Trang chủ</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/students">Quản lý sinh viên</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/invigilators">Quản lý giám thị</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/examrooms">Quản lý phòng thi</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin_dashboard/logout">Đăng xuất</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
 <div class="container">
-  <h2 class="mt-4">Danh sách sinh viên</h2>
+  <h2>Danh sách sinh viên</h2>
   <a href="/students/new" class="btn btn-primary mb-2">Thêm mới sinh viên</a>
 
   <!-- Form tìm kiếm sinh viên -->
   <form th:action="@{/students}" method="get" class="mb-3">
     <div class="input-group">
-      <label>
-        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sinh viên theo tên, email..." th:value="${searchTerm}">
-      </label>
+      <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sinh viên theo tên, email..." th:value="${searchTerm}">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
       </div>
@@ -48,36 +157,22 @@
     </tr>
     </tbody>
   </table>
-<!--  Chia trang-->
+
+  <!-- Chia trang -->
   <nav>
     <ul class="pagination justify-content-center">
-<!--      &lt;!&ndash; Trang đầu &ndash;&gt;-->
-<!--      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">-->
-<!--        <a class="page-link" th:href="@{/students?page=1&size=10}">Đầu tiên</a>-->
-<!--      </li>-->
-
-<!--      &lt;!&ndash; Trang trước &ndash;&gt;-->
-<!--      <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">-->
-<!--        <a class="page-link" th:href="@{/students?page=${currentPage - 1}&size=10}">Trước</a>-->
-<!--      </li>-->
-
       <!-- Các số trang -->
       <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
           th:class="${pageNum == currentPage ? 'active' : ''}">
         <a class="page-link" th:href="@{'/students?page=' + ${pageNum} + '&size=10'}" th:text="${pageNum + 1}"></a>
       </li>
-
-<!--      &lt;!&ndash; Trang sau &ndash;&gt;-->
-<!--      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">-->
-<!--        <a class="page-link" th:href="@{/students?page=${currentPage + 1}&size=10}">Sau</a>-->
-<!--      </li>-->
-
-<!--      &lt;!&ndash; Trang cuối &ndash;&gt;-->
-<!--      <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">-->
-<!--        <a class="page-link" th:href="@{/students?page=${totalPages - 1}&size=10}">Cuối</a>-->
-<!--      </li>-->
     </ul>
   </nav>
 </div>
+
+<!-- JavaScript cho Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -7,29 +7,145 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     nav {
-      margin-bottom: 20px;
+      background-color: #ffffff;
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     nav a {
-      margin-right: 15px;
+      margin-right: 25px;
       text-decoration: none;
       color: #007bff;
+      font-weight: bold;
+      font-size: 16px;
     }
     nav a:hover {
       text-decoration: underline;
     }
+    nav a.active {
+      color: #0056b3;
+      text-decoration: none;
+    }
+    .container {
+      width: 85%;
+      margin: 30px auto;
+    }
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      padding: 25px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.5em;
+      color: #333;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #007bff;
+      color: white;
+      margin-top: 30px;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .notification {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      font-size: 16px;
+    }
+    .notification a {
+      color: #721c24;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .notification a:hover {
+      text-decoration: underline;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    ul li {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
-<h1>Chào mừng đến trang quản trị</h1>
-<p>Đây là khu vực dành cho quản trị viên.</p>
+<header>
+  <h1>Chào mừng đến trang quản trị</h1>
+  <p>Quản lý toàn bộ hệ thống thi và sinh viên của bạn</p>
+</header>
+
 <nav>
-  <a href="/students">Quản lý sinh viên</a> <!-- Liên kết quản lý sinh viên -->
+  <a href="/students" class="active">Quản lý sinh viên</a>
   <a href="/invigilators">Quản lý giám thị</a>
   <a href="/examrooms">Quản lý phòng thi</a>
-  <a href="/admin_dashboard/logout">Logout</a> <!-- Đường dẫn đến endpoint logout -->
+  <a href="/admin_dashboard/logout">Logout</a>
 </nav>
-<!-- Thêm các đường dẫn hoặc chức năng quản trị tại đây -->
+
+<div class="container">
+  <div class="notification">
+    <p><strong>Cảnh báo:</strong> Đảm bảo rằng tất cả thông tin sinh viên đã được cập nhật đúng hạn.</p>
+  </div>
+
+  <div class="card">
+    <h2>Thông tin tổng quan</h2>
+    <p>Số lượng sinh viên: 324</p>
+    <p>Số lượng giám thị: 12</p>
+    <p>Số lượng phòng thi: 5</p>
+  </div>
+
+  <div class="card">
+    <h2>Các tính năng quản trị</h2>
+    <ul>
+      <li>Thêm mới sinh viên, giám thị, phòng thi</li>
+      <li>Cập nhật thông tin sinh viên, giám thị, phòng thi</li>
+      <li>Xóa sinh viên, giám thị, phòng thi</li>
+      <li>Xuất danh sách sinh viên tham gia thi</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Trang quản trị. Tất cả quyền được bảo lưu.</p>
+</footer>
+
+<script>
+  // Script để thêm class 'active' cho liên kết đang được truy cập
+  const navLinks = document.querySelectorAll('nav a');
+  navLinks.forEach(link => {
+    if (window.location.href.includes(link.getAttribute('href'))) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+</script>
 </body>
 </html>
