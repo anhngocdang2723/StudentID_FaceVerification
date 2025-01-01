@@ -9,97 +9,97 @@
     <link rel="stylesheet" href="/css/api_styles.css">
 </head>
 <body>
-<div class="container mt-5">
-    <div class="row">
+<div class="container-fluid mt-5">
+    <div class="row g-4">
         <!-- Cột trái - Quản lý sinh viên -->
-        <div class="col-md-6">
-            <h1 class="text-center mb-4">Quản lý sinh viên</h1>
-            <form id="uploadExcelForm" enctype="multipart/form-data" class="mb-4">
-                <div class="form-group">
-                    <label for="fileExcel">Tải lên file Excel:</label>
-                    <input type="file" class="form-control-file" id="fileExcel" name="fileExcel" accept=".xlsx,.xls" title="Chọn file Excel" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Tải lên</button>
-            </form>
-            <h4>Thông tin sinh viên:</h4>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Họ tên</th>
-                    <th>MSV</th>
-                    <th>Đường dẫn phiếu thi</th>
-                </tr>
-                </thead>
-                <tbody id="studentList"></tbody>
-            </table>
+        <div class="col-lg-6">
+            <div class="card shadow-sm p-4">
+                <h1 class="text-center mb-4">Quản lý sinh viên</h1>
+                <form id="uploadExcelForm" enctype="multipart/form-data" class="mb-4">
+                    <div class="form-group">
+                        <label for="fileExcel">Tải lên file Excel:</label>
+                        <input type="file" class="form-control-file" id="fileExcel" name="fileExcel" accept=".xlsx,.xls" title="Chọn file Excel" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Tải lên</button>
+                </form>
+                <h4>Thông tin sinh viên:</h4>
+                <table class="table table-striped">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>MSV</th>
+                        <th>Trạng thái</th> <!-- Đã thay 'Đường dẫn phiếu thi' thành 'Trạng thái' -->
+                    </tr>
+                    </thead>
+                    <tbody id="studentList"></tbody>
+                </table>
+                <button id="downloadExcelButton">Tải xuống danh sách</button>
+            </div>
         </div>
 
         <!-- Cột phải - Nhận diện khuôn mặt -->
-        <div class="col-md-6">
-            <h1 class="text-center mb-4 section-title">Nhận diện khuôn mặt</h1>
-
-            <!-- Phần tải ảnh và gửi -->
-            <form id="uploadImageForm" enctype="multipart/form-data" class="mb-4">
-                <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm p-4">
+                <h1 class="text-center mb-4 section-title">Nhận diện khuôn mặt</h1>
+                <form id="uploadImageForm" enctype="multipart/form-data" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h5>Chọn ảnh thẻ sinh viên:</h5>
+                            <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*" required>
+                            <div class="image-preview" id="imagePreview">Ảnh thẻ SV</div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Chọn ảnh cá nhân:</h5>
+                            <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*" required>
+                            <div class="image-preview" id="personalImagePreview">Ảnh cá nhân</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-3">Gửi ảnh</button>
+                </form>
+                <div class="row mt-4">
                     <div class="col-md-6">
-                        <h5>Chọn ảnh thẻ sinh viên:</h5>
-                        <input type="file" class="form-control-file" id="fileImage" name="fileImage" accept="image/*"
-                               title="Chọn ảnh thẻ sinh viên" placeholder="Chọn ảnh thẻ sinh viên" required>
-                        <div class="image-preview" id="imagePreview">Ảnh thẻ SV</div>
+                        <h5>Ảnh khuôn mặt đã cắt:</h5>
+                        <img id="face-image" class="image-preview" alt="Ảnh khuôn mặt đã cắt" style="display:none;" />
                     </div>
                     <div class="col-md-6">
-                        <h5>Chọn ảnh cá nhân:</h5>
-                        <input type="file" class="form-control-file" id="filePersonalImage" name="filePersonalImage" accept="image/*"
-                               title="Chọn ảnh cá nhân" placeholder="Chọn ảnh cá nhân" required>
-                        <div class="image-preview" id="personalImagePreview">Ảnh cá nhân</div>
+                        <h5>Kết quả OCR:</h5>
+                        <table class="table table-bordered" id="ocr-table" style="display: none;">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Thông tin</th>
+                                <th>Giá trị</th>
+                            </tr>
+                            </thead>
+                            <tbody id="ocrResult"></tbody>
+                        </table>
+                        <div id="result" aria-label="Kết quả OCR"></div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block mt-3">Gửi ảnh</button>
-            </form>
-
-            <!-- Phần chứa ảnh đã cắt và kết quả OCR -->
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <h5>Ảnh khuôn mặt đã cắt:</h5>
-                    <img id="face-image" class="image-preview" alt="Ảnh khuôn mặt đã cắt" style="display:none;" />
-                </div>
-                <div class="col-md-6">
-                    <h5>Kết quả OCR:</h5>
-                    <table class="table table-bordered" id="ocr-table" style="display: none;">
-                        <thead>
-                        <tr>
-                            <th>Thông tin</th>
-                            <th>Giá trị</th>
-                        </tr>
-                        </thead>
-                        <tbody id="ocrResult"></tbody>
-                    </table>
-                    <div id="result" aria-label="Kết quả OCR"></div>
-                </div>
-            </div>
-
-            <!-- Phần chứa kết quả so sánh khuôn mặt và phiếu thi -->
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <h5>Kết quả so sánh khuôn mặt:</h5>
-                    <div id="comparison-result" style="display:none;">
-                        <p id="comparison-text"></p>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Kết quả so sánh khuôn mặt:</h5>
+                        <div id="comparison-result" class="alert alert-success" style="display:none;">
+                            <p id="comparison-text"></p>
+                        </div>
                     </div>
-                </div>
                     <div class="col-md-6">
                         <div id="ticket-container" style="display: none;">
-                            <h3>Phiếu Thi</h3>
                             <pre id="ticket-content" style="white-space: pre-wrap; font-family: monospace;"></pre>
                         </div>
                     </div>
+                </div>
+                <!-- Nút Tiếp tục nằm ở cuối phần xác thực khuôn mặt -->
+                <button id="continueButton" class="btn btn-success btn-block mt-4">Tiếp tục</button>
             </div>
         </div>
     </div>
 </div>
 
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script src="/js/api_script.js"></script>
 <!--<script>-->
 <!--    document.addEventListener("DOMContentLoaded", function() {-->

@@ -1,6 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Sự kiện khi thay đổi file để xem trước ảnh thẻ sinh viên
+    // Các yếu tố DOM
     const fileImage = document.getElementById('fileImage');
+    const uploadImageForm = document.getElementById('uploadImageForm');
+    const ocrResult = document.getElementById('ocrResult');
+    const studentListTable = document.getElementById('studentList');
+    const continueButton = document.getElementById('continueButton');
+    const fileExcelInput = document.getElementById('fileExcel');
+    const filePersonalImage = document.getElementById('filePersonalImage');
+    const downloadExcelButton = document.getElementById('downloadExcelButton'); // Nút tải xuống Excel
+
+    let studentList = [];
+    let ticketInfo = null; // Biến lưu thông tin phiếu thi
+
+    // Xem trước ảnh thẻ sinh viên
     if (fileImage) {
         fileImage.addEventListener('change', function(event) {
             const file = event.target.files[0];
@@ -18,12 +30,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-// Gửi ảnh và hiển thị kết quả sau khi xử lý
-    const uploadImageForm = document.getElementById('uploadImageForm');
+    // Gửi ảnh và hiển thị kết quả OCR và phiếu thi
     if (uploadImageForm) {
         uploadImageForm.onsubmit = async function(event) {
-            event.preventDefault(); // Ngừng reload trang khi submit
-            const ocrResult = document.getElementById('ocrResult');
+            event.preventDefault();
             if (ocrResult) ocrResult.textContent = "Đang xử lý...";
 
             const formData = new FormData();
@@ -41,80 +51,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 let result = await response.json();
-                console.log(result);
-                if (ocrResult) ocrResult.textContent = "Kết quả OCR:";
+                displayOCRResult(result);
+                displayFaceImage(result);
+                displayTicket(result);
 
-                // Cập nhật bảng OCR
-                const ocrTable = document.getElementById("ocr-table");
-                if (ocrTable) {
-                    const tableBody = ocrTable.querySelector("tbody");
-                    tableBody.innerHTML = ""; // Xóa nội dung cũ
-                    ocrTable.style.display = "table";
-
-                    if (result["Thông tin trích xuất được"]) {
-                        for (const [key, value] of Object.entries(result["Thông tin trích xuất được"])) {
-                            const row = document.createElement("tr");
-                            const cellKey = document.createElement("td");
-                            cellKey.textContent = key;
-                            const cellValue = document.createElement("td");
-                            cellValue.textContent = value;
-                            row.appendChild(cellKey);
-                            row.appendChild(cellValue);
-                            tableBody.appendChild(row);
-                        }
-                    } else {
-                        ocrResult.textContent = "Không có dữ liệu OCR.";
-                        ocrTable.style.display = "none";
-                    }
+                // Lưu thông tin phiếu thi
+                if (result["Phiếu thi"] && result["Phiếu thi"]["ticket_info"]) {
+                    ticketInfo = result["Phiếu thi"]["ticket_info"]; // Lưu lại thông tin phiếu thi
                 }
 
-                // Hiển thị ảnh khuôn mặt nếu có
-                const faceImage = document.getElementById('face-image');
-                if (faceImage) {
-                    if (result["Hình ảnh khuôn mặt (base64)"]) {
-                        faceImage.src = 'data:image/jpeg;base64,' + result["Hình ảnh khuôn mặt (base64)"];
-                        faceImage.style.display = 'block';
-                    } else {
-                        faceImage.style.display = 'none';
-                    }
-                }
-
-                // Hiển thị kết quả so sánh khuôn mặt
-                const comparisonResult = document.getElementById("comparison-result");
-                const comparisonText = document.getElementById("comparison-text");
-                if (result["Kết quả so sánh khuôn mặt"]) {
-                    comparisonText.textContent = result["Kết quả so sánh khuôn mặt"];
-                    comparisonResult.style.display = "block";
-                } else {
-                    comparisonText.textContent = "Không có kết quả so sánh.";
-                    comparisonResult.style.display = "none";
-                }
-
-                // Hiển thị phiếu thi nếu có
-                const ticketContainer = document.getElementById("ticket-container");
-                const ticketContent = document.getElementById("ticket-content");
-                if (ticketContent) {
-                    if (result["Phiếu thi"] && result["Phiếu thi"]["ticket_info"]) {
-                        const ticketInfo = result["Phiếu thi"]["ticket_info"];
-                        ticketContainer.style.display = "block"; // Hiển thị div phiếu thi
-                        ticketContent.innerHTML = `
-                        <strong>Phiếu Dự Thi</strong><br><br>
-                        <strong>Tên sinh viên:</strong> ${ticketInfo["Tên sinh viên"]}<br>
-                        <strong>Mã sinh viên:</strong> ${ticketInfo["Mã sinh viên"]}<br>
-                        <strong>Tên môn thi:</strong> ${ticketInfo["Tên môn thi"]}<br>
-                        <strong>Mã khóa:</strong> ${ticketInfo["Mã khóa"]}<br>
-                        <strong>Vị trí ngồi:</strong> ${ticketInfo["Vị trí ngồi"]}<br>
-                        <br>
-                        <strong>Đường dẫn phiếu thi:</strong> 
-                        <a href="${result["Phiếu thi"]["file_path"]}" target="_blank">Tải về tại đây</a>
-                        <hr>
-                    `;
-                    } else {
-                        console.log("Không có thông tin phiếu thi trong dữ liệu trả về.");
-                        ticketContainer.style.display = "none"; // Ẩn phiếu thi nếu không có
-                    }
-                } else {
-                    console.error("Không tìm thấy phần tử với ID 'ticket-content'.");
+                // Giả sử bạn nhận được MSV từ kết quả và cập nhật trạng thái của sinh viên
+                const msvFromResult = result["Thông tin trích xuất được"]["Mã sinh viên"];
+                if (msvFromResult) {
+                    updateStudentStatus(msvFromResult); // Cập nhật trạng thái khi có MSV
                 }
             } catch (error) {
                 if (ocrResult) ocrResult.textContent = 'Lỗi: ' + error.message;
@@ -122,44 +71,17 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 
-    // Sự kiện xem trước ảnh cá nhân (nếu cần)
-    const filePersonalImage = document.getElementById('filePersonalImage');
-    if (filePersonalImage) {
-        filePersonalImage.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const personalImagePreview = document.getElementById('personalImagePreview');
-                if (personalImagePreview) {
-                    personalImagePreview.style.backgroundImage = `url(${e.target.result})`;
-                    personalImagePreview.textContent = '';
-                }
-            };
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Gửi yêu cầu đến FastAPI và hiển thị thông tin sinh viên
-    const uploadExcelForm = document.getElementById('uploadExcelForm');
-    if (uploadExcelForm) {
-        uploadExcelForm.onsubmit = async function(event) {
-            event.preventDefault(); // Ngừng reload trang khi submit
-            const fileExcelInput = document.getElementById('fileExcel');
+    // Cập nhật bảng sinh viên khi tải lên file Excel
+    if (fileExcelInput) {
+        fileExcelInput.addEventListener('change', async function(event) {
             const file = fileExcelInput.files[0];
-
-            if (!file) {
-                alert("Vui lòng chọn file Excel trước khi tải lên.");
-                return;
-            }
+            if (!file) return alert("Vui lòng chọn file Excel trước khi tải lên.");
 
             const formData = new FormData();
-            formData.append("file", file); // Đảm bảo tên trường trùng với tên trong backend
+            formData.append("file", file);
 
             try {
-                console.log("Bắt đầu tải lên file Excel");
-                const response = await fetch("http://127.0.0.1:8000/api/read-excel", {
+                let response = await fetch("http://127.0.0.1:8000/api/read-excel", {
                     method: "POST",
                     body: formData
                 });
@@ -170,67 +92,193 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 const result = await response.json();
-                console.log("Kết quả nhận được:", result);
-
-                const studentList = document.getElementById('studentList');
-                studentList.innerHTML = ""; // Xóa nội dung cũ để cập nhật
-
-                // Kiểm tra và hiển thị thông tin sinh viên
                 if (result.students && result.students.length > 0) {
-                    result.students.forEach(student => {
-                        const row = document.createElement('tr');
-
-                        // Tách tên và mã sinh viên
-                        const studentInfo = student.split(" - "); // Chia chuỗi tại dấu " - "
-                        const name = studentInfo[0] || "Chưa có tên"; // Phần trước dấu " - "
-                        const msv = studentInfo[1] || "Chưa có mã sinh viên"; // Phần sau dấu " - "
-
-                        // Lấy đường dẫn phiếu thi
-                        const examSheetLink = student.exam_sheet_link || "Chưa có"; // Nếu không có đường dẫn thì hiển thị "Chưa có"
-
-                        row.innerHTML = `
-                        <td>${name}</td>
-                        <td>${msv}</td>
-                        <td>
-                            <a href="${examSheetLink}" target="_blank">${examSheetLink === "Chưa có" ? "Chưa có" : "Xem phiếu thi"}</a>
-                        </td> <!-- Hiển thị đường dẫn phiếu thi -->
-                    `;
-                        studentList.appendChild(row);
-                    });
+                    studentList = result.students.map(student => ({
+                        name: student.split(" - ")[0] || "Chưa có tên",
+                        msv: student.split(" - ")[1] || "Chưa có mã sinh viên",
+                        status: "Chưa có mặt",
+                        isAuthenticated: false // Thêm thuộc tính xác thực
+                    }));
+                    updateStudentTable();
                 } else {
                     alert("Không có thông tin sinh viên trong file Excel.");
                 }
             } catch (error) {
                 alert("Lỗi: " + error.message);
             }
-        };
+        });
     }
 
-    // function fetchExamTicket(studentMsv) {
-    //     const previewElement = document.getElementById('exam-sheet-preview');
-    //     previewElement.textContent = "Đang tải..."; // Hiển thị thông báo khi đang tải
-    //
-    //     fetch(`http://127.0.0.1:8000/api/serve-ticket/${studentMsv}`)
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 throw new Error(`HTTP error! Status: ${response.status}`);
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             if (data.ticket_content) {
-    //                 previewElement.textContent = data.ticket_content; // Hiển thị nội dung phiếu thi
-    //             } else {
-    //                 previewElement.textContent = "Không tìm thấy phiếu thi."; // Thông báo nếu không có dữ liệu
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Lỗi:', error);
-    //             previewElement.textContent = "Có lỗi xảy ra khi tải phiếu thi."; // Hiển thị lỗi
-    //         });
-    // }
+    // Cập nhật bảng sinh viên
+    function updateStudentTable() {
+        studentListTable.innerHTML = '';
+        studentList.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.msv}</td>
+                <td>${student.status}</td>
+            `;
+            studentListTable.appendChild(row);
+        });
+    }
 
-    // Ví dụ sử dụng MSV để lấy phiếu thi
-    // const studentMsv = "215748020110333";  // MSV của sinh viên
-    // fetchExamTicket(studentMsv);
+    // Hiển thị kết quả OCR và cập nhật trạng thái
+    function displayOCRResult(result) {
+        const ocrTable = document.getElementById("ocr-table");
+        const tableBody = ocrTable.querySelector("tbody");
+        if (ocrTable) {
+            tableBody.innerHTML = "";
+            ocrTable.style.display = "table";
+
+            if (result["Thông tin trích xuất được"]) {
+                for (const [key, value] of Object.entries(result["Thông tin trích xuất được"])) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${key}</td><td>${value}</td>`;
+                    tableBody.appendChild(row);
+                }
+            } else {
+                ocrResult.textContent = "Không có dữ liệu OCR.";
+                ocrTable.style.display = "none";
+            }
+        }
+    }
+
+    // Hiển thị ảnh khuôn mặt đã cắt
+    function displayFaceImage(result) {
+        const faceImage = document.getElementById('face-image');
+        if (faceImage) {
+            if (result["Hình ảnh khuôn mặt (base64)"]) {
+                faceImage.src = 'data:image/jpeg;base64,' + result["Hình ảnh khuôn mặt (base64)"];
+                faceImage.style.display = 'block';
+            } else {
+                faceImage.style.display = 'none';
+            }
+        }
+    }
+
+    // Hiển thị phiếu thi
+    function displayTicket(result) {
+        const ticketContainer = document.getElementById("ticket-container");
+        const ticketContent = document.getElementById("ticket-content");
+
+        if (ticketContent) {
+            if (result["Phiếu thi"] && result["Phiếu thi"]["ticket_info"]) {
+                const ticketInfo = result["Phiếu thi"]["ticket_info"];
+                ticketContainer.style.display = "block";
+                ticketContent.innerHTML = `
+                    <h3>Phiếu Dự Thi</h3>
+                    <div><strong>Tên sinh viên:</strong> ${ticketInfo["Tên sinh viên"]}</div>
+                    <div><strong>Mã sinh viên:</strong> ${ticketInfo["Mã sinh viên"]}</div>
+                    <div><strong>Tên môn thi:</strong> ${ticketInfo["Tên môn thi"]}</div>
+                    <div><strong>Mã khóa:</strong> ${ticketInfo["Mã khóa"]}</div>
+                    <div><strong>Vị trí ngồi:</strong> ${ticketInfo["Vị trí ngồi"]}</div>
+                    <div><strong>Đường dẫn phiếu thi:</strong>
+                        <a href="${result["Phiếu thi"]["file_path"]}" target="_blank">Tải về tại đây</a>
+                    </div>
+                `;
+            } else {
+                ticketContainer.style.display = "none";
+            }
+        }
+    }
+
+    // Cập nhật trạng thái của sinh viên khi có MSV đã xác thực
+    function updateStudentStatus(msvFromResult) {
+        studentList.forEach(student => {
+            if (student.msv === msvFromResult) {
+                student.status = 'Có mặt'; // Cập nhật trạng thái khi MSV trùng khớp
+                student.isAuthenticated = true; // Đánh dấu đã xác thực
+            }
+        });
+        updateStudentTable();
+    }
+
+    // Cập nhật trạng thái của sinh viên khi nhấn nút "Tiếp tục"
+    if (continueButton) {
+        continueButton.addEventListener('click', function() {
+            // Lấy MSV từ phiếu thi
+            if (ticketInfo && ticketInfo["Mã sinh viên"]) {
+                const msvFromTicket = ticketInfo["Mã sinh viên"];
+
+                studentList.forEach(student => {
+                    if (student.msv === msvFromTicket) {
+                        student.status = 'Có mặt'; // Cập nhật trạng thái thành 'Có mặt'
+                        student.isAuthenticated = true; // Đánh dấu đã xác thực
+                    }
+                });
+                updateStudentTable();
+                alert('Trạng thái đã được cập nhật!');
+            } else {
+                alert('Không thể xác định MSV từ phiếu thi.');
+            }
+
+            // Làm mới ảnh sau khi xác thực
+            resetRightPanel();
+            resetImage();
+        });
+
+    }
+
+    // Reset lại phần bên phải (Ảnh khuôn mặt, Kết quả OCR, Kết quả so sánh khuôn mặt, Phiếu Dự Thi)
+    function resetRightPanel() {
+        // Reset ảnh khuôn mặt
+        const faceImage = document.getElementById('face-image');
+        if (faceImage) faceImage.style.display = 'none';
+
+        // Reset kết quả OCR
+        const ocrTable = document.getElementById("ocr-table");
+        const tableBody = ocrTable.querySelector("tbody");
+        if (ocrTable) {
+            tableBody.innerHTML = "";
+            ocrResult.textContent = "Kết quả OCR:";
+            ocrTable.style.display = "none";
+        }
+
+        // Reset kết quả so sánh khuôn mặt
+        const comparisonResult = document.getElementById("comparison-result");
+        if (comparisonResult) comparisonResult.style.display = "none";
+        const comparisonText = document.getElementById("comparison-text");
+        if (comparisonText) comparisonText.textContent = "";
+
+        // Reset phiếu dự thi
+        const ticketContainer = document.getElementById("ticket-container");
+        if (ticketContainer) ticketContainer.style.display = "none";
+    }
+
+    // Reset lại ảnh tải lên
+    function resetImage() {
+        // Làm mới ảnh tải lên
+        const imagePreview = document.getElementById('imagePreview');
+        if (imagePreview) {
+            imagePreview.style.backgroundImage = ''; // Xóa ảnh trước
+            imagePreview.textContent = 'Chọn ảnh thẻ sinh viên';
+        }
+        // Xóa file đã tải lên
+        fileImage.value = '';
+    }
+
+    // Xử lý tải xuống danh sách sinh viên dưới dạng file Excel
+    if (downloadExcelButton) {
+        downloadExcelButton.addEventListener('click', function() {
+            if (studentList.length === 0) {
+                alert("Danh sách sinh viên rỗng.");
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const wsData = studentList.map(student => [
+                student.name,
+                student.msv,
+                student.status
+            ]);
+
+            const ws = XLSX.utils.aoa_to_sheet([["Tên sinh viên", "Mã sinh viên", "Trạng thái"], ...wsData]);
+            XLSX.utils.book_append_sheet(wb, ws, "Danh sách sinh viên");
+
+            // Tải file Excel về
+            XLSX.writeFile(wb, "Danh_sach_sinh_vien.xlsx");
+        });
+    }
+
 });

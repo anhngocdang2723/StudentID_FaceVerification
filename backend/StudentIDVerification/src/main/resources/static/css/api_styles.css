@@ -1,141 +1,115 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
+/* Overall container styling */
+.container-fluid {
+    margin-top: 50px; /* Adjusted for more space at the top */
+    padding: 0 15px; /* Added padding to avoid edges touching the screen */
 }
 
-h1 {
-    font-size: 2rem;
-    color: #007bff;
+/* Card styling for better spacing and shadow effect */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* Headings - Make them consistent and uniform */
+h1, h4, h5 {
+    font-weight: bold;
     margin-bottom: 20px;
 }
 
-h5 {
-    font-size: 1.2rem;
-    color: #555;
+/* For the form section - Increase spacing between form elements */
+.form-group {
+    margin-bottom: 20px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.form-group label {
-    font-weight: bold;
-}
-
-.form-group input[type="file"] {
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.btn-block {
-    font-weight: bold;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.btn-block:hover {
-    background-color: #0056b3;
-}
-
-.image-preview {
+/* File input styling */
+input[type="file"] {
+    display: block;
     width: 100%;
-    height: 200px; /* Chiều cao của khung */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-size: contain; /* Thay đổi từ cover sang contain để ảnh không bị cắt */
-    background-position: center; /* Giữ ảnh ở giữa khung */
-    background-repeat: no-repeat; /* Không lặp lại ảnh */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaa;
-    font-size: 1rem;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+/* Preview images style */
+.image-preview {
+    border: 2px dashed #007bff;
+    padding: 20px;
+    text-align: center;
+    color: #007bff;
     margin-top: 10px;
 }
 
-#face-image {
-    margin-top: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    max-width: 100%;
-    height: auto;
+/* Button styling */
+.btn {
+    padding: 12px 30px;
+    font-size: 16px;
 }
 
+/* Table styling for uniformity */
 .table {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
+    margin-top: 20px;
 }
 
 .table th, .table td {
     text-align: center;
-    padding: 10px;
+    padding: 12px;
+}
+
+/* OCR and comparison result styling */
+#ocr-table {
+    margin-top: 15px;
+    width: 100%;
 }
 
 #comparison-result {
-    background-color: #e9f7ef;
-    color: #155724;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-}
-.image-preview {
-    max-width: 100%;
-    max-height: 200px;
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 5px;
-    transition: transform 0.2s;
-}
-.image-preview img {
-    max-width: 100%;
-    max-height: 200px;
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 5px;
-    transition: transform 0.2s;
-}
-
-.image-preview img:hover {
-    transform: scale(1.05);
-}
-
-.section-title {
-    font-weight: bold;
     margin-top: 20px;
+    display: none;
 }
 
-#ticket-container {
-    background-color: #f4f4f4;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-#ticket-container h3 {
-    text-align: center;
-    font-size: 1.5em;
-    color: #333;
-}
-
+/* Ticket content - For better display */
 #ticket-content {
-    font-size: 1.2em;
-    line-height: 1.5;
-    margin-top: 10px;
     white-space: pre-wrap;
-    word-wrap: break-word;
-    color: #333;
+    font-family: "Courier New", Courier, monospace;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
-#ticket-content strong {
-    color: #0056b3;
+/* Responsive adjustments for different screen sizes */
+@media (max-width: 991px) {
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .form-group label {
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .image-preview {
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    #ticket-container {
+        display: block;
+    }
 }
