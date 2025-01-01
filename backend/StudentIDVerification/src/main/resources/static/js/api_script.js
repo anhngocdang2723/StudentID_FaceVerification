@@ -12,6 +12,24 @@ document.addEventListener("DOMContentLoaded", function() {
     let studentList = [];
     let ticketInfo = null; // Biến lưu thông tin phiếu thi
 
+    // Xem trước ảnh cá nhân
+    if (filePersonalImage) {
+        filePersonalImage.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const personalImagePreview = document.getElementById('personalImagePreview');
+                if (personalImagePreview) {
+                    personalImagePreview.style.backgroundImage = `url(${e.target.result})`;
+                    personalImagePreview.textContent = ''; // Xóa text nếu có
+                }
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     // Xem trước ảnh thẻ sinh viên
     if (fileImage) {
         fileImage.addEventListener('change', function(event) {
@@ -250,12 +268,18 @@ document.addEventListener("DOMContentLoaded", function() {
     function resetImage() {
         // Làm mới ảnh tải lên
         const imagePreview = document.getElementById('imagePreview');
+        const personalImagePreview = document.getElementById('personalImagePreview');
         if (imagePreview) {
             imagePreview.style.backgroundImage = ''; // Xóa ảnh trước
             imagePreview.textContent = 'Chọn ảnh thẻ sinh viên';
         }
+        if (personalImagePreview) {
+            personalImagePreview.style.backgroundImage = ''; // Xóa ảnh trước
+            personalImagePreview.textContent = 'Chọn ảnh cá nhân';
+        }
         // Xóa file đã tải lên
         fileImage.value = '';
+        filePersonalImage.value = '';
     }
 
     // Xử lý tải xuống danh sách sinh viên dưới dạng file Excel
