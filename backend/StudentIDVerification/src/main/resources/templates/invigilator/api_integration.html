@@ -34,6 +34,7 @@
                     <tbody id="studentList"></tbody>
                 </table>
                 <button id="downloadExcelButton">Tải xuống danh sách</button>
+                <button id="startExamButton">Tiến hành ca thi</button>
             </div>
         </div>
 
@@ -94,13 +95,24 @@
         </div>
     </div>
 </div>
-
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script src="/js/api_script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startExamButton = document.getElementById("startExamButton");
+
+        if (startExamButton) {
+            startExamButton.addEventListener("click", function () {
+                // Điều hướng đến trang /exam
+                window.location.href = "/invigilator/exam";
+            });
+        }
+    });
+
+</script>
 <!--<script>-->
 <!--    document.addEventListener("DOMContentLoaded", function() {-->
 <!--        // Mã JavaScript sẽ chạy khi trang đã được tải xong-->
