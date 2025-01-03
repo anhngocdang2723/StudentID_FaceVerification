@@ -88,7 +88,7 @@
 </div>
 
 <!-- Button to end the exam -->
-<button id="endExamButton">Kết thúc ca thi</button>
+<button id="endExamButton" >Kết thúc ca thi</button>
 
 <!-- Table to display student list -->
 <table id="studentList" border="1" cellpadding="5" cellspacing="0" style="margin-top: 20px;">
@@ -209,7 +209,7 @@
     endExamButton.addEventListener('click', function() {
         if (confirm("Bạn có chắc chắn muốn kết thúc ca thi?")) {
             alert("Ca thi đã kết thúc!");
-            generatePDF(); // Generate and download the PDF
+            // generatePDF(); // Generate and download the PDF
         }
     });
 
