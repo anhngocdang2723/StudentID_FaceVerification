@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Kiểm tra nhận roll
         String userRole = (String) session.getAttribute("userRole");
 //      System.out.println("role: " + userRole);
         if ("admin".equals(userRole)) {

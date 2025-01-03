@@ -3,7 +3,7 @@ import cv2
 
 model = YOLO(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\api\models\best.pt")
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
@@ -22,28 +22,21 @@ while True:
         print("Không thể đọc khung hình từ webcam.")
         break
 
-    # Vẽ khung ảo cố định lên khung hình
     cv2.rectangle(frame, (virtual_box_x1, virtual_box_y1), (virtual_box_x2, virtual_box_y2), (0, 255, 0), 2)
 
-    # Dự đoán với YOLOv8
     results = model.predict(source=frame, show=False, conf=0.90)
 
-    # Xử lý từng bounding box
     for box in results[0].boxes:
-        # Tọa độ của bounding box từ YOLO
         x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-        # Kiểm tra nếu bounding box nằm hoàn toàn trong khung ảo
         if x1 >= virtual_box_x1 and y1 >= virtual_box_y1 and x2 <= virtual_box_x2 and y2 <= virtual_box_y2:
             card_image = frame[y1:y2, x1:x2]
             cv2.imshow("High Quality Student ID Card", card_image)
             cv2.imwrite(r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\test\output\student_id_card.jpg", card_image)
 
-    # Vẽ kết quả lên khung hình
     annotated_frame = results[0].plot()
     cv2.imshow("YOLOv8 Live Detection", annotated_frame)
 
-    # Thoát khi nhấn 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

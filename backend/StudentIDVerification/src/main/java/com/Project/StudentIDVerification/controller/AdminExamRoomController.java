@@ -68,7 +68,6 @@ public class AdminExamRoomController {
         return computers;
     }
 
-    // Hiển thị danh sách tất cả các phòng thi
     @GetMapping
     public String listExamRooms(Model model) {
         List<ExamRoom> examRooms = examRoomService.getAllExamRooms();
@@ -76,7 +75,6 @@ public class AdminExamRoomController {
         return "admin/examroom_list";
     }
 
-    // Hiển thị form tạo phòng thi
     @GetMapping("/create")
     public String showCreateExamRoomForm(Model model) {
         List<Room> rooms = roomRepository.findAll();
@@ -123,7 +121,6 @@ public class AdminExamRoomController {
             examRoom.setDefaultCamerasAndComputers();
             System.out.println("Created ExamRoom: " + examRoom);
 
-            // Lưu vào database
             examRoomRepository.save(examRoom);
             examRooms.add(examRoom);
         }
@@ -138,12 +135,11 @@ public class AdminExamRoomController {
                                  Model model, RedirectAttributes redirectAttributes) {
 
         // In thông tin nhận được từ form
-        System.out.println("Received request to create ExamRoom with the following data:");
-        System.out.println("examId: " + examId);
-        System.out.println("roomIds: " + roomIds);
-        System.out.println("invigilatorIds: " + invigilatorIds);
+//        System.out.println("Received request to create ExamRoom with the following data:");
+//        System.out.println("examId: " + examId);
+//        System.out.println("roomIds: " + roomIds);
+//        System.out.println("invigilatorIds: " + invigilatorIds);
 
-        // Kiểm tra nếu không có dữ liệu được gửi
         if (examId == null || roomIds == null || invigilatorIds == null || roomIds.isEmpty() || invigilatorIds.isEmpty()) {
             System.out.println("One or more parameters are missing!");
             model.addAttribute("error", "Dữ liệu không đầy đủ!");
@@ -174,7 +170,6 @@ public class AdminExamRoomController {
         return "redirect:/examrooms";
     }
 
-    // Hiển thị form chỉnh sửa phòng thi
     @GetMapping("/edit/{id}")
     public String showEditExamRoomForm(@PathVariable String id, Model model) {
         ExamRoom examRoom = examRoomService.getExamRoomById(id)
@@ -183,10 +178,8 @@ public class AdminExamRoomController {
         return "admin/examroom_edit"; // View hiển thị form chỉnh sửa phòng thi
     }
 
-    // Xử lý cập nhật phòng thi
     @PostMapping("/{id}")
     public String updateExamRoom(@PathVariable String id, @ModelAttribute("examRoom") ExamRoom updatedExamRoom) {
-        // Đảm bảo danh sách cameras và computers được giữ nguyên khi chỉnh sửa
         ExamRoom existingRoom = examRoomService.getExamRoomById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid room ID: " + id));
 
@@ -196,11 +189,10 @@ public class AdminExamRoomController {
         return "redirect:/examrooms";
     }
 
-    // Xoá phòng thi
     @GetMapping("/delete/{id}")
     public String deleteExamRoom(@PathVariable String id) {
         examRoomService.deleteExamRoom(id);
-        return "redirect:/examrooms";  // Sau khi xóa, chuyển hướng lại danh sách phòng thi
+        return "redirect:/examrooms";
     }
 
 }
