@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class Proctor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Sử dụng IDENTITY cho SQLite
     private Long proctorId;  // Mã giám thị (ID giám thị)
 
     @Column(nullable = false, unique = true)

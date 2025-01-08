@@ -1,34 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Đăng nhập người dùng</h1>
+<div class="container" style="max-width: 400px; margin-top: 100px;">
+    <h2 class="text-center">Login</h2>
 
-<!-- Form đăng nhập -->
-<form action="/users/login" method="post">
-    <label for="accountId">Account ID:</label>
-    <input type="text" id="accountId" name="accountId" required><br><br>
+    <!-- Hiển thị lỗi nếu có -->
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
-
-    <button type="submit">Login</button>
-</form>
-
-<!-- Hiển thị thông báo thành công -->
-<div th:if="${successMessage}" style="color: green;">
-    <p th:text="${successMessage}"></p>
-    <h1>tb day</h1>
+    <form action="/login" method="POST">
+        <div class="form-group">
+            <label for="accountId">Account ID</label>
+            <input type="text" id="accountId" name="accountId" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
 </div>
 
-<!-- Hiển thị thông báo lỗi -->
-<div th:if="${errorMessage}" style="color: red;">
-    <p th:text="${errorMessage}"></p>
-</div>
-
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

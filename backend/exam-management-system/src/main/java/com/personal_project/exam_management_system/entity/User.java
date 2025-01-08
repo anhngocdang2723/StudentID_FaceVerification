@@ -1,40 +1,29 @@
 package com.personal_project.exam_management_system.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "Users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long userId;  // Mã người dùng (ID tài khoản)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
 
     @Column(nullable = false, unique = true)
-    private String accountId;  // Tài khoản (MSV, mã giám thị, mã admin)
+    private String accountId;
 
     @Column(nullable = false)
-    private String password;  // Mật khẩu
+    private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;  // Phân quyền (student, proctor, admin)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id") // ánh xạ đúng với role_id trong bảng Users
+    private Role role;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;  // Ngày tạo tài khoản
+    private String createdAt;
 
-    // Constructor mặc định
-    public User() {}
-
-    // Constructor có tham số
-    public User(String accountId, String password, Role role, LocalDateTime createdAt) {
-        this.accountId = accountId;
-        this.password = password;
-        this.role = role;
-        this.createdAt = createdAt;
-    }
-
-    // Getters và Setters
+    // Getters and Setters
     public Long getUserId() {
         return userId;
     }
@@ -67,28 +56,11 @@ public class User {
         this.role = role;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", accountId='" + accountId + '\'' +
-                ", role=" + role +
-                ", createdAt=" + createdAt +
-                '}';
-    }
-
-    // Enum cho các quyền (student, proctor, admin)
-    public enum Role {
-        STUDENT,
-        PROCTOR,
-        ADMIN
     }
 }

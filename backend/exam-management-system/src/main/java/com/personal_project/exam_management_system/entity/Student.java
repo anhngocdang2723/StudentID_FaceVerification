@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long studentId;  // Mã sinh viên (sử dụng tự động tăng cho trường hợp này)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Sử dụng IDENTITY cho SQLite
+    private Long studentId;  // Mã sinh viên
 
     @Column(nullable = false, unique = true)
     private String studentCode;  // Mã sinh viên
@@ -187,5 +187,18 @@ public class Student {
                 ", email='" + email + '\'' +
                 ", status=" + status +
                 '}';
+    }
+
+    // Enum cho Giới tính
+    public enum Gender {
+        MALE,
+        FEMALE;
+    }
+
+    // Enum cho Trạng thái sinh viên
+    public enum Status {
+        ACTIVE,
+        GRADUATED,
+        INACTIVE;
     }
 }

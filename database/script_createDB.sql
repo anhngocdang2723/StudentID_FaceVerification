@@ -2,7 +2,8 @@ CREATE TABLE Users (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     account_id TEXT UNIQUE NOT NULL,    -- Tài khoản (MSV, mã giám thị, mã admin)
     password TEXT NOT NULL,             -- Mật khẩu
-    role TEXT CHECK (role IN ('student', 'proctor', 'admin')) NOT NULL,  -- Phân quyền
+    role_id INTEGER, 
+	FOREIGN KEY (role_id) REFERENCES Role (role_id)  -- Phân quyền
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP  -- Ngày tạo tài khoản
 );
 
@@ -30,3 +31,12 @@ CREATE TABLE Proctors (
     phone_number TEXT,                  -- Số điện thoại
     email TEXT                          -- Email
 );
+
+CREATE TABLE Role (
+    role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role_name TEXT NOT NULL UNIQUE
+);
+
+INSERT INTO Role (role_name) VALUES ('Student');
+INSERT INTO Role (role_name) VALUES ('Proctor');
+INSERT INTO Role (role_name) VALUES ('Admin');
