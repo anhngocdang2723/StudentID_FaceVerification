@@ -1,13 +1,15 @@
 package com.personal_project.exam_management_system.entity;
 
+import com.personal_project.exam_management_system.converter.LocalDateConverter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "Students")
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Sử dụng IDENTITY cho SQLite
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long studentId;  // Mã sinh viên
 
     @Column(nullable = false, unique = true)
@@ -29,6 +31,7 @@ public class Student {
     @Column(nullable = false)
     private Gender gender;  // Giới tính (Male/Female)
 
+    @Convert(converter = LocalDateConverter.class)
     @Column(nullable = false)
     private LocalDate dateOfBirth;  // Ngày sinh
 
@@ -42,17 +45,17 @@ public class Student {
     @Column(nullable = false)
     private Status status;  // Trạng thái sinh viên (Active/Graduated/Inactive)
 
-    @Lob
-    private byte[] studentPhoto;  // Ảnh thẻ sinh viên (Lưu dưới dạng BLOB)
+    @Column(nullable = true)
+    private String studentPhoto;  // Đường dẫn ảnh thẻ sinh viên (Lưu dưới dạng TEXT)
 
-    @Lob
-    private byte[] facePhoto;  // Ảnh khuôn mặt sinh viên (Lưu dưới dạng BLOB)
+    @Column(nullable = true)
+    private String facePhoto;  // Đường dẫn ảnh khuôn mặt sinh viên (Lưu dưới dạng TEXT)
 
     // Constructor mặc định
     public Student() {}
 
     // Constructor có tham số
-    public Student(String studentCode, String fullName, String department, String className, String cohort, Gender gender, LocalDate dateOfBirth, String phoneNumber, String email, Status status, byte[] studentPhoto, byte[] facePhoto) {
+    public Student(String studentCode, String fullName, String department, String className, String cohort, Gender gender, LocalDate dateOfBirth, String phoneNumber, String email, Status status, String studentPhoto, String facePhoto) {
         this.studentCode = studentCode;
         this.fullName = fullName;
         this.department = department;
@@ -156,19 +159,19 @@ public class Student {
         this.status = status;
     }
 
-    public byte[] getStudentPhoto() {
+    public String getStudentPhoto() {
         return studentPhoto;
     }
 
-    public void setStudentPhoto(byte[] studentPhoto) {
+    public void setStudentPhoto(String studentPhoto) {
         this.studentPhoto = studentPhoto;
     }
 
-    public byte[] getFacePhoto() {
+    public String getFacePhoto() {
         return facePhoto;
     }
 
-    public void setFacePhoto(byte[] facePhoto) {
+    public void setFacePhoto(String facePhoto) {
         this.facePhoto = facePhoto;
     }
 
@@ -186,6 +189,8 @@ public class Student {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", status=" + status +
+                ", studentPhoto='" + studentPhoto + '\'' +
+                ", facePhoto='" + facePhoto + '\'' +
                 '}';
     }
 

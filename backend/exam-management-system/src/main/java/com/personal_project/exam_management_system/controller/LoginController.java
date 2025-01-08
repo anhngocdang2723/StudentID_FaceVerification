@@ -25,11 +25,24 @@ public class LoginController {
     public String login(@RequestParam String accountId, @RequestParam String password, Model model) {
         String result = userService.authenticate(accountId, password);
 
-        if (result.equals("Login successful")) {
-            return "redirect:/dashboard_student";  // Đăng nhập thành công, chuyển đến trang home (hoặc trang nào bạn muốn)
+        if (result.equals("Invalid credentials") || result.equals("Invalid role")) {
+            model.addAttribute("error", result);  // Hiển thị lỗi
+            return "login";  // Quay lại trang đăng nhập
         } else {
-            model.addAttribute("error", result);  // Nếu thất bại, hiển thị lỗi
-            return "login";  // Trả về lại trang đăng nhập
+            // Chuyển hướng đến trang dashboard tương ứng
+            return "redirect:/" + result;  // result có thể là "dashboard_student", "dashboard_proctor", "dashboard_admin"
         }
+    }
+
+    // Các endpoint cho từng dashboard
+
+    @GetMapping("/dashboard_proctor")
+    public String proctorDashboard() {
+        return "dashboard_proctor";  // Trả về trang dashboard_proctor.html
+    }
+
+    @GetMapping("/dashboard_admin")
+    public String adminDashboard() {
+        return "dashboard_admin";  // Trả về trang dashboard_admin.html
     }
 }

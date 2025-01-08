@@ -13,7 +13,15 @@ public class StudentService {
 
     // Phương thức tìm kiếm thông tin sinh viên theo mã sinh viên
     public Student findByStudentCode(String studentCode) {
-        return studentRepository.findByStudentCode(studentCode)
-                .orElseThrow(() -> new RuntimeException("Student not found with code: " + studentCode));
+        // Debugging: Kiểm tra mã sinh viên đang được tìm kiếm
+        System.out.println("Searching for student with code: " + studentCode);
+
+        // Sử dụng Optional để tránh lỗi NullPointerException
+        Student student = studentRepository.findByStudentCode(studentCode).orElse(null);
+
+        // Debugging: Kiểm tra xem có sinh viên không
+        System.out.println("Student found: " + student);
+
+        return student;
     }
 }
