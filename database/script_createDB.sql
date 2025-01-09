@@ -19,8 +19,8 @@ CREATE TABLE Students (
     phone_number TEXT,                  -- Số điện thoại
     email TEXT,                         -- Email
     status TEXT CHECK (status IN ('Active', 'Graduated', 'Inactive')) DEFAULT 'Active', -- Trạng thái sinh viên
-    student_photo BLOB,                 -- Ảnh thẻ sinh viên (dạng BLOB để lưu ảnh)
-    face_photo BLOB                     -- Ảnh khuôn mặt sinh viên (dạng BLOB để lưu ảnh)
+    student_photo TEXT,                 -- Ảnh thẻ sinh viên 
+    face_photo TEXT                     -- Ảnh khuôn mặt sinh viên 
 );
 
 CREATE TABLE Proctors (

@@ -33,11 +33,11 @@ public class UserService {
                 // Dựa vào role_id trả về giao diện tương ứng
                 switch (roleId.intValue()) {
                     case 1:
-                        return "student/dashboard_student";
+                        return "student/dashboard-student";
                     case 2:
-                        return "dashboard_proctor";
+                        return "proctor/dashboard-proctor";
                     case 3:
-                        return "dashboard_admin";
+                        return "admin/dashboard-admin";
                     default:
                         return "Invalid role";
                 }

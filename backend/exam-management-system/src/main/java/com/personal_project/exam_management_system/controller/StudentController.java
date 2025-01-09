@@ -19,40 +19,71 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/dashboard_student")
+    // Trang dashboard-student
+    @GetMapping("/dashboard-student")
     public String studentDashboard(Model model) {
-        // Lấy userCode từ UserService
+        // Lấy userCode để query thông tin sv
         String userCode = userService.getUserCode();
 
-        // Debugging: In ra giá trị userCode
-        System.out.println("User Code: " + userCode);
+//        System.out.println("User Code: " + userCode);
+
+        if (userCode != null) {
+            // query thông tin sv
+            Student student = studentService.findByStudentCode(userCode);
+
+//            System.out.println("Student Info: " + student);
+
+            if (student != null) {
+                // Nếu ảnh sinh viên không tồn tại, gán đường dẫn ảnh mặc định
+//                if (student.getStudentPhoto() == null || student.getStudentPhoto().isEmpty()) {
+//                    student.setStudentPhoto("/images/default-student-photo.jpg");  // Đường dẫn ảnh thẻ sinh viên mặc định
+//                }
+//                if (student.getFacePhoto() == null || student.getFacePhoto().isEmpty()) {
+//                    student.setFacePhoto("/images/default-face-photo.jpg");  // Đường dẫn ảnh khuôn mặt mặc định
+//                }
+
+                // Truyền thông tin sinh viên vào model
+                model.addAttribute("student", student);
+                return "dashboard-student";
+            } else {
+                model.addAttribute("error", "Student not found");
+                return "error";
+            }
+        } else {
+            model.addAttribute("error", "User code not found");
+            return "error";
+        }
+    }
+
+    // Trang thông tin cá nhân
+    @GetMapping("/info")
+    public String studentInfo(Model model) {
+        // Lấy userCode từ UserService
+        String userCode = userService.getUserCode();
 
         if (userCode != null) {
             // Truy vấn thông tin sinh viên theo userCode
             Student student = studentService.findByStudentCode(userCode);
 
-            // Debugging: In ra thông tin sinh viên
-            System.out.println("Student Info: " + student);
-
             if (student != null) {
                 // Nếu ảnh sinh viên không tồn tại, gán đường dẫn ảnh mặc định
                 if (student.getStudentPhoto() == null || student.getStudentPhoto().isEmpty()) {
-                    student.setStudentPhoto("path/to/default/student-photo.jpg");  // Đường dẫn ảnh thẻ sinh viên mặc định
+                    student.setStudentPhoto("/images/default-student-photo.jpg");
                 }
                 if (student.getFacePhoto() == null || student.getFacePhoto().isEmpty()) {
-                    student.setFacePhoto("path/to/default/face-photo.jpg");  // Đường dẫn ảnh khuôn mặt mặc định
+                    student.setFacePhoto("/images/default-face-photo.jpg");
                 }
 
                 // Truyền thông tin sinh viên vào model
                 model.addAttribute("student", student);
-                return "dashboard_student";  // Trả về trang dashboard_student.html
+                return "student-info";  // Trả về trang student-info.html
             } else {
                 model.addAttribute("error", "Student not found");
-                return "error";  // Nếu không tìm thấy sinh viên, hiển thị trang lỗi
+                return "error";
             }
         } else {
             model.addAttribute("error", "User code not found");
-            return "error";  // Nếu không lấy được userCode, hiển thị lỗi
+            return "error";
         }
     }
 }

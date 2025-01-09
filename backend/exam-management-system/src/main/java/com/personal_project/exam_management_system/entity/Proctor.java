@@ -3,6 +3,7 @@ package com.personal_project.exam_management_system.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Proctors")
 public class Proctor {
 
     @Id

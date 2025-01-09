@@ -3,6 +3,7 @@ package com.personal_project.exam_management_system.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Role")
 public class Role {
 
     @Id

@@ -1,3 +1,4 @@
+#face_extraction.py
 import cv2
 import logging
 import base64
@@ -18,7 +19,7 @@ def resize_image(img, scale_percent):
 def detect_face(img, scale_percent=50, expand_ratio=0.2):
     resized_img = resize_image(img, scale_percent)
     faces = face_cascade.detectMultiScale(cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY), scaleFactor=1.1, minNeighbors=5)
-    
+
     if len(faces) > 0:
         (x, y, w, h) = faces[0]
 
@@ -29,12 +30,12 @@ def detect_face(img, scale_percent=50, expand_ratio=0.2):
 
         expand_w = int(w * expand_ratio)
         expand_h = int(h * expand_ratio)
-        
+
         x = max(x - expand_w // 2, 0)
         y = max(y - expand_h // 2, 0)
         w = min(w + expand_w, img.shape[1] - x)
         h = min(h + expand_h, img.shape[0] - y)
-        
+
         return img[y:y+h, x:x+w]
     return None
 
@@ -43,7 +44,7 @@ def process_student_id(img_path):
         img = cv2.imread(img_path)
         if img is None:
             raise ValueError(f"Không thể đọc được ảnh từ đường dẫn {img_path}")
-        
+
         logging.info("Đã đọc thành công ảnh.")
         face_img = detect_face(img)
 

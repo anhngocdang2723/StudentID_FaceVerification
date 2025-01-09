@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Sinh Viên</title>
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .logo h2 {
+            font-size: 1.5rem;
+            color: #ecf0f1;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav ul li a.active,
+        .sidebar nav ul li a:hover {
+            background-color: #3498db;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .content header {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .content header h1 {
+            margin: 0 0 10px;
+            font-size: 1.8rem;
+        }
+
+        .content header p {
+            margin: 0;
+            color: #7f8c8d;
+        }
+
+        /* Student Info */
+        .student-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-photos {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .student-photos div {
+            text-align: center;
+        }
+
+        .student-photos img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .student-details {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .student-details h3 {
+            color: #3498db;
+        }
+
+        .student-details p {
+            margin: 5px 0;
+        }
+
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .upload-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .upload-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .sidebar nav ul {
+                display: flex;
+                justify-content: space-around;
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            .student-photos {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .student-details {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="/static/logo_dhvinh.png" alt="Logo" style="width: 150px; height: auto; margin-bottom: 10px;" />
+            <h2>PHÂN HỆ SINH VIÊN</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/student/dashboard-student">Trang chủ</a></li>
+                <li><a href="/student/info" class="active">Thông tin cá nhân</a></li>
+                <li><a href="/student/courses">Các khóa học</a></li>
+                <li><a href="/student/exams">Lịch thi</a></li>
+                <li><a href="/student/grades">Điểm số</a></li>
+                <li><a href="/student/settings">Cài đặt</a></li>
+                <li><a href="/logout">Đăng xuất</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+        <header>
+            <h1>Thông Tin Sinh Viên</h1>
+            <p>Xem và cập nhật thông tin cá nhân của bạn.</p>
+        </header>
+
+        <section class="student-info">
+            <div class="student-photos">
+                <div>
+                    <p>Ảnh thẻ sinh viên</p>
+                    <img th:src="${student.studentPhoto}" alt="Ảnh thẻ sinh viên" />
+                    <button class="upload-btn">Cập nhật</button>
+                </div>
+                <div>
+                    <p>Ảnh cá nhân</p>
+                    <img th:src="${student.facePhoto}" alt="Ảnh khuôn mặt" />
+                </div>
+            </div>
+
+            <div class="student-details">
+                <h3 th:text="${student.fullName}" th:attr="data-full-name=${student.fullName}" class="student-name">Họ và Tên</h3>
+                <p th:text="'Mã sinh viên: ' + ${student.studentCode}" th:attr="data-student-code=${student.studentCode}" class="student-code">Mã sinh viên</p>
+                <p th:text="'Ngành: ' + ${student.department}">Ngành</p>
+                <p th:text="'Lớp: ' + ${student.className}">Lớp</p>
+                <p th:text="'Khoá: ' + ${student.cohort}">Khoá</p>
+                <p th:text="'Giới tính: ' + ${student.gender}">Giới tính</p>
+                <p th:text="'Ngày sinh: ' + ${student.dateOfBirth}">Ngày sinh</p>
+                <p th:text="'Trạng thái: ' + ${student.status}">Trạng thái tài khoản</p>
+                <p>
+                    <span>Email: <span th:text="${student.email}">Email</span></span>
+                    <button class="edit-btn">Sửa</button>
+                </p>
+                <p>
+                    <span>Số điện thoại: <span th:text="${student.phoneNumber}">Số điện thoại</span></span>
+                    <button class="edit-btn">Sửa</button>
+                </p>
+            </div>
+        </section>
+
+        <a class="back-link" href="/logout">Đăng xuất</a>
+    </main>
+</div>
+</body>
+<script>
+    document.querySelectorAll('.upload-btn').forEach(button => {
+        button.addEventListener('click', async function () {
+            // Lấy thông tin sinh viên từ thuộc tính data-* trực tiếp
+            const studentName = document.querySelector('.student-name').getAttribute('data-full-name').trim();
+            const studentCode = document.querySelector('.student-code').getAttribute('data-student-code');
+
+            console.log('Student Name:', studentName);
+            console.log('Student Code:', studentCode);
+
+            // Tạo phần tử input để chọn ảnh
+            const studentPhotoInput = document.createElement('input');
+            studentPhotoInput.type = 'file';
+            studentPhotoInput.accept = 'image/*';
+            studentPhotoInput.style.display = 'none';
+            document.body.appendChild(studentPhotoInput);
+
+            studentPhotoInput.click();
+
+            studentPhotoInput.addEventListener('change', async function () {
+                const file = studentPhotoInput.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('studentPhoto', file);
+                formData.append('fullName', studentName);  // Đảm bảo truyền đúng tên sinh viên
+                formData.append('studentCode', studentCode);  // Đảm bảo truyền đúng mã sinh viên
+
+                try {
+                    const response = await fetch("http://localhost:8000/upload-photo/", {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Không thể tải ảnh lên');
+                    }
+
+                    const data = await response.json();
+
+                    // Cập nhật ảnh thẻ và ảnh khuôn mặt từ phản hồi của server
+                    const faceImgPath = data.face_image_path;
+                    const cardImgPath = data.card_image_path;
+
+                    const faceImageElement = document.querySelector('img[alt="Ảnh khuôn mặt"]');
+                    faceImageElement.src = `http://localhost:8000/${faceImgPath}`;
+
+                    const cardImageElement = document.querySelector('img[alt="Ảnh thẻ sinh viên"]');
+                    cardImageElement.src = `http://localhost:8000/${cardImgPath}`;
+
+                    alert("Cập nhật ảnh thành công!");
+
+                    // Load lại trang để cập nhật các thay đổi
+                    location.reload();
+
+                } catch (error) {
+                    alert("Lỗi: " + error.message);
+                }
+
+                // Remove the file input element after use
+                studentPhotoInput.remove();
+            });
+        });
+    });
+</script>
+</html>

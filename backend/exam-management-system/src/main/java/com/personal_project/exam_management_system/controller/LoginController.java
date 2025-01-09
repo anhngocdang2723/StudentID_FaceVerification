@@ -30,19 +30,35 @@ public class LoginController {
             return "login";  // Quay lại trang đăng nhập
         } else {
             // Chuyển hướng đến trang dashboard tương ứng
-            return "redirect:/" + result;  // result có thể là "dashboard_student", "dashboard_proctor", "dashboard_admin"
+            // Đảm bảo sử dụng các đường dẫn đúng với vai trò người dùng
+            switch (result) {
+                case "student/dashboard-student":
+                    return "redirect:/student/dashboard-student";  // Đối với sinh viên
+                case "proctor/dashboard-proctor":
+                    return "redirect:/proctor/dashboard-proctor";  // Đối với giám thị
+                case "admin/dashboard-admin":
+                    return "redirect:/admin/dashboard-admin";  // Đối với quản trị viên
+                default:
+                    model.addAttribute("error", "Unknown role");
+                    return "login";  // Nếu không xác định được vai trò
+            }
         }
     }
 
     // Các endpoint cho từng dashboard
 
-    @GetMapping("/dashboard_proctor")
-    public String proctorDashboard() {
-        return "dashboard_proctor";  // Trả về trang dashboard_proctor.html
-    }
-
-    @GetMapping("/dashboard_admin")
-    public String adminDashboard() {
-        return "dashboard_admin";  // Trả về trang dashboard_admin.html
-    }
+//    @GetMapping("/student/dashboard-student")
+//    public String studentDashboard() {
+//        return "dashboard-student";  // Trả về trang dashboard-student.html
+//    }
+//
+//    @GetMapping("/proctor/dashboard-proctor")
+//    public String proctorDashboard() {
+//        return "dashboard-proctor";  // Trả về trang dashboard-proctor.html
+//    }
+//
+//    @GetMapping("/admin/dashboard-admin")
+//    public String adminDashboard() {
+//        return "dashboard-admin";  // Trả về trang dashboard-admin.html
+//    }
 }
