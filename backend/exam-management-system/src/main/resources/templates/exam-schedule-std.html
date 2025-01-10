@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch Thi của Sinh Viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        td {
+            color: #555;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Lịch Thi của Sinh Viên: <span th:text="${student.fullName}"></span></h1>
+    <button type="button" class="btn btn-secondary" onclick="window.history.back();">Quay lại</button>
+    <table>
+        <thead>
+        <tr>
+            <th>Mã Ca Thi</th>
+            <th>Môn Thi</th>
+            <th>Phòng Thi</th>
+            <th>Ngày Giờ Thi</th>
+            <th>Trạng Thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="examSession : ${examSessions}">
+            <td th:text="${examSession.sessionCode}"></td>
+            <td th:text="${examSession.courseCode}"></td>
+            <td th:text="${examSession.roomCode}"></td>
+            <td th:text="${examSession.examDateTime}"></td>
+            <td th:text="${examSession.sessionStatus}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

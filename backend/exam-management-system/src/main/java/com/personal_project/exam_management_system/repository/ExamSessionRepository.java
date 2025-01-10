@@ -10,19 +10,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ExamSessionRepository extends JpaRepository<ExamSession, String> {
+    @Query("SELECT es FROM ExamSession es WHERE es.studentCodes LIKE %:studentCode%")
+    List<ExamSession> findByStudentCode(@Param("studentCode") String studentCode);
 
-//    @Query("SELECT es.sessionCode, c.courseName, er.address, " +
-//            "GROUP_CONCAT(s.fullName) AS listStudentNames, " +
-//            "p.fullName AS proctorName, es.examDateTime, es.sessionStatus, es.reportFilePath " +
-//            "FROM ExamSession es " +
-//            "JOIN Course c ON es.courseCode = c.courseCode " +
-//            "JOIN ExamRoom er ON es.roomCode = er.roomCode " +
-//            "JOIN Proctor p ON es.proctorCode = p.proctorCode " +
-//            "JOIN Student s ON (',' || es.studentCodes || ',') LIKE ('%,' || s.studentCode || ',%')" +
-////            "JOIN Student s ON ('es.studentCodes') LIKE ('%,s.studentCode') " +
-//            "WHERE es.sessionCode = :sessionCode " +
-//            "GROUP BY es.sessionCode, c.courseName, er.address, p.fullName, es.examDateTime, es.sessionStatus, es.reportFilePath")
-//    List<Object[]> getExamSessionDetailsRaw(@Param("sessionCode") String sessionCode);
+    @Query("SELECT es FROM ExamSession es WHERE es.proctorCode LIKE %:proctorCode%")
+    List<ExamSession> findByProctorCode(@Param("proctorCode") String proctorCode);
 
     @Query(value = "SELECT " +
             "es.session_code, " +

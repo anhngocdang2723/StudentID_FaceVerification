@@ -2,6 +2,8 @@ package com.personal_project.exam_management_system.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "examsessions")
 public class ExamSession {

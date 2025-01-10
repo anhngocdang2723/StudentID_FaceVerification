@@ -29,7 +29,7 @@ public class ExamSessionService {
         List<Object[]> results = examSessionRepository.getExamSessionDetailsRaw(sessionCode);
 
         if (!results.isEmpty()) {
-            Object[] firstRow = results.get(0); // Dùng chỉ số để lấy giá trị từ kết quả query
+            Object[] firstRow = results.getFirst();
 
             String sessionCodeFromDb = (String) firstRow[0];
             String courseName = (String) firstRow[1];
@@ -47,6 +47,9 @@ public class ExamSessionService {
         return null;
     }
 
+    public ExamSession save(ExamSession examSession) {
+        return examSessionRepository.save(examSession);
+    }
 }
 
 

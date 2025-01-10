@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tạo Ca Thi Mới</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        select, input[type="datetime-local"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 8px;
+        }
+        .checkbox-group div {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .checkbox-group label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<h1>Tạo Ca Thi Mới</h1>
+<form action="/admin/manage-exam_sessions/create" method="POST">
+    <!-- Chọn phòng thi -->
+    <label for="selectedRoomCodes">Chọn các phòng thi:</label>
+    <div name="selectedRoomCodes" id="selectedRoomCodes" class="checkbox-group">
+        <th:block th:each="room : ${examRooms}">
+            <div>
+                <label for="room_${room.roomCode}"></label><input type="checkbox" name="selectedRoomCodes" th:value="${room.roomCode}" id="room_${room.roomCode}" />
+                <label th:for="'room_' + ${room.roomCode}" th:text="${room.roomCode}"></label>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- Chọn giám thị -->
+    <label for="selectedProctorCodes">Chọn các giám thị:</label>
+    <div name="selectedProctorCodes" id="selectedProctorCodes" class="checkbox-group">
+        <th:block th:each="proctor : ${proctors}">
+            <div>
+                <label for="proctor_${proctor.proctorCode}"></label><input type="checkbox" name="selectedProctorCodes" th:value="${proctor.proctorCode}" id="proctor_${proctor.proctorCode}" />
+                <label th:for="'proctor_' + ${proctor.proctorCode}" th:text="${proctor.fullName}"></label>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- Chọn môn thi -->
+    <label for="courseCode">Chọn môn thi:</label>
+    <select name="courseCode" id="courseCode">
+        <option th:each="course : ${courses}" th:value="${course.courseCode}" th:text="${course.courseName}"></option>
+    </select>
+
+    <!-- Chọn ngày giờ thi -->
+    <label for="examDateTime">Ngày giờ thi:</label>
+    <input type="datetime-local" name="examDateTime" id="examDateTime" required />
+
+    <button type="submit">Tạo ca thi</button>
+</form>
+</body>
+</html>

@@ -17,8 +17,8 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -48,7 +48,6 @@ public class AdminController {
     // Hiển thị dashboard quản trị viên
     @GetMapping("/dashboard-admin")
     public String dashboardAdmin(Model model) {
-        // Đặt tên của template con cần hiển thị vào thuộc tính pageContent
         model.addAttribute("pageContent", "dashboard-admin");
         return "template-admin";
     }
@@ -288,6 +287,71 @@ public class AdminController {
         return "template-admin";
     }
 
+    @GetMapping("/manage-exam_sessions/create")
+    public String showCreateExamSessionPage(Model model) {
+        List<ExamRoom> examRooms = examRoomService.getAllRooms();
+        List<Course> courses = courseService.getAllCourses();
+        List<Proctor> proctors = proctorService.getAllProctors();
+
+        model.addAttribute("examRooms", examRooms);
+        model.addAttribute("courses", courses);
+        model.addAttribute("proctors", proctors);
+
+        return "create-exam_session";
+    }
+
+    @PostMapping("/manage-exam_sessions/create")
+    public String createExamSessions(@RequestParam List<String> selectedRoomCodes,
+                                     @RequestParam List<String> selectedProctorCodes,
+                                     @RequestParam String courseCode,
+                                     @RequestParam String examDateTime) {
+
+        // Kiểm tra nếu số phòng và số giám thị không khớp
+        if (selectedRoomCodes.size() != selectedProctorCodes.size()) {
+            return "redirect:/error";  // Redirect về trang lỗi nếu không đúng
+        }
+
+        // Lấy danh sách tất cả sinh viên từ database
+        List<Student> allStudents = studentService.findAllStudents();
+        List<String> studentCodes = allStudents.stream()
+                .map(Student::getStudentCode)
+                .collect(Collectors.toList());
+
+        Random rand = new Random();
+        int totalRooms = selectedRoomCodes.size();
+        int studentsPerRoom = studentCodes.size() / totalRooms;
+
+        for (int i = 0; i < totalRooms; i++) {
+            ExamSession examSession = new ExamSession();
+            examSession.setSessionCode("SESSION-" + selectedRoomCodes.get(i) +"-"+ selectedProctorCodes.get(i));
+            examSession.setCourseCode(courseCode);
+            examSession.setRoomCode(String.valueOf(Collections.singletonList(selectedRoomCodes.get(i))));
+            examSession.setProctorCode(selectedProctorCodes.get(i));
+            examSession.setExamDateTime(examDateTime);
+            examSession.setSessionStatus("Scheduled");
+            examSession.setReportFilePath(null);
+
+            List<String> randomStudentCodes = getRandomStudents(studentCodes, studentsPerRoom);
+            examSession.setStudentCodes(String.join(",", randomStudentCodes));
+
+            examSessionService.save(examSession);
+
+            studentCodes.removeAll(randomStudentCodes);
+        }
+        return "redirect:/admin/manage-exam_sessions";
+    }
+
+    private List<String> getRandomStudents(List<String> students, int count) {
+        List<String> randomStudents = new ArrayList<>();
+        Random rand = new Random();
+        for (int i = 0; i < count; i++) {
+            if (students.isEmpty()) break;
+            int index = rand.nextInt(students.size());
+            randomStudents.add(students.get(index));
+            students.remove(index);
+        }
+        return randomStudents;
+    }
 
 
     // ====================================== Quản lý báo cáo ========================================
