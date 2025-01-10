@@ -1,0 +1,57 @@
+<!-- manage-proctors.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý giám thị</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 50px;  /* Đảm bảo nội dung không bị che khuất bởi sidebar */
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container mt-5">
+        <h1>Danh sách giám thị</h1>
+        <a href="/admin/add-proctor" class="btn btn-primary mb-3">Thêm giám thị mới</a>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Mã giám thị</th>
+                <th>Họ và tên</th>
+                <th>Đơn vị</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="proctor : ${proctors}">
+                <td th:text="${proctor.proctorCode}"></td>
+                <td th:text="${proctor.fullName}"></td>
+                <td th:text="${proctor.department}"></td>
+                <td th:text="${proctor.phoneNumber}"></td>
+                <td th:text="${proctor.email}"></td>
+                <td>
+                    <a href="/admin/edit-proctor?proctorCode=${proctor.proctorCode}" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                    <a href="/admin/delete-proctor?proctorCode=${proctor.proctorCode}" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

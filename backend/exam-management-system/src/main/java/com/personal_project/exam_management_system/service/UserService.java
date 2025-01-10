@@ -54,5 +54,9 @@ public class UserService {
     public String getUserCode() {
         return this.userCode;  // Trả về giá trị của userCode
     }
+
+    public User save(User user) {
+        return userRepository.save(user);  // Lưu người dùng vào cơ sở dữ liệu
+    }
 }
 

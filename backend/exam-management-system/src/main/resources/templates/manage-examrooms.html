@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phòng thi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 50px;  /* Đảm bảo nội dung không bị che khuất bởi sidebar */
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container mt-5">
+        <h1>Danh sách phòng thi</h1>
+        <a href="/admin/exam-rooms/add" class="btn btn-primary mb-3">Thêm phòng thi mới</a>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Mã phòng</th>
+                <th>Địa chỉ</th>
+                <th>Số lượng tối đa</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp qua các phòng thi từ dữ liệu backend -->
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.roomCode}"></td>
+                <td th:text="${room.address}"></td>
+                <td th:text="${room.maxCapacity}"></td>
+                <td>
+                    <a th:href="@{/admin/exam-rooms/{roomCode}/edit(roomCode=${room.roomCode})}" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                    <a th:href="@{/admin/exam-rooms/{roomCode}/delete(roomCode=${room.roomCode})}" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

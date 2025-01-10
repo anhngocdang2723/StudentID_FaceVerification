@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa thông tin sinh viên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Chỉnh sửa thông tin sinh viên</h1>
+
+    <form action="/admin/edit-student" method="post">
+        <div class="form-group">
+            <label for="studentCode">Mã sinh viên</label>
+            <input type="text" id="studentCode" name="studentCode" class="form-control" th:value="${student.studentCode}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="fullName">Họ và tên</label>
+            <input type="text" id="fullName" name="fullName" class="form-control" th:value="${student.fullName}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="department">Đơn vị</label>
+            <input type="text" id="department" name="department" class="form-control" th:value="${student.department}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="className">Lớp học</label>
+            <input type="text" id="className" name="className" class="form-control" th:value="${student.className}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cohort">Khóa</label>
+            <input type="text" id="cohort" name="cohort" class="form-control" th:value="${student.cohort}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Giới tính</label>
+            <select id="gender" name="gender" class="form-control" th:value="${student.gender}">
+                <option value="MALE" th:selected="${student.gender == 'MALE'}">Nam</option>
+                <option value="FEMALE" th:selected="${student.gender == 'FEMALE'}">Nữ</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dateOfBirth">Ngày sinh</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" th:value="${student.dateOfBirth}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phoneNumber">SĐT</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" th:value="${student.phoneNumber}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" th:value="${student.email}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Trạng thái</label>
+            <select id="status" name="status" class="form-control" th:value="${student.status}">
+                <option value="ACTIVE" th:selected="${student.status == 'ACTIVE'}">Hoạt động</option>
+                <option value="INACTIVE" th:selected="${student.status == 'INACTIVE'}">Không hoạt động</option>
+            </select>
+        </div>
+
+        <input type="hidden" name="studentPhoto" th:value="${student.studentPhoto}">
+        <input type="hidden" name="facePhoto" th:value="${student.facePhoto}">
+
+        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+        <button type="button" class="btn btn-secondary" onclick="window.history.back();">Quay lại</button>
+    </form>
+</div>
+</body>
+</html>

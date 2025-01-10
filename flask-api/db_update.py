@@ -27,8 +27,8 @@ def update_images(student_code, full_name):
     face_image_filename = f"{name_without_accents}_{student_code_last_3}_face.jpg"
 
     # Sử dụng đường dẫn tương đối cho ảnh
-    card_image_path = f"\\card\\{card_image_filename}"  # Dùng dấu \ để lưu đường dẫn
-    face_image_path = f"\\face\\{face_image_filename}"  # Dùng dấu \ để lưu đường dẫn
+    card_image_path = f"\\images\\card\\{card_image_filename}"  # Dùng dấu \ để lưu đường dẫn
+    face_image_path = f"\\images\\face\\{face_image_filename}"  # Dùng dấu \ để lưu đường dẫn
 
     # Nếu bạn muốn sử dụng dấu "/" thay vì "\", chỉ cần thay đổi thành "/"
     # card_image_path = f"/card/{card_image_filename}"

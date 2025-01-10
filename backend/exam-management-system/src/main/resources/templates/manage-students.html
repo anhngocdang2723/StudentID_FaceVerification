@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Sinh Viên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 50px;  /* Đảm bảo nội dung không bị che khuất bởi sidebar */
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<!-- Nội dung chính -->
+<div class="content">
+    <div class="container mt-5">
+        <h1>Quản lý Sinh Viên</h1>
+
+        <!-- Form tìm kiếm sinh viên -->
+        <form action="/admin/manage-students/search" method="get" class="form-inline mb-4">
+            <div class="form-group">
+                <label for="studentCode" class="mr-2">Mã sinh viên:</label>
+                <input type="text" id="studentCode" name="studentCode" class="form-control" placeholder="Nhập mã sinh viên" required>
+            </div>
+            <button type="submit" class="btn btn-primary ml-2">Tìm kiếm</button>
+            <!-- Nút thêm mới sinh viên -->
+            <a href="/admin/manage-students/create" class="btn btn-success ml-2">
+                <i class="fas fa-plus"></i> Thêm mới sinh viên
+            </a>
+
+        </form>
+        <form action="/admin/manage-students" method="get">
+            <button type="submit">Xoá bộ lọc</button>  <!-- Khi nhấn, sẽ trả về trang không có bộ lọc -->
+            <!-- Hiển thị thông báo -->
+            <div th:if="${successMessage}" class="alert alert-success" id="successMessage">
+                <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger" id="errorMessage">
+                <span th:text="${errorMessage}"></span>
+            </div>
+        </form>
+
+        <!-- Bảng danh sách sinh viên -->
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã Sinh Viên</th>
+                <th>Họ và Tên</th>
+                <th>Đơn Vị</th>
+                <th>Lớp Học</th>
+                <th>Khoá</th>
+                <th>Giới Tính</th>
+                <th>Ngày Sinh</th>
+                <th>Email</th>
+                <th>Trạng Thái</th>
+                <th>Ảnh Thẻ</th>
+                <th>Ảnh Khuôn Mặt</th>
+                <th>Thao Tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp qua danh sách sinh viên và hiển thị thông tin -->
+            <tr th:each="student, stat : ${students}">
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${student.studentCode}"></td>
+                <td th:text="${student.fullName}"></td>
+                <td th:text="${student.department}"></td>
+                <td th:text="${student.className}"></td>
+                <td th:text="${student.cohort}"></td>
+                <td th:text="${student.gender}"></td>
+                <td th:text="${student.dateOfBirth}"></td>
+                <td th:text="${student.email}"></td>
+                <td th:text="${student.status}"></td>
+                <td><img th:src="@{${student.studentPhoto}}" alt="Ảnh thẻ" width="50" height="50"></td>
+                <td><img th:src="@{${student.facePhoto}}" alt="Ảnh khuôn mặt" width="50" height="50"></td>
+                <td>
+                    <a th:href="@{/admin/edit-student(studentCode=${student.studentCode})}" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                    <a th:href="@{/admin/delete-student(studentCode=${student.studentCode})}" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    if (document.getElementById('successMessage')) {
+        setTimeout(function() {
+            document.getElementById('successMessage').style.display = 'none';
+        }, 2500); // 4000ms = 4 giây
+    }
+
+    if (document.getElementById('errorMessage')) {
+        setTimeout(function() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }, 2500); // 4000ms = 4 giây
+    }
+</script>
+</body>
+</html>

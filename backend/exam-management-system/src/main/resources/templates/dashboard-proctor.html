@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proctor Dashboard</title>
+    <title>PHÂN HỆ GIÁM THỊ</title>
     <style>
         /* Global Styles */
         body {
@@ -125,16 +125,18 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
-            <h2>Proctor Dashboard</h2>
+            <img src="/static/logo_dhvinh.png" alt="Logo" />
+            <h2>PHÂN HỆ GIÁM THỊ</h2>
         </div>
         <nav>
             <ul>
-                <li><a href="/proctor/info" class="active">Personal Information</a></li>
-                <li><a href="/proctor/exams">Manage Exams</a></li>
-                <li><a href="/proctor/students">View Students</a></li>
-                <li><a href="/proctor/attendance">Attendance</a></li>
-                <li><a href="/proctor/settings">Settings</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><a href="/proctor" class="active">Trang Chủ</a></li>
+                <li><a href="/proctor/info">Thông Tin Cá Nhân</a></li>
+                <li><a href="/proctor/exams">Quản Lý Kỳ Thi</a></li>
+                <li><a href="/proctor/students">Xem Sinh Viên</a></li>
+                <li><a href="/proctor/attendance">Điểm Danh</a></li>
+                <li><a href="/proctor/settings">Cài Đặt</a></li>
+                <li><a href="/logout">Đăng Xuất</a></li>
             </ul>
         </nav>
     </aside>
@@ -142,13 +144,13 @@
     <!-- Main Content -->
     <main class="content">
         <header>
-            <h1>Welcome, [Proctor Name]</h1>
-            <p>Choose an option from the menu to get started.</p>
+            <h1>Chào Mừng,<td th:text="${proctor.fullName}"></td></h1>
+            <p>Chọn một tùy chọn từ menu để bắt đầu.</p>
         </header>
 
         <!-- Placeholder for dynamic content -->
         <section>
-            <p>This is the proctor dashboard. Select an option from the sidebar to view details.</p>
+            <p>Đây là bảng điều khiển giám thị. Chọn một tùy chọn từ thanh bên để xem chi tiết.</p>
         </section>
     </main>
 </div>

@@ -96,13 +96,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .student-photos {
-            display: flex;
-            justify-content: space-between;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
         .student-photos div {
             text-align: center;
         }
@@ -113,11 +106,6 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 10px;
-        }
-
-        .student-details {
-            font-size: 1.1rem;
-            line-height: 1.8;
         }
 
         .student-details h3 {
@@ -158,19 +146,6 @@
             background-color: #27ae60;
         }
 
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.2rem;
-            color: #3498db;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .dashboard-container {
@@ -192,15 +167,66 @@
             .content {
                 padding: 10px;
             }
+        }
 
-            .student-photos {
-                flex-direction: column;
-                align-items: center;
-            }
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-            .student-details {
-                font-size: 1rem;
-            }
+        .student-table th, .student-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .student-table th[colspan="2"] {
+            text-align: center;
+            font-size: 1.5rem; /* Tăng cỡ chữ */
+            background-color: #3498db; /* Tô màu nền để nổi bật */
+            color: white; /* Màu chữ */
+            padding: 15px; /* Thêm khoảng cách */
+        }
+
+        .student-table th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .student-table img {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .student-table .upload-btn,
+        .student-table .edit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .student-table .upload-btn:hover,
+        .student-table .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .student-table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -228,48 +254,97 @@
     <!-- Main Content -->
     <main class="content">
         <header>
-            <h1>Thông Tin Sinh Viên</h1>
+            <h1>Thông tin sinh viên</h1>
             <p>Xem và cập nhật thông tin cá nhân của bạn.</p>
         </header>
 
         <section class="student-info">
-            <div class="student-photos">
-                <div>
-                    <p>Ảnh thẻ sinh viên</p>
-                    <img th:src="${student.studentPhoto}" alt="Ảnh thẻ sinh viên" />
-                    <button class="upload-btn">Cập nhật</button>
-                </div>
-                <div>
-                    <p>Ảnh cá nhân</p>
-                    <img th:src="${student.facePhoto}" alt="Ảnh khuôn mặt" />
-                </div>
-            </div>
-
-            <div class="student-details">
-                <h3 th:text="${student.fullName}" th:attr="data-full-name=${student.fullName}" class="student-name">Họ và Tên</h3>
-                <p th:text="'Mã sinh viên: ' + ${student.studentCode}" th:attr="data-student-code=${student.studentCode}" class="student-code">Mã sinh viên</p>
-                <p th:text="'Ngành: ' + ${student.department}">Ngành</p>
-                <p th:text="'Lớp: ' + ${student.className}">Lớp</p>
-                <p th:text="'Khoá: ' + ${student.cohort}">Khoá</p>
-                <p th:text="'Giới tính: ' + ${student.gender}">Giới tính</p>
-                <p th:text="'Ngày sinh: ' + ${student.dateOfBirth}">Ngày sinh</p>
-                <p th:text="'Trạng thái: ' + ${student.status}">Trạng thái tài khoản</p>
-                <p>
-                    <span>Email: <span th:text="${student.email}">Email</span></span>
-                    <button class="edit-btn">Sửa</button>
-                </p>
-                <p>
-                    <span>Số điện thoại: <span th:text="${student.phoneNumber}">Số điện thoại</span></span>
-                    <button class="edit-btn">Sửa</button>
-                </p>
-            </div>
+            <table class="student-table">
+                <thead>
+                <tr>
+                    <th colspan="2">Thông tin sinh viên</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th>Ảnh thẻ sinh viên</th>
+                    <td>
+                        <img th:src="${student.studentPhoto}" alt="Ảnh thẻ sinh viên" />
+                        <button class="upload-btn">Cập nhật</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ảnh cá nhân</th>
+                    <td>
+                        <img th:src="${student.facePhoto}" alt="Ảnh khuôn mặt" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>Họ và Tên</th>
+                    <td th:text="${student.fullName}" th:attr="data-full-name=${student.fullName}" class="student-name">Họ và Tên</td>
+                </tr>
+                <tr>
+                    <th>Mã sinh viên</th>
+                    <td th:text="${student.studentCode}" th:attr="data-student-code=${student.studentCode}" class="student-code">Mã sinh viên</td>
+                </tr>
+                <tr>
+                    <th>Ngành</th>
+                    <td th:text="${student.department}">Ngành</td>
+                </tr>
+                <tr>
+                    <th>Lớp</th>
+                    <td th:text="${student.className}">Lớp</td>
+                </tr>
+                <tr>
+                    <th>Khoá</th>
+                    <td th:text="${student.cohort}">Khoá</td>
+                </tr>
+                <tr>
+                    <th>Giới tính</th>
+                    <td th:text="${student.gender}">Giới tính</td>
+                </tr>
+                <tr>
+                    <th>Ngày sinh</th>
+                    <td th:text="${student.dateOfBirth}">Ngày sinh</td>
+                </tr>
+                <tr>
+                    <th>Trạng thái tài khoản</th>
+                    <td th:text="${student.status}">Trạng thái</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>
+                        <span th:text="${student.email}">Email</span>
+                        <button class="edit-btn">Sửa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Số điện thoại</th>
+                    <td>
+                        <span th:text="${student.phoneNumber}">Số điện thoại</span>
+                        <button class="edit-btn">Sửa</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </section>
-
-        <a class="back-link" href="/logout">Đăng xuất</a>
     </main>
 </div>
 </body>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadBtn = document.querySelector('.upload-btn');
+
+        if (uploadBtn) {
+            console.log('Upload button found');
+            uploadBtn.addEventListener('click', function(e) {
+                console.log('Upload button clicked');
+                this.classList.add('active');
+            });
+        } else {
+            console.error('Upload button not found');
+        }
+    });
     document.querySelectorAll('.upload-btn').forEach(button => {
         button.addEventListener('click', async function () {
             // Lấy thông tin sinh viên từ thuộc tính data-* trực tiếp

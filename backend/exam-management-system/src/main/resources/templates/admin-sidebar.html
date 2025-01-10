@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar - Quản trị viên</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin-sidebar.css"> <!-- Liên kết tệp CSS -->
+</head>
+<body>
+
+<div class="sidebar" th:fragment="sidebar">
+    <div class="logo">
+        <img src="/static/logo_dhvinh.png" alt="Logo" />
+    </div>
+    <h2>BẢNG QUẢN LÝ</h2>
+    <ul>
+        <li><a href="/admin/dashboard-admin" th:id="dashboard"><i class="fas fa-home"></i> Tổng quan</a></li>
+        <li><a href="/admin/manage-students" th:id="manage-students"><i class="fas fa-user-graduate"></i> Quản lý sinh viên</a></li>
+        <li><a href="/admin/manage-proctors" th:id="manage-proctors"><i class="fas fa-user-tie"></i> Quản lý giám thị</a></li>
+        <li><a href="/admin/manage-courses" th:id="manage-courses"><i class="fas fa-book"></i> Quản lý học phần</a></li>
+        <li><a href="/admin/manage-examrooms" th:id="manage-examrooms"><i class="fas fa-door-open"></i> Quản lý phòng thi</a></li>
+        <li><a href="/admin/manage-exams" th:id="manage-exams"><i class="fas fa-clock"></i> Quản lý ca thi</a></li>
+        <li><a href="/admin/reports" th:id="reports"><i class="fas fa-chart-line"></i> Báo cáo</a></li>
+        <li><a href="/admin/settings" th:id="settings"><i class="fas fa-cogs"></i> Cài đặt</a></li>
+        <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+    </ul>
+</div>
+
+<script>
+    // JavaScript for dynamically highlighting the active link in sidebar
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('.sidebar ul li a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+
+</body>
+</html>

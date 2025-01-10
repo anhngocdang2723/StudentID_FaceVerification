@@ -45,20 +45,8 @@ public class LoginController {
         }
     }
 
-    // Các endpoint cho từng dashboard
-
-//    @GetMapping("/student/dashboard-student")
-//    public String studentDashboard() {
-//        return "dashboard-student";  // Trả về trang dashboard-student.html
-//    }
-//
-//    @GetMapping("/proctor/dashboard-proctor")
-//    public String proctorDashboard() {
-//        return "dashboard-proctor";  // Trả về trang dashboard-proctor.html
-//    }
-//
-//    @GetMapping("/admin/dashboard-admin")
-//    public String adminDashboard() {
-//        return "dashboard-admin";  // Trả về trang dashboard-admin.html
-//    }
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login";
+    }
 }

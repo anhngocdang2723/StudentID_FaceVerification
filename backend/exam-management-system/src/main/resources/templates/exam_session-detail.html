@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Ca Thi</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .content {
+            margin-left: 150px;
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 16px;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .card strong {
+            font-weight: bold;
+        }
+
+        .file-link {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            margin: 30px auto;
+            width: 100%;
+            max-width: 220px;
+            transition: background-color 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container">
+        <h1>Chi Tiết Ca Thi</h1>
+
+        <div th:if="${examSessionDetails != null}" class="card">
+            <h2>Thông Tin Ca Thi</h2>
+            <p><strong>Mã Ca Thi:</strong> <span th:text="${examSessionDetails.sessionCode}"></span></p>
+            <p><strong>Tên Môn Học:</strong> <span th:text="${examSessionDetails.courseName}"></span></p>
+            <p><strong>Địa Chỉ Phòng Thi:</strong> <span th:text="${examSessionDetails.address}"></span></p>
+            <p><strong>Tên Giám Thị:</strong> <span th:text="${examSessionDetails.proctorName}"></span></p>
+            <p><strong>Ngày Giờ Thi:</strong> <span th:text="${examSessionDetails.examDateTime}"></span></p>
+            <p><strong>Trạng Thái:</strong> <span th:text="${examSessionDetails.sessionStatus}"></span></p>
+            <p><strong>Danh Sách Sinh Viên:</strong></p>
+            <ul>
+                <li th:each="studentName : ${examSessionDetails.listStudentNames}" th:text="${studentName}"></li>
+            </ul>
+            <p th:if="${examSessionDetails.reportFilePath != null}">
+                <strong>File Báo Cáo:</strong> <span th:text="${examSessionDetails.reportFilePath}"></span>
+                <a href="javascript:void(0);" class="file-link" onclick="viewReport('[[@{${examSessionDetails.reportFilePath}}]]')">Xem file</a>
+                <a href="javascript:void(0);" class="file-link" onclick="downloadReport('[[@{${examSessionDetails.reportFilePath}}]]')">Tải về</a>
+            </p>
+        </div>
+
+        <div th:if="${examSessionDetails == null}" class="card">
+            <p>Không tìm thấy thông tin ca thi.</p>
+        </div>
+
+        <a href="/admin/manage-exam_sessions" class="back-link">Quay lại danh sách ca thi</a>
+    </div>
+</div>
+<script>
+    // Xử lý việc xem file
+    function viewReport(filePath) {
+        var fullPath = '/reports/' + filePath;
+        window.open(fullPath, '_blank');
+    }
+
+    // Xử lý việc tải file về
+    function downloadReport(filePath) {
+        var fullPath = '/reports/' + filePath;
+        var a = document.createElement('a');
+        a.href = fullPath;
+        a.download = filePath; // Đây là tên tệp khi tải về
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
+</body>
+</html>

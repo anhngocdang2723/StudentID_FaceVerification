@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proctor Information</title>
+    <title>Thông tin giám thị</title>
     <style>
         /* Global Styles */
         body {
@@ -143,16 +143,18 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
-            <h2>Proctor Dashboard</h2>
+            <img src="/static/logo_dhvinh.png" alt="Logo" />
+            <h2>PHÂN HỆ GIÁM THỊ</h2>
         </div>
         <nav>
             <ul>
-                <li><a href="/proctor/info" class="active">Personal Information</a></li>
-                <li><a href="/proctor/exams">Manage Exams</a></li>
-                <li><a href="/proctor/students">View Students</a></li>
-                <li><a href="/proctor/attendance">Attendance</a></li>
-                <li><a href="/proctor/settings">Settings</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><a href="/proctor">Trang chủ</a></li>
+                <li><a href="/proctor/info"  class="active">Thông tin cá nhân</a></li>
+                <li><a href="/proctor/exams">Quản Lý Kỳ Thi</a></li>
+                <li><a href="/proctor/students">Xem Sinh Viên</a></li>
+                <li><a href="/proctor/attendance">Điểm Danh</a></li>
+                <li><a href="/proctor/settings">Cài Đặt</a></li>
+                <li><a href="/logout">Đăng xuâts</a></li>
             </ul>
         </nav>
     </aside>
@@ -160,31 +162,31 @@
     <!-- Main Content -->
     <main class="content">
         <header>
-            <h1>Proctor Information</h1>
-            <p>View and update your personal information.</p>
+            <h1>Thông tin giám thị</h1>
+            <p>Xem và cập nhật thông tin cá nhân của bạn.</p>
         </header>
 
         <section>
-            <h2>Personal Information</h2>
+            <h2>Thông tin cá nhân</h2>
             <table class="info-table">
                 <tr>
-                    <th>Full Name</th>
-                    <td>{{proctor.name}}</td>
+                    <th>Họ tên</th>
+                    <td th:text="${proctor.fullName}"></td>
                 </tr>
                 <tr>
                     <th>Email</th>
-                    <td>{{proctor.email}}</td>
+                    <td th:text="${proctor.email}"></td>
                 </tr>
                 <tr>
-                    <th>Phone</th>
-                    <td>{{proctor.phone}}</td>
+                    <th>Số điện thoại</th>
+                    <td th:text="${proctor.phoneNumber}"></td>
                 </tr>
                 <tr>
-                    <th>Role</th>
-                    <td>Proctor</td>
+                    <th>Vai trò</th>
+                    <td>Giám thị</td>
                 </tr>
                 <tr>
-                    <th>Assigned Exam Sessions</th>
+                    <th>Ca thi được phân công</th>
                     <td>{{proctor.examSessions}}</td>
                 </tr>
             </table>

@@ -40,3 +40,31 @@ CREATE TABLE Role (
 INSERT INTO Role (role_name) VALUES ('Student');
 INSERT INTO Role (role_name) VALUES ('Proctor');
 INSERT INTO Role (role_name) VALUES ('Admin');
+
+
+CREATE TABLE Courses (
+    course_code TEXT PRIMARY KEY,           -- Mã học phần
+    course_name TEXT NOT NULL,              -- Tên học phần
+    credit_hours INTEGER NOT NULL,         -- Số tín chỉ
+    description TEXT,                       -- Mô tả học phần (optional)
+    department TEXT NOT NULL,               -- Khoa/Bộ môn
+    semester TEXT,                          -- Học kỳ (optional)
+    year INTEGER                             -- Năm học (optional)
+);
+CREATE TABLE ExamRooms (
+    room_code TEXT PRIMARY KEY,             -- Mã phòng
+    address TEXT NOT NULL,                  -- Địa chỉ
+    max_capacity INTEGER NOT NULL           -- Số lượng tối đa
+);
+CREATE TABLE ExamSessions (
+    session_code TEXT PRIMARY KEY,          -- Mã ca thi
+    course_code TEXT NOT NULL,              -- Mã học phần (tham chiếu đến bảng Courses)
+    room_code TEXT NOT NULL,                -- Mã phòng thi (tham chiếu đến bảng ExamRooms)
+    student_codes TEXT,                     -- Danh sách mã SV (Lưu dưới dạng chuỗi hoặc JSON)
+    proctor_code TEXT NOT NULL,             -- Mã Giám thị (tham chiếu đến bảng Proctors)
+    exam_date_time TEXT NOT NULL,           -- Thời gian ca thi
+    session_status TEXT NOT NULL,           -- Trạng thái ca thi (e.g. "Scheduled", "Completed", etc.)
+    report_file_path TEXT                   -- Báo cáo (Đường dẫn đến file PDF hoặc loại tệp khác)
+);
+
+ALTER TABLE Courses ADD COLUMN id INTEGER PRIMARY KEY AUTOINCREMENT;

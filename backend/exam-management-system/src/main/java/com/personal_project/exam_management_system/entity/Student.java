@@ -9,52 +9,50 @@ import java.time.LocalDate;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long studentId;  // Mã sinh viên
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long studentId;
 
     @Column(nullable = false, unique = true)
-    private String studentCode;  // Mã sinh viên
+    private String studentCode;
 
     @Column(nullable = false)
-    private String fullName;  // Họ và tên
+    private String fullName;
 
     @Column(nullable = false)
-    private String department;  // Đơn vị (Khoa/Viện)
+    private String department;
 
     @Column(nullable = false)
-    private String className;  // Lớp học
+    private String className;
 
     @Column(nullable = false)
-    private String cohort;  // Khoá học (Ví dụ: 62, 63, v.v.)
+    private String cohort;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Gender gender;  // Giới tính (Male/Female)
+    private Gender gender;
 
     @Convert(converter = LocalDateConverter.class)
     @Column(nullable = false)
-    private LocalDate dateOfBirth;  // Ngày sinh
+    private LocalDate dateOfBirth;
 
     @Column(nullable = true)
-    private String phoneNumber;  // Số điện thoại
+    private String phoneNumber;
 
     @Column(nullable = true)
-    private String email;  // Email
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;  // Trạng thái sinh viên (Active/Graduated/Inactive)
+    private Status status;
 
     @Column(nullable = true)
-    private String studentPhoto;  // Đường dẫn ảnh thẻ sinh viên (Lưu dưới dạng TEXT)
+    private String studentPhoto;
 
     @Column(nullable = true)
-    private String facePhoto;  // Đường dẫn ảnh khuôn mặt sinh viên (Lưu dưới dạng TEXT)
+    private String facePhoto;
 
-    // Constructor mặc định
     public Student() {}
 
-    // Constructor có tham số
     public Student(String studentCode, String fullName, String department, String className, String cohort, Gender gender, LocalDate dateOfBirth, String phoneNumber, String email, Status status, String studentPhoto, String facePhoto) {
         this.studentCode = studentCode;
         this.fullName = fullName;

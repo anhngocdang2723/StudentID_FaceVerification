@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm phòng thi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Thêm phòng thi mới</h1>
+    <form action="/admin/exam-rooms/add" method="post">
+        <div class="form-group">
+            <label for="roomCode">Mã phòng</label>
+            <input type="text" class="form-control" id="roomCode" name="roomCode" placeholder="Nhập mã phòng" required>
+        </div>
+        <div class="form-group">
+            <label for="address">Địa chỉ</label>
+            <input type="text" class="form-control" id="address" name="address" placeholder="Nhập địa chỉ phòng" required>
+        </div>
+        <div class="form-group">
+            <label for="maxCapacity">Số lượng tối đa</label>
+            <input type="number" class="form-control" id="maxCapacity" name="maxCapacity" placeholder="Nhập số lượng tối đa" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm phòng thi</button>
+        <a href="/admin/manage-examrooms" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>
+</body>
+</html>

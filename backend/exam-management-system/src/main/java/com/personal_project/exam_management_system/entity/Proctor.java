@@ -7,11 +7,8 @@ import jakarta.persistence.*;
 public class Proctor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Sử dụng IDENTITY cho SQLite
-    private Long proctorId;  // Mã giám thị (ID giám thị)
-
-    @Column(nullable = false, unique = true)
-    private String proctorCode;  // Mã giám thị
+    @Column(name = "proctor_code", nullable = false, unique = true)
+    private String proctorCode;  // Mã giám thị (làm khóa chính)
 
     @Column(nullable = false)
     private String fullName;  // Họ và tên
@@ -25,10 +22,8 @@ public class Proctor {
     @Column(nullable = true)
     private String email;  // Email
 
-    // Constructor mặc định
     public Proctor() {}
 
-    // Constructor có tham số
     public Proctor(String proctorCode, String fullName, String department, String phoneNumber, String email) {
         this.proctorCode = proctorCode;
         this.fullName = fullName;
@@ -38,14 +33,6 @@ public class Proctor {
     }
 
     // Getters và Setters
-    public Long getProctorId() {
-        return proctorId;
-    }
-
-    public void setProctorId(Long proctorId) {
-        this.proctorId = proctorId;
-    }
-
     public String getProctorCode() {
         return proctorCode;
     }
@@ -89,8 +76,7 @@ public class Proctor {
     @Override
     public String toString() {
         return "Proctor{" +
-                "proctorId=" + proctorId +
-                ", proctorCode='" + proctorCode + '\'' +
+                "proctorCode='" + proctorCode + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", department='" + department + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

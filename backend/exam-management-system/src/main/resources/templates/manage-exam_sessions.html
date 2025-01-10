@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý ca thi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 50px;
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container mt-5">
+        <h1>Danh sách ca thi</h1>
+        <a href="/admin/manage-examsessions/create" class="btn btn-primary mb-3">Thêm ca thi mới</a>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Mã ca thi</th>
+                <th>Mã học phần</th>
+                <th>Mã phòng thi</th>
+                <th>Giám thị</th>
+                <th>Thời gian thi</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="examSession : ${examSessions}">
+                <td th:text="${examSession.sessionCode}"></td>
+                <td th:text="${examSession.courseCode}"></td>
+                <td th:text="${examSession.roomCode}"></td>
+                <td th:text="${examSession.proctorCode}"></td>
+                <td th:text="${examSession.examDateTime}"></td>
+                <td th:text="${examSession.sessionStatus}"></td>
+                <td>
+                    <a href="/admin/manage-exam_sessions/exam_session/{sessionCode}" th:href="@{'/admin/manage-exam_sessions/exam_session/' + ${examSession.sessionCode}}" class="btn btn-info btn-sm">Chi tiết</a>
+                    <a href="/admin/manage-examsessions/edit/{sessionCode}" th:href="@{'/admin/manage-examsessions/edit/' + ${examSession.sessionCode}}" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                    <a href="/admin/manage-examsessions/delete/{sessionCode}" th:href="@{'/admin/manage-examsessions/delete/' + ${examSession.sessionCode}}" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

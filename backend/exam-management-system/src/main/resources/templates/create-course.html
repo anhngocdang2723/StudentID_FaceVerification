@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm học phần</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container mt-5">
+        <h1>Thêm học phần mới</h1>
+        <form action="/manage-courses/course/create" method="post">
+            <div class="form-group">
+                <label for="courseCode">Mã học phần</label>
+                <input type="text" class="form-control" id="courseCode" name="courseCode" placeholder="Nhập mã học phần" required>
+            </div>
+            <div class="form-group">
+                <label for="courseName">Tên học phần</label>
+                <input type="text" class="form-control" id="courseName" name="courseName" placeholder="Nhập tên học phần" required>
+            </div>
+            <div class="form-group">
+                <label for="creditHours">Số tín chỉ</label>
+                <input type="number" class="form-control" id="creditHours" name="creditHours" placeholder="Nhập số tín chỉ" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Đơn vị phụ trách</label>
+                <input type="text" class="form-control" id="department" name="department" placeholder="Nhập đơn vị phụ trách" required>
+            </div>
+            <div class="form-group">
+                <label for="semester">Học kỳ</label>
+                <select class="form-control" id="semester" name="semester" required>
+                    <option value="1">Học kỳ 1</option>
+                    <option value="2">Học kỳ 2</option>
+                    <option value="3">Học kỳ hè</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="year">Năm học</label>
+                <input type="number" class="form-control" id="year" name="year" placeholder="VD: 2025" required>
+            </div>
+            <button type="submit" class="btn btn-success">Thêm học phần</button>
+            <button type="button" class="btn btn-secondary" onclick="window.history.back();">Quay lại</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

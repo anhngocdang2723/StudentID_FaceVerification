@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển - Quản trị viên</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar .logo img {
+            width: 100%;
+            max-width: 150px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .sidebar h2 {
+            color: #f1f1f1;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: #f1f1f1;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar ul li a.active {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo">
+        <img src="/images/static/logo_dhvinh.png" alt="Logo" />
+    </div>
+    <h2>BẢNG QUẢN LÝ</h2>
+    <ul>
+        <li><a href="/admin/dashboard-admin" id="dashboard"><i class="fas fa-home"></i> Tổng quan</a></li>
+        <li><a href="/admin/manage-students" id="manage-students"><i class="fas fa-user-graduate"></i> Quản lý sinh viên</a></li>
+        <li><a href="/admin/manage-proctors" id="manage-proctors"><i class="fas fa-user-tie"></i> Quản lý giám thị</a></li>
+        <li><a href="/admin/manage-courses" id="manage-courses"><i class="fas fa-book"></i> Quản lý học phần</a></li>
+        <li><a href="/admin/manage-examrooms" id="manage-examrooms"><i class="fas fa-door-open"></i> Quản lý phòng thi</a></li>
+        <li><a href="/admin/manage-exam_sessions" id="manage-exam_sessions"><i class="fas fa-clock"></i> Quản lý ca thi</a></li>
+        <li><a href="/admin/reports" id="reports"><i class="fas fa-chart-line"></i> Báo cáo</a></li>
+        <li><a href="/admin/settings" id="settings"><i class="fas fa-cogs"></i> Cài đặt</a></li>
+        <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+    </ul>
+</div>
+
+<!-- Content Section -->
+<div class="content">
+    <!-- Nội dung động từ các trang sẽ được thay vào đây -->
+    <div id="page-content">
+        <!-- Nội dung trang sẽ được tải vào đây -->
+        <div th:replace="${pageContent}"></div> <!-- Chỗ này sẽ được Thymeleaf thay thế -->
+    </div>
+</div>
+
+<script>
+    // JavaScript for dynamically highlighting the active link in sidebar
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('.sidebar ul li a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+
+</body>
+</html>

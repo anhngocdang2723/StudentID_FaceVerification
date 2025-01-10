@@ -10,8 +10,8 @@ from db_update import update_images  # Ensure this is imported correctly
 app = Flask(__name__)
 CORS(app)
 
-CARD_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\image\\card'
-FACE_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\image\\face'
+CARD_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\card'
+FACE_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\face'
 
 os.makedirs(CARD_FOLDER, exist_ok=True)
 os.makedirs(FACE_FOLDER, exist_ok=True)

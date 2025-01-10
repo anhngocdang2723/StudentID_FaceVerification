@@ -29,7 +29,7 @@ public class StudentController {
 
         if (userCode != null) {
             // query thông tin sv
-            Student student = studentService.findByStudentCode(userCode);
+            Student student = studentService.findStudentByStudentCode(userCode);
 
 //            System.out.println("Student Info: " + student);
 
@@ -63,7 +63,7 @@ public class StudentController {
 
         if (userCode != null) {
             // Truy vấn thông tin sinh viên theo userCode
-            Student student = studentService.findByStudentCode(userCode);
+            Student student = studentService.findStudentByStudentCode(userCode);
 
             if (student != null) {
                 // Nếu ảnh sinh viên không tồn tại, gán đường dẫn ảnh mặc định

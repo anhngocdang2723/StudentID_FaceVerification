@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý học phần</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .content {
+            margin-left: 50px;  /* Đảm bảo nội dung không bị che khuất bởi sidebar */
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="container mt-5">
+        <h1>Danh sách học phần</h1>
+        <a href="/admin/manage-courses/course/create" class="btn btn-primary mb-3">Thêm học phần mới</a>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Mã học phần</th>
+                <th>Tên học phần</th>
+                <th>Số tín chỉ</th>
+                <th>Đơn vị</th>
+                <th>Học kỳ</th>
+                <th>Năm học</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="course : ${courses}">
+                <td th:text="${course.courseCode}"></td>
+                <td th:text="${course.courseName}"></td>
+                <td th:text="${course.creditHours}"></td>
+                <td th:text="${course.department}"></td>
+                <td th:text="${course.semester}"></td>
+                <td th:text="${course.year}"></td>
+                <td>
+                    <a href="/admin/courses/edit/{courseCode}(courseCode=${course.courseCode})" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                    <a href="/admin/courses/delete/{courseCode}(courseCode=${course.courseCode})" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
