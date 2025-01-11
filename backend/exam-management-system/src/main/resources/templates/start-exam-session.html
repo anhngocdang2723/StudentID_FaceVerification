@@ -12,10 +12,10 @@
         <h1 class="text-center mb-4">Danh sách sinh viên</h1>
         <form id="startExamSessionForm" method="POST">
             <div class="mb-3">
-                <label for="sessionCode" class="form-label">Mã Ca Thi</label>
+                <label for="sessionCode" class="form-label">Nhập mã ca thi để bắt đầu</label>
                 <input type="text" class="form-control" id="sessionCode" name="sessionCode" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Bắt đầu</button>
+            <button type="submit" class="btn btn-primary w-100">Bắt đầu ca thi</button>
         </form>
         <div id="message" class="mt-3"></div>
         <h4>Kết quả truy vấn</h4>
@@ -23,24 +23,24 @@
             <thead class="table-light">
             <tr>
                 <th>Họ tên</th>
-                <th>MSV</th>
-                <th>SĐT</th>
+                <th>Mã xinh viên</th>
+                <th>Số điện thoại</th>
                 <th>Ảnh cá nhân</th>
                 <th>Trạng thái</th>
-                <th>Xác minh</th>
+                <th>Tiến hành xác minh</th>
             </tr>
             </thead>
             <tbody id="studentList"></tbody>
         </table>
-        <button id="downloadExcelButton" class="btn btn-success w-100 mb-3">Tải xuống danh sách</button>
-        <button id="startExamButton" class="btn btn-warning w-100">Tiến hành ca thi</button>
+        <button class="btn btn-success w-100 mb-3">Tải xuống danh sách</button>
+        <a href="/proctor/virtual-exam" class="btn btn-warning w-100">Tiến hành ca thi</a>
     </div>
 </div>
 
-<!-- Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+        // Xử lý gửi form bắt đầu ca thi
         $('#startExamSessionForm').submit(function (e) {
             e.preventDefault();
 
@@ -53,36 +53,115 @@
                 data: JSON.stringify({ sessionCode: sessionCode }),
                 success: function (response) {
                     if (response.error) {
-                        $('#message').removeClass('alert-success').addClass('alert alert-danger').text(response.error);
+                        $('#message').removeClass('alert-success')
+                            .addClass('alert alert-danger')
+                            .text(response.error);
                         return;
                     }
 
-                    $('#message').removeClass('alert-danger').addClass('alert alert-success').text('Lấy danh sách sinh viên thành công!');
+                    $('#message').removeClass('alert-danger')
+                        .addClass('alert alert-success')
+                        .text('Lấy danh sách sinh viên thành công!');
                     $('#studentList').empty();
 
                     var studentList = response.student_info;
 
+                    // Hiển thị danh sách sinh viên
                     studentList.forEach(function (student) {
-                        var row = `<tr>
+                        var row = `<tr id="student-${student.student_id}">
                             <td>${student.name}</td>
                             <td>${student.student_id}</td>
                             <td>${student.phone}</td>
                             <td><img src="${student.image_url}" alt="Ảnh cá nhân" width="50" height="50"></td>
-                            <td>${student.status}</td>
+                            <td class="status ${student.status === 'Đã điểm danh' ? 'text-success' : 'text-danger'}">${student.status}</td>
                             <td>
-                                <a href="/proctor/verify-face?student_id=${student.student_id}&name=${student.name}&phone=${student.phone}&image_url=${student.image_url}"
-                                   target="_blank" class="btn btn-info">Xác minh</a>
+                                <button onclick="openVerificationPage('${student.student_id}', '${student.name}', '${student.phone}', '${student.image_url}')"
+                                        class="btn btn-info">Xác minh</button>
                             </td>
                         </tr>`;
                         $('#studentList').append(row);
                     });
                 },
-                error: function (xhr) {
-                    $('#message').removeClass('alert-success').addClass('alert alert-danger').text('Có lỗi xảy ra khi lấy thông tin sinh viên.');
+                error: function () {
+                    $('#message').removeClass('alert-success')
+                        .addClass('alert alert-danger')
+                        .text('Có lỗi xảy ra khi lấy thông tin sinh viên.');
                 }
             });
         });
     });
+
+    // Mở trang xác minh bằng window.open
+    function openVerificationPage(studentId, name, phone, imageUrl) {
+        window.open(`/proctor/verify-face?student_id=${studentId}&name=${name}&phone=${phone}&image_url=${imageUrl}`,
+            '_blank',
+            'width=800,height=600');
+    }
+
+    // Lắng nghe kết quả từ trang xác minh và cập nhật trạng thái
+    window.addEventListener('message', function (event) {
+        // Kiểm tra nguồn gửi dữ liệu để đảm bảo an toàn
+        if (event.origin !== window.location.origin) {
+            console.warn("Nguồn không hợp lệ:", event.origin);
+            return;
+        }
+
+        if (event.data.verify_face_result === 'done') {
+            const studentId = event.data.student_id;
+            const status = event.data.status;
+
+            // Cập nhật trạng thái sinh viên
+            const row = $(`#student-${studentId}`);
+            row.find('.status').text(status)
+                .removeClass('text-danger')
+                .addClass('text-success');
+
+            // Ẩn nút Xác minh sau khi xác minh thành công
+            row.find('button').hide();
+        }
+    });
+
+    // Sự kiện khi nhấn nút Tải xuống danh sách
+    $('.btn-success').click(function () {
+        console.log("Đã nhấn nút tải xuống danh sách!");
+        var sessionCode = $('#sessionCode').val();
+        var studentInfo = [];
+
+        // Lấy thông tin sinh viên từ bảng
+        $('#studentList tr').each(function () {
+            var student = {
+                name: $(this).find('td').eq(0).text(),
+                student_id: $(this).find('td').eq(1).text(),
+                status: $(this).find('td').eq(4).text() // Lấy trạng thái
+            };
+            studentInfo.push(student);
+        });
+
+        $.ajax({
+            url: 'http://127.0.0.1:8000/generate-pdf/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                sessionCode: sessionCode,
+                studentInfo: studentInfo  // Gửi thông tin sinh viên
+            }),
+            xhrFields: {
+                responseType: 'blob'  // Để nhận file PDF
+            },
+            success: function (response) {
+                // Tạo link tải file PDF
+                var blob = new Blob([response], { type: 'application/pdf' });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'bao_cao_ca_thi.pdf';
+                link.click();
+            },
+            // error: function () {
+            //     alert('Có lỗi xảy ra khi tạo file PDF.');
+            // }
+        });
+    });
+
 </script>
 </body>
 </html>

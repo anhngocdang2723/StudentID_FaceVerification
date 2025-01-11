@@ -192,13 +192,11 @@ public class Student {
                 '}';
     }
 
-    // Enum cho Giới tính
     public enum Gender {
         MALE,
         FEMALE;
     }
 
-    // Enum cho Trạng thái sinh viên
     public enum Status {
         ACTIVE,
         GRADUATED,

@@ -21,16 +21,16 @@ public class ExamRoomService {
         return examRoomRepository.findById(roomCode);
     }
 
-    public ExamRoom addRoom(ExamRoom examRoom) {
-        return examRoomRepository.save(examRoom);
+    public void addRoom(ExamRoom examRoom) {
+        examRoomRepository.save(examRoom);
     }
 
     public void deleteRoom(String roomCode) {
         examRoomRepository.deleteById(roomCode);
     }
 
-    public ExamRoom updateRoom(String roomCode, ExamRoom updatedRoom) {
-        return examRoomRepository.findById(roomCode).map(room -> {
+    public void updateRoom(String roomCode, ExamRoom updatedRoom) {
+        examRoomRepository.findById(roomCode).map(room -> {
             room.setAddress(updatedRoom.getAddress());
             room.setMaxCapacity(updatedRoom.getMaxCapacity());
             return examRoomRepository.save(room);

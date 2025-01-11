@@ -8,19 +8,19 @@ public class Proctor {
 
     @Id
     @Column(name = "proctor_code", nullable = false, unique = true)
-    private String proctorCode;  // Mã giám thị (làm khóa chính)
+    private String proctorCode;
 
     @Column(nullable = false)
-    private String fullName;  // Họ và tên
+    private String fullName;
 
     @Column(nullable = false)
-    private String department;  // Đơn vị (Khoa/Bộ môn)
+    private String department;
 
     @Column(nullable = true)
-    private String phoneNumber;  // Số điện thoại
+    private String phoneNumber;
 
     @Column(nullable = true)
-    private String email;  // Email
+    private String email;
 
     public Proctor() {}
 

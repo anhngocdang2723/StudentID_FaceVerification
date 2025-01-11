@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chi Tiết Ca Thi</title>
+    <title>Chi tiết ca thi</title>
     <style>
         body {
             display: flex;
@@ -88,22 +88,22 @@
 <body>
 <div class="content">
     <div class="container">
-        <h1>Chi Tiết Ca Thi</h1>
+        <h1>Chi tiết ca thi</h1>
 
         <div th:if="${examSessionDetails != null}" class="card">
-            <h2>Thông Tin Ca Thi</h2>
-            <p><strong>Mã Ca Thi:</strong> <span th:text="${examSessionDetails.sessionCode}"></span></p>
-            <p><strong>Tên Môn Học:</strong> <span th:text="${examSessionDetails.courseName}"></span></p>
-            <p><strong>Địa Chỉ Phòng Thi:</strong> <span th:text="${examSessionDetails.address}"></span></p>
-            <p><strong>Tên Giám Thị:</strong> <span th:text="${examSessionDetails.proctorName}"></span></p>
-            <p><strong>Ngày Giờ Thi:</strong> <span th:text="${examSessionDetails.examDateTime}"></span></p>
-            <p><strong>Trạng Thái:</strong> <span th:text="${examSessionDetails.sessionStatus}"></span></p>
-            <p><strong>Danh Sách Sinh Viên:</strong></p>
+            <h2>Thông tin ca thi</h2>
+            <p><strong>Mã ca thi:</strong> <span th:text="${examSessionDetails.sessionCode}"></span></p>
+            <p><strong>Tên môn học:</strong> <span th:text="${examSessionDetails.courseName}"></span></p>
+            <p><strong>Địa chỉ phòng thi:</strong> <span th:text="${examSessionDetails.address}"></span></p>
+            <p><strong>Tên giám thị:</strong> <span th:text="${examSessionDetails.proctorName}"></span></p>
+            <p><strong>Ngày giờ thi:</strong> <span th:text="${examSessionDetails.examDateTime}"></span></p>
+            <p><strong>Trạng thái:</strong> <span th:text="${examSessionDetails.sessionStatus}"></span></p>
+            <p><strong>Danh sách sinh viên:</strong></p>
             <ul>
                 <li th:each="studentName : ${examSessionDetails.listStudentNames}" th:text="${studentName}"></li>
             </ul>
             <p th:if="${examSessionDetails.reportFilePath != null}">
-                <strong>File Báo Cáo:</strong> <span th:text="${examSessionDetails.reportFilePath}"></span>
+                <strong>File báo cáo:</strong> <span th:text="${examSessionDetails.reportFilePath}"></span>
                 <a href="javascript:void(0);" class="file-link" onclick="viewReport('[[@{${examSessionDetails.reportFilePath}}]]')">Xem file</a>
                 <a href="javascript:void(0);" class="file-link" onclick="downloadReport('[[@{${examSessionDetails.reportFilePath}}]]')">Tải về</a>
             </p>

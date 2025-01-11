@@ -353,6 +353,5 @@ public class AdminController {
         return randomStudents;
     }
 
-
     // ====================================== Quản lý báo cáo ========================================
 }

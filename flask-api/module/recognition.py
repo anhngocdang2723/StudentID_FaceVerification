@@ -1,3 +1,5 @@
+#mudule.recognition.py
+
 import face_recognition
 from PIL import Image, ImageEnhance
 import numpy as np
@@ -6,7 +8,6 @@ import io
 import os
 
 def crop_face(image_array, margin=0.2):
-    """Detect and crop face from image"""
     face_locations = face_recognition.face_locations(image_array)
     if not face_locations:
         raise ValueError("No face detected")
@@ -25,25 +26,20 @@ def crop_face(image_array, margin=0.2):
 
     return image_array[crop_top:crop_bottom, crop_left:crop_right]
 
-def standardize_image(image_array, target_size=(512, 512)):
-    """Standardize image size and format"""
+def standardize_image(image_array, target_size=(160, 160)):
     image = Image.fromarray(image_array)
     image = image.resize(target_size, Image.Resampling.LANCZOS)
     return np.array(image)
 
 def enhance_image(image_array):
-    """Enhance image quality"""
     image = Image.fromarray(image_array)
 
-    # Enhance contrast
     contrast = ImageEnhance.Contrast(image)
     image = contrast.enhance(1.2)
 
-    # Enhance sharpness
     sharpness = ImageEnhance.Sharpness(image)
     image = sharpness.enhance(1.5)
 
-    # Convert to CV2 format for denoising
     cv_image = np.array(image)
     denoised = cv2.fastNlMeansDenoisingColored(cv_image)
 
@@ -51,14 +47,12 @@ def enhance_image(image_array):
 
 def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
     try:
-        # Process personal image
         filePersonalImage.seek(0)
         personal_image = face_recognition.load_image_file(io.BytesIO(filePersonalImage.read()))
         personal_face = crop_face(personal_image)
         personal_face = standardize_image(personal_face)
         personal_face = enhance_image(personal_face)
 
-        # Process student ID image
         base_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results"
         student_path = os.path.join(base_path, studentImagePathInDB.lstrip('/'))
         student_image = face_recognition.load_image_file(student_path)
@@ -66,7 +60,6 @@ def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
         student_face = standardize_image(student_face)
         student_face = enhance_image(student_face)
 
-        # Compare faces
         personal_encoding = face_recognition.face_encodings(personal_face)[0]
         student_encoding = face_recognition.face_encodings(student_face)[0]
 
@@ -92,5 +85,4 @@ def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
 
 # result = verify_faces(filePersonalImage, studentImagePathInDB)
 # print(result)
-
 # filePersonalImage.close()

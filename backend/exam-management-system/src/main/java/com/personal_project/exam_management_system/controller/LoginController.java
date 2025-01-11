@@ -26,21 +26,19 @@ public class LoginController {
         String result = userService.authenticate(accountId, password);
 
         if (result.equals("Invalid credentials") || result.equals("Invalid role")) {
-            model.addAttribute("error", result);  // Hiển thị lỗi
-            return "login";  // Quay lại trang đăng nhập
+            model.addAttribute("error", result);
+            return "login";
         } else {
-            // Chuyển hướng đến trang dashboard tương ứng
-            // Đảm bảo sử dụng các đường dẫn đúng với vai trò người dùng
             switch (result) {
                 case "student/dashboard-student":
-                    return "redirect:/student/dashboard-student";  // Đối với sinh viên
+                    return "redirect:/student/dashboard-student";
                 case "proctor/dashboard-proctor":
-                    return "redirect:/proctor/dashboard-proctor";  // Đối với giám thị
+                    return "redirect:/proctor/dashboard-proctor";
                 case "admin/dashboard-admin":
-                    return "redirect:/admin/dashboard-admin";  // Đối với quản trị viên
+                    return "redirect:/admin/dashboard-admin";
                 default:
                     model.addAttribute("error", "Unknown role");
-                    return "login";  // Nếu không xác định được vai trò
+                    return "login";
             }
         }
     }

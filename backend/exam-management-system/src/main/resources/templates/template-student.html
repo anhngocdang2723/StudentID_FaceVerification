@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÂN HỆ SINH VIÊN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #ecf0f1;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s ease;
+        }
+
+        .sidebar:hover {
+            width: 280px;
+        }
+
+        .sidebar .logo img {
+            width: 100%;
+            max-width: 150px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .sidebar h2 {
+            color: #ecf0f1;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 12px 0;
+        }
+
+        .sidebar ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s, padding-left 0.3s;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #3498db;
+            padding-left: 20px;
+        }
+
+        .sidebar ul li a.active {
+            background-color: #2980b9;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            flex: 1;
+            background-color: #f4f4f9;
+            transition: margin-left 0.3s;
+        }
+
+        /* When sidebar is hovered, shift content */
+        /*.sidebar:hover ~ .content {*/
+        /*    margin-left: 280px;*/
+        /*}*/
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo">
+        <img src="/images/static/logo_dhvinh.png" alt="Logo" />
+    </div>
+    <h2>PHÂN HỆ SINH VIÊN</h2>
+    <ul>
+        <li><a href="/student/dashboard-student" id="dashboard"><i class="fas fa-home"></i> Trang chủ</a></li>
+        <li><a href="/student/info" id="info"><i class="fas fa-user"></i> Thông tin cá nhân</a></li>
+        <li><a href="/student/courses" id="courses"><i class="fas fa-book"></i> Môn học của tôi</a></li>
+        <li><a href="/student/schedule" id="schedule"><i class="fas fa-calendar-alt"></i> Lịch thi học phần</a></li>
+        <li><a href="/student/grades" id="grades"><i class="fas fa-graduation-cap"></i> Thống kê điểm số</a></li>
+        <li><a href="/student/settings" id="settings"><i class="fas fa-cogs"></i> Cài đặt tài khoản</a></li>
+        <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+    </ul>
+</div>
+
+<div class="content">
+    <div id="page-content">
+        <div th:replace="${pageContent}"></div>
+    </div>
+</div>
+
+<script>
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('.sidebar ul li a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+
+</body>
+</html>

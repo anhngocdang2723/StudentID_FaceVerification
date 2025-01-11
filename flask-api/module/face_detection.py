@@ -1,4 +1,4 @@
-# face_detection.py
+# module.face_detection.py
 
 import cv2
 import os
@@ -6,7 +6,6 @@ import unidecode
 import numpy as np
 
 FACE_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\face'
-
 os.makedirs(FACE_FOLDER, exist_ok=True)
 
 def detect_and_crop_face(image_data, full_name, student_code):

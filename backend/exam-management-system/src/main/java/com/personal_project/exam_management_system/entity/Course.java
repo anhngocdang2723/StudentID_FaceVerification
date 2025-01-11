@@ -8,25 +8,25 @@ public class Course {
 
     @Id
     @Column(name = "course_code")
-    private String courseCode;  // Mã học phần
+    private String courseCode;
 
     @Column(nullable = false)
-    private String courseName;  // Tên học phần
+    private String courseName;
 
     @Column(nullable = false)
-    private int creditHours;  // Số tín chỉ
+    private int creditHours;
 
     @Column(nullable = true)
-    private String description;  // Mô tả
+    private String description;
 
     @Column(nullable = false)
-    private String department;  // Đơn vị
+    private String department;
 
     @Column(nullable = false)
-    private String semester;  // Học kỳ
+    private String semester;
 
     @Column(nullable = false)
-    private int year;  // Năm học
+    private int year;
 
     public Course() {}
 

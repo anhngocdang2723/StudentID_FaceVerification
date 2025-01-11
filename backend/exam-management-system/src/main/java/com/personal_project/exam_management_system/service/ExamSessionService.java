@@ -38,7 +38,6 @@ public class ExamSessionService {
             String sessionStatus = (String) firstRow[6];
             String reportFilePath = (String) firstRow[7];
 
-            // Trả về DTO với trường listStudentNames là chuỗi
             return new ExamSessionDetailDTO(sessionCodeFromDb, courseName, address, listStudentNames, proctorName, examDateTime, sessionStatus, reportFilePath);
         }
 

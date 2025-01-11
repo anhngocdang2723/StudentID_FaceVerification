@@ -5,69 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHÂN HỆ GIÁM THỊ</title>
     <style>
-        /* Global Styles */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             color: #333;
-        }
-
-        .dashboard-container {
-            display: flex;
             height: 100vh;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar .logo h2 {
-            font-size: 1.5rem;
-            margin: 0;
-            color: #ecf0f1;
-        }
-
-        .sidebar nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar nav ul li {
-            margin: 15px 0;
-        }
-
-        .sidebar nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-            padding: 10px;
-            border-radius: 5px;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar nav ul li a.active,
-        .sidebar nav ul li a:hover {
-            background-color: #3498db;
-        }
-
-        /* Main Content */
         .content {
-            flex: 1;
+            margin-left: 180px;
             padding: 20px;
+            width: 80%;
             overflow-y: auto;
         }
 
@@ -82,11 +31,13 @@
         .content header h1 {
             margin: 0 0 10px;
             font-size: 1.8rem;
+            color: #2c3e50;
         }
 
         .content header p {
             margin: 0;
             color: #7f8c8d;
+            font-size: 1rem;
         }
 
         .content section {
@@ -94,65 +45,102 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
+        .content section h2 {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
 
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                align-items: center;
-                padding: 10px;
-            }
+        .content section p {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
 
-            .sidebar nav ul {
-                display: flex;
-                justify-content: space-around;
-            }
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
-            .content {
-                padding: 10px;
-            }
+        .stat-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px;
+            color: #3498db;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-card .stat-desc {
+            color: #7f8c8d;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
-<div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <img src="/static/logo_dhvinh.png" alt="Logo" />
-            <h2>PHÂN HỆ GIÁM THỊ</h2>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/proctor" class="active">Trang Chủ</a></li>
-                <li><a href="/proctor/info">Thông Tin Cá Nhân</a></li>
-                <li><a href="/proctor/schedule">Xem ca coi thi</a></li>
-                <li><a href="/proctor/students">Xem Sinh Viên</a></li>
-                <li><a href="/proctor/start-exam-session">Bắt đầu ca thi</a></li>
-                <li><a href="/proctor/settings">Cài Đặt</a></li>
-                <li><a href="/logout">Đăng Xuất</a></li>
-            </ul>
-        </nav>
-    </aside>
 
+<div class="dashboard-container">
     <!-- Main Content -->
     <main class="content">
         <header>
-            <h1>Chào Mừng,<td th:text="${proctor.fullName}"></td></h1>
+            <h1>Chào mừng, Giám thị: <span th:text="${proctor.fullName}"></span></h1>
             <p>Chọn một tùy chọn từ menu để bắt đầu.</p>
         </header>
 
-        <!-- Placeholder for dynamic content -->
+        <!-- Statistics Section -->
         <section>
-            <p>Đây là bảng điều khiển giám thị. Chọn một tùy chọn từ thanh bên để xem chi tiết.</p>
+            <h2>Thống Kê Hệ Thống</h2>
+            <div class="stats-container">
+                <!-- Stat Card 1 -->
+                <div class="stat-card">
+                    <h3>Số Ca Thi</h3>
+                    <div class="stat-value">12</div>
+                    <p class="stat-desc">Số lượng ca thi đã được tổ chức.</p>
+                </div>
+
+                <!-- Stat Card 2 -->
+                <div class="stat-card">
+                    <h3>Sinh Viên Thi</h3>
+                    <div class="stat-value">300</div>
+                    <p class="stat-desc">Tổng số sinh viên tham gia thi.</p>
+                </div>
+
+                <!-- Stat Card 3 -->
+                <div class="stat-card">
+                    <h3>Phòng Thi</h3>
+                    <div class="stat-value">8</div>
+                    <p class="stat-desc">Số phòng thi đã được phân công.</p>
+                </div>
+            </div>
         </section>
+
+        <!-- Additional Statistics -->
+        <section>
+            <h2>Chi Tiết Các Môn Thi</h2>
+            <p>Thông tin chi tiết về các môn thi của các ca thi:</p>
+            <ul>
+                <li><strong>Môn: </strong>Toán học - <strong>Ca thi: </strong>Ca 1 - <strong>Phòng thi: </strong>Phòng A1</li>
+                <li><strong>Môn: </strong>Vật lý - <strong>Ca thi: </strong>Ca 2 - <strong>Phòng thi: </strong>Phòng B1</li>
+                <li><strong>Môn: </strong>Hóa học - <strong>Ca thi: </strong>Ca 3 - <strong>Phòng thi: </strong>Phòng C1</li>
+            </ul>
+        </section>
+
     </main>
 </div>
+
 </body>
 </html>

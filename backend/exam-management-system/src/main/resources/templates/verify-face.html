@@ -30,11 +30,16 @@
 
         <div id="ticketContainer" class="mt-4" style="display:none;">
             <h4>Phiếu thi</h4>
+            <p><strong>Họ và tên:</strong> <span id="student_name"></span></p>
+            <p><strong>Mã sinh viên:</strong> <span id="student_ID"></span></p>
             <p><strong>Vị trí ngồi:</strong> <span id="seatingPosition"></span></p>
             <p><strong>Tài khoản thi:</strong> <span id="examAccount"></span></p>
             <p><strong>Mật khẩu thi:</strong> <span id="examPassword"></span></p>
             <p><strong>Link Phiếu thi:</strong> <a id="ticketLink" href="#" target="_blank">Tải phiếu thi</a></p>
         </div>
+
+        <!-- Thêm nút để đóng trang -->
+        <button id="closeButton" class="btn btn-danger mt-4">Đóng trang</button>
     </div>
 </div>
 
@@ -47,7 +52,6 @@
         const studentPhone = urlParams.get('phone');
         let studentImageUrl = urlParams.get('image_url');
 
-        // Đảm bảo chuyển đổi đường dẫn cho ảnh sinh viên
         studentImageUrl = studentImageUrl.replace(/\\/g, '/');
 
         $('#studentName').text(studentName);
@@ -55,34 +59,70 @@
         $('#studentPhone').text(studentPhone);
         $('#studentImage').attr('src', studentImageUrl);
 
+        // Sự kiện nhấn nút "Đóng trang"
+        $('#closeButton').click(function () {
+            window.close();
+        });
+
         $('#uploadImageForm').submit(function (e) {
             e.preventDefault();
 
-            // Đảm bảo gửi file cá nhân (file đã chọn)
             let formData = new FormData(this);
-            formData.append('student_image_path', studentImageUrl);  // Thêm đường dẫn ảnh sinh viên vào formData
-            formData.append('student_id', studentId);  // Thêm mã sinh viên vào formData
+            formData.append('student_image_path', studentImageUrl);
+            formData.append('student_id', studentId);
+            formData.append('student_name', studentName);
 
             $.ajax({
-                url: 'http://127.0.0.1:8000/verify-face/',  // Đảm bảo là địa chỉ đúng cho Flask server
+                url: 'http://127.0.0.1:8000/verify-face/',
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (response) {
                     if (response.match) {
-                        $('#comparisonResult').removeClass('alert-danger').addClass('alert-success').text('Xác minh thành công!').show();
+                        $('#comparisonResult').removeClass('alert-danger')
+                            .addClass('alert-success')
+                            .text('Xác minh thành công! Trang sẽ tự động đóng sau 10 giây.')
+                            .show();
+
+                        $('#student_name').text(response.student_name);
+                        $('#student_ID').text(response.student_id);
                         $('#seatingPosition').text(response.seating_position);
                         $('#examAccount').text(response.exam_account);
                         $('#examPassword').text(response.exam_password);
                         $('#ticketLink').attr('href', response.exam_ticket_path).show();
                         $('#ticketContainer').show();
+
+                        // Gửi kết quả về trang quản lý ca thi
+                        window.opener.postMessage({
+                            verify_face_result: 'done',
+                            student_id: studentId,
+                            status: 'Đã điểm danh'
+                        }, '*');
+
+                        // Đếm ngược 10 giây và tự động đóng trang
+                        let countdown = 10;
+                        let countdownInterval = setInterval(function () {
+                            $('#comparisonResult').text(`Xác minh thành công! Trang sẽ tự động đóng sau ${countdown} giây.`);
+                            countdown--;
+
+                            if (countdown < 0) {
+                                clearInterval(countdownInterval);
+                                window.close();
+                            }
+                        }, 1000);
                     } else {
-                        $('#comparisonResult').removeClass('alert-success').addClass('alert-danger').text('Xác minh thất bại!').show();
+                        $('#comparisonResult').removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .text('Xác minh thất bại! Vui lòng thử lại.')
+                            .show();
                     }
                 },
                 error: function (xhr, status, error) {
-                    $('#comparisonResult').removeClass('alert-success').addClass('alert-danger').text('Lỗi khi xác minh khuôn mặt: ' + error).show();
+                    $('#comparisonResult').removeClass('alert-success')
+                        .addClass('alert-danger')
+                        .text('Lỗi khi xác minh khuôn mặt: ' + error)
+                        .show();
                 }
             });
         });

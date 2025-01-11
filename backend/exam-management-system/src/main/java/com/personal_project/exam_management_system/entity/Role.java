@@ -8,7 +8,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")  // Đảm bảo ánh xạ đúng tên cột trong DB
+    @Column(name = "role_id")
     private Long roleId;
 
     @Column(nullable = false, unique = true)

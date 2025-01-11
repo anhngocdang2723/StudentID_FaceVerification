@@ -46,26 +46,18 @@ public class StudentController {
 //        System.out.println("User Code: " + userCode);
         if (userCode != null) {
             Student student = studentService.findStudentByStudentCode(userCode);
-
 //            System.out.println("Student Info: " + student);
-
             if (student != null) {
-                // Nếu ảnh sinh viên không tồn tại, gán đường dẫn ảnh mặc định
-//                if (student.getStudentPhoto() == null || student.getStudentPhoto().isEmpty()) {
-//                    student.setStudentPhoto("/images/default-student-photo.jpg");  // Đường dẫn ảnh thẻ sinh viên mặc định
-//                }
-//                if (student.getFacePhoto() == null || student.getFacePhoto().isEmpty()) {
-//                    student.setFacePhoto("/images/default-face-photo.jpg");  // Đường dẫn ảnh khuôn mặt mặc định
-//                }
                 model.addAttribute("student", student);
-                return "dashboard-student";
+                model.addAttribute("pageContent", "dashboard-student");
+                return "template-student";
             } else {
                 model.addAttribute("error", "Student not found");
-                return "error";
+                return "redirect:error";
             }
         } else {
             model.addAttribute("error", "User code not found");
-            return "error";
+            return "redirect:error";
         }
     }
 
@@ -85,7 +77,8 @@ public class StudentController {
                 }
 
                 model.addAttribute("student", student);
-                return "student-info";
+                model.addAttribute("pageContent", "student-info");
+                return "template-student";
             } else {
                 model.addAttribute("error", "Student not found");
                 return "error";
@@ -113,6 +106,7 @@ public class StudentController {
         model.addAttribute("student", student.get());
         model.addAttribute("examSessions", examSessions);
 
-        return "exam-schedule-std";
+        model.addAttribute("pageContent", "exam-schedule-std");
+        return "template-student";
     }
 }

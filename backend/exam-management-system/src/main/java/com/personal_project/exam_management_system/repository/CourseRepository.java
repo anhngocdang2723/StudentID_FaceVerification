@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    // Bạn có thể thêm các phương thức truy vấn nếu cần.
 }

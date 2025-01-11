@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ca Thi Ảo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .camera-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .camera {
+            width: 200px;
+            height: 150px;
+            background-color: #ccc;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .position-container {
+            width: 90%;
+            max-width: 600px;
+            background-color: #e0e0e0;
+            border: 2px solid #000;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #ffeb3b;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #000;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: #f44336;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+<div class="timer" id="timer">40:00</div>
+
+<div class="camera-container">
+    <div class="camera">Camera 1</div>
+    <div class="camera">Camera 2</div>
+    <div class="camera">Camera 3</div>
+</div>
+
+<div class="position-container">
+    <h3>Vị trí ngồi:</h3>
+    <p>Sơ đồ vị trí ngồi sẽ được hiển thị ở đây</p>
+</div>
+
+<!-- Button to end the exam -->
+<a href="/login" id="endExamButton" >Kết thúc ca thi</a>
+
+<!-- Table to display student list -->
+<table id="studentList" border="1" cellpadding="5" cellspacing="0" style="margin-top: 20px;">
+    <thead>
+    <tr>
+        <th>Tên sinh viên</th>
+        <th>Mã sinh viên</th>
+        <th>Trạng thái</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Student list will be dynamically populated here -->
+    </tbody>
+</table>
+
+<script>
+    // Initial student list (will be updated from OCR or file upload)
+    let studentList = [];
+
+    const studentListTable = document.getElementById('studentList').getElementsByTagName('tbody')[0];
+    const endExamButton = document.getElementById('endExamButton');
+    const timerElement = document.getElementById('timer');
+    let totalTime = 40 * 60; // 40 minutes in seconds
+
+    function updateTimer() {
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (totalTime > 0) {
+            totalTime--;
+            setTimeout(updateTimer, 1000);
+        } else {
+            alert("Thời gian thi đã hết!");
+        }
+    }
+
+    function updateStudentTable() {
+        studentListTable.innerHTML = '';
+        studentList.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.msv}</td>
+                <td>${student.status}</td>
+            `;
+            studentListTable.appendChild(row);
+        });
+    }
+
+    // Process OCR result (assuming this is done via OCR handling)
+    function updateStudentStatusFromOCR(msvFromResult) {
+        studentList.forEach(student => {
+            if (student.msv === msvFromResult) {
+                student.status = 'Có mặt'; // Update status to present
+                student.isAuthenticated = true; // Mark as authenticated
+            }
+        });
+        updateStudentTable();
+    }
+
+    // Process Excel file (assuming this is done via file upload handling)
+    function handleExcelFileUpload(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // PDF generation when exam ends
+        function generatePDF() {
+            const studentListData = studentList.map(student => ({
+                name: student.name,
+                msv: student.msv,
+                status: student.status,
+                score: student.status === 'Có mặt' ? (Math.random() * 10).toFixed(2) : 'N/A', // Random score for present students
+                signature: student.status === 'Có mặt' ? 'Ký tên' : 'Chưa ký'
+            }));
+
+            fetch('/generate-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentListData)
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'DanhSachSinhVien.pdf';
+                    link.click();
+                })
+                .catch(error => console.error('Error generating PDF:', error));
+        }
+
+        // Event listener for the "Kết thúc ca thi" button
+        endExamButton.addEventListener('click', function () {
+            if (confirm("Bạn có chắc chắn muốn kết thúc ca thi?")) {
+                alert("Ca thi đã kết thúc!");
+                // generatePDF(); // Generate and download the PDF
+            }
+        });
+    }
+</script>
+</body>
+</html>

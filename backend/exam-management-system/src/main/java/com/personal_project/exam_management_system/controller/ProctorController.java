@@ -47,8 +47,6 @@ public class ProctorController {
     @Autowired
     private AppConfig appConfig;
 
-
-
     // Trang dashboard-proctor
     @GetMapping("/dashboard-proctor")
     public String dashboardProctor(Model model) {
@@ -59,14 +57,15 @@ public class ProctorController {
 
             if (proctor != null) {
                 model.addAttribute("proctor", proctor);
-                return "dashboard-proctor";
+                model.addAttribute("pageContent", "dashboard-proctor");
+                return "template-proctor";
             } else {
                 model.addAttribute("error", "Proctor not found");
-                return "error";
+                return "redirect:error";
             }
         } else {
             model.addAttribute("error", "User code not found");
-            return "error";
+            return "redirect:error";
         }
     }
 
@@ -80,14 +79,15 @@ public class ProctorController {
 
             if (proctor != null) {
                 model.addAttribute("proctor", proctor);
-                return "proctor-info";  // Trả về trang proctor-info.html
+                model.addAttribute("pageContent", "proctor-info");
+                return "template-proctor";
             } else {
                 model.addAttribute("error", "Proctor not found");
-                return "error";
+                return "redirect:error";
             }
         } else {
             model.addAttribute("error", "User code not found");
-            return "error";
+            return "redirect:error";
         }
     }
 
@@ -98,14 +98,15 @@ public class ProctorController {
 
         if (proctor.isEmpty()) {
             model.addAttribute("error", "Giám thị không tồn tại");
-            return "error";
+            return "redirect:error";
         }
         List<ExamSession> examSessions = examSessionRepository.findByProctorCode(proctorCode);
 
         model.addAttribute("proctor", proctor.get());
         model.addAttribute("examSessions", examSessions);
 
-        return "exam-schedule-proctor";
+        model.addAttribute("pageContent", "exam-schedule-proctor");
+        return "template-proctor";
     }
 
     @GetMapping("/start-exam-session")
@@ -148,5 +149,10 @@ public class ProctorController {
         model.addAttribute("phone", phone);
         model.addAttribute("imageUrl", imageUrl);
         return "verify-face";
+    }
+
+    @GetMapping("/virtual-exam")
+    public String virtualExam(Model model) {
+        return "virtual-exam";
     }
 }

@@ -1,3 +1,5 @@
+#module.db_update.py
+
 import sqlite3
 from db_connect import connect_db
 
@@ -10,7 +12,6 @@ def get_student_list(session_code):
     try:
         cursor = conn.cursor()
 
-        # Truy vấn mã sinh viên từ bảng ExamSessions
         query = "SELECT student_codes FROM ExamSessions WHERE session_code = ?"
         cursor.execute(query, (session_code,))
         result = cursor.fetchone()
@@ -22,7 +23,6 @@ def get_student_list(session_code):
             if not student_list:
                 return {"error": f"Ca thi {session_code} không có sinh viên nào."}
 
-            # Truy vấn thông tin sinh viên từ bảng Students
             placeholders = ','.join('?' for _ in student_list)
             query_students = f"""
                 SELECT student_code, full_name, phone_number, face_photo

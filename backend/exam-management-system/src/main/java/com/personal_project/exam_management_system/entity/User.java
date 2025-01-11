@@ -17,7 +17,7 @@ public class User {
     private String password;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id") // ánh xạ đúng với role_id trong bảng Users
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
 
     @Column(nullable = false, updatable = false)

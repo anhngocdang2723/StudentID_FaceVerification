@@ -2,12 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lịch Coi Thi của Giám Thị</title>
+    <title>Lịch coi thi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 20px;
         }
         h1 {
             text-align: center;
@@ -45,16 +44,16 @@
 </head>
 <body>
 <div class="container">
-    <h1>Lịch Coi Thi của Giám Thị: <span th:text="${proctor.fullName}"></span></h1>
+    <h1>Lịch coi thi của giám thị: <span th:text="${proctor.fullName}"></span></h1>
     <button type="button" class="btn btn-secondary" onclick="window.history.back();">Quay lại</button>
     <table>
         <thead>
         <tr>
-            <th>Mã Ca Thi</th>
-            <th>Môn Thi</th>
-            <th>Phòng Thi</th>
-            <th>Ngày Giờ Thi</th>
-            <th>Trạng Thái</th>
+            <th>Mã ca thi</th>
+            <th>Mã môn thi</th>
+            <th>Phòng thi</th>
+            <th>Thi điểm coi thi</th>
+            <th>Trạng thái</th>
         </tr>
         </thead>
         <tbody>

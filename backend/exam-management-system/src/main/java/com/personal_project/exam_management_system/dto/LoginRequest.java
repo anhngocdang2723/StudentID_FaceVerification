@@ -1,4 +1,4 @@
-package com.personal_project.exam_management_system.dto; // Bạn có thể đặt lớp này trong gói dto hoặc một gói khác phù hợp
+package com.personal_project.exam_management_system.dto;
 
 public class LoginRequest {
 

@@ -1,7 +1,7 @@
 import os
 import cv2
 import unidecode
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_file
 import numpy as np
 import random
 from flask_cors import CORS
@@ -11,6 +11,7 @@ from module.face_detection import detect_and_crop_face
 from module.student_info import get_student_list
 from module.recognition import verify_faces
 from module.generate_ticket import generate_exam_ticket, generate_random_string
+from module.pdf_generator import generate_pdf
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -75,7 +76,7 @@ def verify_face():
         student_image_path = request.form.get('student_image_path')
         personal_image_file = request.files['filePersonalImage']
         student_id = request.form.get('student_id')
-        student_name = request.form.get('studentName')
+        student_name = request.form.get('student_name')
 
         if not student_image_path or not personal_image_file or not student_id:
             return jsonify({'error': 'Cần cung cấp đủ cả đường dẫn ảnh sinh viên, ảnh cá nhân và mã sinh viên.'}), 400
@@ -89,10 +90,6 @@ def verify_face():
             seating_position = random.randint(1, 20)
             exam_account = generate_random_string()
             exam_password = generate_random_string()
-
-            # print("Seating position:", seating_position)
-            # print("Exam account:", exam_account)
-            # print("Exam password:", exam_password)
 
             ticket_directory = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\tickets"
 
@@ -112,6 +109,30 @@ def verify_face():
             })
         else:
             return jsonify({'match': False})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/generate-pdf/', methods=['POST'])
+def generate_pdf_route():
+    try:
+        data = request.get_json()
+        session_code = data.get('sessionCode')
+        student_info = data.get('studentInfo')
+
+        if not session_code or not student_info:
+            return jsonify({'error': 'Missing required data'}), 400
+
+        pdf_stream = generate_pdf(session_code, student_info)
+
+        filename = f'bao_cao_ca_thi-{session_code}.pdf'
+
+        return send_file(
+            pdf_stream,
+            as_attachment=True,
+            attachment_filename=filename,
+            mimetype='application/pdf'
+        )
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

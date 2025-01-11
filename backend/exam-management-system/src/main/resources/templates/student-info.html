@@ -18,53 +18,9 @@
             height: 100vh;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar .logo h2 {
-            font-size: 1.5rem;
-            color: #ecf0f1;
-        }
-
-        .sidebar nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar nav ul li {
-            margin: 15px 0;
-        }
-
-        .sidebar nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-            padding: 10px;
-            border-radius: 5px;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar nav ul li a.active,
-        .sidebar nav ul li a:hover {
-            background-color: #3498db;
-        }
-
         /* Main Content */
         .content {
+            margin-left: 150px;
             flex: 1;
             padding: 20px;
             overflow-y: auto;
@@ -146,29 +102,6 @@
             background-color: #27ae60;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                align-items: center;
-                padding: 10px;
-            }
-
-            .sidebar nav ul {
-                display: flex;
-                justify-content: space-around;
-            }
-
-            .content {
-                padding: 10px;
-            }
-        }
-
         .student-table {
             width: 100%;
             border-collapse: collapse;
@@ -232,25 +165,6 @@
 </head>
 <body>
 <div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <img src="/static/logo_dhvinh.png" alt="Logo" style="width: 150px; height: auto; margin-bottom: 10px;" />
-            <h2>PHÂN HỆ SINH VIÊN</h2>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/student/dashboard-student">Trang chủ</a></li>
-                <li><a href="/student/info" class="active">Thông tin cá nhân</a></li>
-                <li><a href="/student/courses">Các khóa học</a></li>
-                <li><a href="/student/exams">Lịch thi</a></li>
-                <li><a href="/student/grades">Điểm số</a></li>
-                <li><a href="/student/settings">Cài đặt</a></li>
-                <li><a href="/logout">Đăng xuất</a></li>
-            </ul>
-        </nav>
-    </aside>
-
     <!-- Main Content -->
     <main class="content">
         <header>
