@@ -3,20 +3,19 @@ import cv2
 import unidecode
 from flask import Flask, request, jsonify, render_template
 import numpy as np
+import random
 from flask_cors import CORS
-from db_update import update_images
+from module.db_update import update_images
 from db_connect import connect_db
-from face_detection import detect_and_crop_face
-from student_info import get_student_list
-from recognition import verify_faces
+from module.face_detection import detect_and_crop_face
+from module.student_info import get_student_list
+from module.recognition import verify_faces
+from module.generate_ticket import generate_exam_ticket, generate_random_string
 
 app = Flask(__name__)
-# CORS(app)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-
 CARD_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\card'
-
 os.makedirs(CARD_FOLDER, exist_ok=True)
 
 @app.route('/upload-photo/', methods=['POST'])
@@ -75,12 +74,11 @@ def verify_face():
     try:
         student_image_path = request.form.get('student_image_path')
         personal_image_file = request.files['filePersonalImage']
+        student_id = request.form.get('student_id')
+        student_name = request.form.get('studentName')
 
-        # print("Ảnh sinh viên trong DB:", student_image_path)
-        # print("Ảnh thực tế:", personal_image_file)
-
-        if not student_image_path or not personal_image_file:
-            return jsonify({'error': 'Cần cung cấp đủ cả đường dẫn ảnh sinh viên và ảnh cá nhân.'}), 400
+        if not student_image_path or not personal_image_file or not student_id:
+            return jsonify({'error': 'Cần cung cấp đủ cả đường dẫn ảnh sinh viên, ảnh cá nhân và mã sinh viên.'}), 400
 
         result = verify_faces(personal_image_file, student_image_path)
 
@@ -88,13 +86,34 @@ def verify_face():
             return jsonify({'error': result['error']}), 500
 
         if result['match']:
-            return jsonify({'match': True})
+            seating_position = random.randint(1, 20)
+            exam_account = generate_random_string()
+            exam_password = generate_random_string()
+
+            # print("Seating position:", seating_position)
+            # print("Exam account:", exam_account)
+            # print("Exam password:", exam_password)
+
+            ticket_directory = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\tickets"
+
+            if not os.path.exists(ticket_directory):
+                os.makedirs(ticket_directory)
+
+            ticket_path = generate_exam_ticket(student_name, student_id, ticket_directory)
+
+            return jsonify({
+                'match': True,
+                'exam_ticket_path': ticket_path,
+                'student_name': student_name,
+                'student_id': student_id,
+                'seating_position': seating_position,
+                'exam_account': exam_account,
+                'exam_password': exam_password
+            })
         else:
             return jsonify({'match': False})
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000)

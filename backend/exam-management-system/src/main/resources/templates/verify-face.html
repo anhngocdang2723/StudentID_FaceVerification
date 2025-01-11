@@ -30,7 +30,10 @@
 
         <div id="ticketContainer" class="mt-4" style="display:none;">
             <h4>Phiếu thi</h4>
-            <pre id="ticketContent" style="white-space: pre-wrap; font-family: monospace;"></pre>
+            <p><strong>Vị trí ngồi:</strong> <span id="seatingPosition"></span></p>
+            <p><strong>Tài khoản thi:</strong> <span id="examAccount"></span></p>
+            <p><strong>Mật khẩu thi:</strong> <span id="examPassword"></span></p>
+            <p><strong>Link Phiếu thi:</strong> <a id="ticketLink" href="#" target="_blank">Tải phiếu thi</a></p>
         </div>
     </div>
 </div>
@@ -69,7 +72,10 @@
                 success: function (response) {
                     if (response.match) {
                         $('#comparisonResult').removeClass('alert-danger').addClass('alert-success').text('Xác minh thành công!').show();
-                        $('#ticketContent').text(response.exam_ticket || "Không có phiếu thi").show();
+                        $('#seatingPosition').text(response.seating_position);
+                        $('#examAccount').text(response.exam_account);
+                        $('#examPassword').text(response.exam_password);
+                        $('#ticketLink').attr('href', response.exam_ticket_path).show();
                         $('#ticketContainer').show();
                     } else {
                         $('#comparisonResult').removeClass('alert-success').addClass('alert-danger').text('Xác minh thất bại!').show();
