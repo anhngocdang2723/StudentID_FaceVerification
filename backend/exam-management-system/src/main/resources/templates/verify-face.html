@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác minh danh tính sinh viên</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h1 class="text-center mb-4">Xác minh danh tính sinh viên</h1>
+        <div id="studentInfo" class="mb-4">
+            <h4>Thông tin sinh viên</h4>
+            <p><strong>Họ tên:</strong> <span id="studentName"></span></p>
+            <p><strong>Mã sinh viên:</strong> <span id="studentID"></span></p>
+            <p><strong>Số điện thoại:</strong> <span id="studentPhone"></span></p>
+            <img id="studentImage" src="" alt="Ảnh sinh viên" width="150" height="150">
+        </div>
+
+        <form id="uploadImageForm" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="filePersonalImage" class="form-label">Chọn ảnh để xác minh:</label>
+                <input type="file" class="form-control" id="filePersonalImage" name="filePersonalImage" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Gửi ảnh xác minh</button>
+        </form>
+
+        <div id="comparisonResult" class="alert mt-4" style="display:none;"></div>
+
+        <div id="ticketContainer" class="mt-4" style="display:none;">
+            <h4>Phiếu thi</h4>
+            <pre id="ticketContent" style="white-space: pre-wrap; font-family: monospace;"></pre>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('student_id');
+        const studentName = urlParams.get('name');
+        const studentPhone = urlParams.get('phone');
+        let studentImageUrl = urlParams.get('image_url');
+
+        // Đảm bảo chuyển đổi đường dẫn cho ảnh sinh viên
+        studentImageUrl = studentImageUrl.replace(/\\/g, '/');
+
+        $('#studentName').text(studentName);
+        $('#studentID').text(studentId);
+        $('#studentPhone').text(studentPhone);
+        $('#studentImage').attr('src', studentImageUrl);
+
+        $('#uploadImageForm').submit(function (e) {
+            e.preventDefault();
+
+            // Đảm bảo gửi file cá nhân (file đã chọn)
+            let formData = new FormData(this);
+            formData.append('student_image_path', studentImageUrl);  // Thêm đường dẫn ảnh sinh viên vào formData
+            formData.append('student_id', studentId);  // Thêm mã sinh viên vào formData
+
+            $.ajax({
+                url: 'http://127.0.0.1:8000/verify-face/',  // Đảm bảo là địa chỉ đúng cho Flask server
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.match) {
+                        $('#comparisonResult').removeClass('alert-danger').addClass('alert-success').text('Xác minh thành công!').show();
+                        $('#ticketContent').text(response.exam_ticket || "Không có phiếu thi").show();
+                        $('#ticketContainer').show();
+                    } else {
+                        $('#comparisonResult').removeClass('alert-success').addClass('alert-danger').text('Xác minh thất bại!').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#comparisonResult').removeClass('alert-success').addClass('alert-danger').text('Lỗi khi xác minh khuôn mặt: ' + error).show();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

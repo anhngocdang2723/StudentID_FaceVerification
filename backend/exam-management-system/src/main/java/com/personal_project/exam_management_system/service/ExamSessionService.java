@@ -6,8 +6,6 @@ import com.personal_project.exam_management_system.repository.ExamSessionReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,8 +45,12 @@ public class ExamSessionService {
         return null;
     }
 
-    public ExamSession save(ExamSession examSession) {
-        return examSessionRepository.save(examSession);
+    public void save(ExamSession examSession) {
+        examSessionRepository.save(examSession);
+    }
+
+    public ExamSession getSessionByCode(String sessionCode) {
+        return examSessionRepository.findBySessionCode(sessionCode);
     }
 }
 

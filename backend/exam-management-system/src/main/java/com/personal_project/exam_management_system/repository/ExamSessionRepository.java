@@ -16,6 +16,8 @@ public interface ExamSessionRepository extends JpaRepository<ExamSession, String
     @Query("SELECT es FROM ExamSession es WHERE es.proctorCode LIKE %:proctorCode%")
     List<ExamSession> findByProctorCode(@Param("proctorCode") String proctorCode);
 
+    ExamSession findBySessionCode(String sessionCode);
+
     @Query(value = "SELECT " +
             "es.session_code, " +
             "c.course_name, " +

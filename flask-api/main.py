@@ -1,42 +1,23 @@
 import os
 import cv2
 import unidecode
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import numpy as np
-from flask_cors import CORS  # Import CORS
-from db_update import update_images  # Ensure this is imported correctly
+from flask_cors import CORS
+from db_update import update_images
+from db_connect import connect_db
+from face_detection import detect_and_crop_face
+from student_info import get_student_list
+from recognition import verify_faces
 
-# Enable CORS for all domains
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 CARD_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\card'
-FACE_FOLDER = r'D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results\\images\\face'
 
 os.makedirs(CARD_FOLDER, exist_ok=True)
-os.makedirs(FACE_FOLDER, exist_ok=True)
-
-def detect_and_crop_face(image_data, full_name, student_code):
-    np_arr = np.frombuffer(image_data, np.uint8)
-    img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-
-    if len(faces) == 0:
-        return None
-
-    x, y, w, h = faces[0]
-    face_img = img[y:y+h, x:x+w]
-
-    name_without_accents = unidecode.unidecode(full_name.strip()).replace(" ", "").lower()
-    student_code_last_3 = student_code[-3:]
-    face_filename = f"{name_without_accents}_{student_code_last_3}_face.jpg"
-    face_path = os.path.join(FACE_FOLDER, face_filename)
-    cv2.imwrite(face_path, face_img)
-
-    return face_path
 
 @app.route('/upload-photo/', methods=['POST'])
 def upload_photo():
@@ -63,7 +44,7 @@ def upload_photo():
     if face_image_path is None:
         return jsonify({'error': 'No face detected in the image'}), 400
 
-    update_images(student_code, full_name)  # Update images in the database
+    update_images(student_code, full_name)
 
     return jsonify({
         'message': 'Photo uploaded and face cropped successfully',
@@ -71,5 +52,49 @@ def upload_photo():
         'face_image_path': face_image_path
     }), 200
 
+@app.route('/get-student-info/', methods=['POST'])
+def get_student_info():
+    session_code = request.json.get('sessionCode', '').strip()
+
+    if not session_code:
+        return jsonify({'error': 'Invalid session code'}), 400
+
+    student_info_result = get_student_list(session_code)
+
+    if student_info_result.get("student_info_result", {}).get("student_info"):
+        return jsonify({
+            'message': 'Danh sách sinh viên thành công',
+            'student_info': student_info_result['student_info_result']['student_info']
+        }), 200
+    else:
+        return jsonify({'error': student_info_result.get('error', 'Không tìm thấy thông tin sinh viên hoặc ca thi')}), 404
+    # curl -X POST http://127.0.0.1:8000/get-student-info/ -H "Content-Type: application/json" -d "{\"sessionCode\": \"EXS001\"}"
+
+@app.route('/verify-face/', methods=['POST'])
+def verify_face():
+    try:
+        student_image_path = request.form.get('student_image_path')
+        personal_image_file = request.files['filePersonalImage']
+
+        # print("Ảnh sinh viên trong DB:", student_image_path)
+        # print("Ảnh thực tế:", personal_image_file)
+
+        if not student_image_path or not personal_image_file:
+            return jsonify({'error': 'Cần cung cấp đủ cả đường dẫn ảnh sinh viên và ảnh cá nhân.'}), 400
+
+        result = verify_faces(personal_image_file, student_image_path)
+
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 500
+
+        if result['match']:
+            return jsonify({'match': True})
+        else:
+            return jsonify({'match': False})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='127.0.0.1', port=8000)
