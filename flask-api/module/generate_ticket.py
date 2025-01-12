@@ -34,19 +34,3 @@ def generate_exam_ticket(student_name, student_id, output_path):
     c.save()
 
     return ticket_path
-
-# def handle_exam_ticket(student_name, student_id):
-#     ticket_directory = r"D:\Edu\Python\StudentID_FaceVerification\student-id-face-matching\results\tickets"
-
-#     if not os.path.exists(ticket_directory):
-#         os.makedirs(ticket_directory)
-
-#     ticket_path = generate_exam_ticket(student_name, student_id, ticket_directory)
-
-#     return ticket_path
-
-# student_name = "Ngoc Anh"
-# student_id = "215748020110333"
-
-# ticket_path = handle_exam_ticket(student_name, student_id)
-# print(f"Phiếu thi đã được tạo và lưu tại: {ticket_path}")
