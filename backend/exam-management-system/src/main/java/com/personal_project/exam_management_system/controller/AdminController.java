@@ -59,7 +59,7 @@ public class AdminController {
         List<Student> students = studentService.findAllStudents();
         model.addAttribute("students", students);
         model.addAttribute("pageContent", "manage-students");
-        return "template-admin";  // Trả về layout chung
+        return "template-admin";
     }
 
     // Tìm kiếm sinh viên theo mã sinh viên
@@ -120,7 +120,6 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Sinh viên không tồn tại.");
                 return "redirect:/admin/manage-students";
             }
-            // Cập nhật thông tin sinh viên
             existingStudent.setFullName(student.getFullName());
             existingStudent.setDepartment(student.getDepartment());
             existingStudent.setClassName(student.getClassName());
