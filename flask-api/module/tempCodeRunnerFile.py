@@ -1,49 +1,90 @@
-from fpdf import FPDF
+#mudule.recognition.py
+
+import face_recognition
+from PIL import Image, ImageEnhance
+import numpy as np
+import cv2
 import io
+import os
 
-class PDF(FPDF):
-    def header(self):
-        # Thêm font Unicode đã tải xuống
-        self.add_font('DejaVuSans', '', r'flask-api\font\dejavu-sans.book.ttf', uni=True)
-        self.set_font('DejaVuSans', 'B', 12)
+def crop_face(image_array, margin=0.2):
+    face_locations = face_recognition.face_locations(image_array)
+    if not face_locations:
+        raise ValueError("No face detected")
 
-    def footer(self):
-        self.set_font('DejaVuSans', 'I', 8)
+    top, right, bottom, left = face_locations[0]
+    height = bottom - top
+    width = right - left
 
-    def chapter_title(self, title):
-        self.set_font('DejaVuSans', 'B', 12)
-        self.cell(0, 10, title, ln=True, align='C')
-        self.ln(10)
+    margin_y = int(height * margin)
+    margin_x = int(width * margin)
 
-    def chapter_body(self, body):
-        self.set_font('DejaVuSans', '', 12)
-        self.multi_cell(0, 10, body)
-        self.ln()
+    crop_top = max(top - margin_y, 0)
+    crop_bottom = min(bottom + margin_y, image_array.shape[0])
+    crop_left = max(left - margin_x, 0)
+    crop_right = min(right + margin_x, image_array.shape[1])
 
-def generate_pdf(session_code, student_info):
-    pdf = PDF()
-    pdf.add_page()
+    return image_array[crop_top:crop_bottom, crop_left:crop_right]
 
-    # Tiêu đề
-    pdf.cell(200, 10, txt=f"Báo cáo Ca thi: {session_code}", ln=True, align='C')
-    pdf.ln(10)
+def standardize_image(image_array, target_size=(160, 160)):
+    image = Image.fromarray(image_array)
+    image = image.resize(target_size, Image.Resampling.LANCZOS)
+    return np.array(image)
 
-    # Header bảng
-    pdf.cell(60, 10, txt="Họ tên", border=1)
-    pdf.cell(50, 10, txt="Mã sinh viên", border=1)
-    pdf.cell(40, 10, txt="Trạng thái", border=1)
-    pdf.ln()
+def enhance_image(image_array):
+    image = Image.fromarray(image_array)
 
-    # Dữ liệu sinh viên
-    for student in student_info:
-        pdf.cell(60, 10, txt=student["name"], border=1)
-        pdf.cell(50, 10, txt=student["student_id"], border=1)
-        pdf.cell(40, 10, txt=student["status"], border=1)
-        pdf.ln()
+    contrast = ImageEnhance.Contrast(image)
+    image = contrast.enhance(1.2)
 
-    # Xuất file PDF vào bộ nhớ
-    pdf_stream = io.BytesIO()
-    pdf.output(pdf_stream)
-    pdf_stream.seek(0)
+    sharpness = ImageEnhance.Sharpness(image)
+    image = sharpness.enhance(1.5)
 
-    return pdf_stream
+    cv_image = np.array(image)
+    denoised = cv2.fastNlMeansDenoisingColored(cv_image)
+
+    return denoised
+
+def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
+    try:
+        filePersonalImage.seek(0)
+        personal_image = face_recognition.load_image_file(io.BytesIO(filePersonalImage.read()))
+        personal_face = crop_face(personal_image)
+        personal_face = standardize_image(personal_face)
+        personal_face = enhance_image(personal_face)
+
+        base_path = r"D:\\Edu\\Python\\StudentID_FaceVerification\\student-id-face-matching\\results"
+        student_path = os.path.join(base_path, studentImagePathInDB.lstrip('/'))
+        student_image = face_recognition.load_image_file(student_path)
+        student_face = crop_face(student_image)
+        student_face = standardize_image(student_face)
+        student_face = enhance_image(student_face)
+
+        personal_encoding = face_recognition.face_encodings(personal_face)[0]
+
+        print(personal_encoding)
+        student_encoding = face_recognition.face_encodings(student_face)[0]
+
+        face_distances = face_recognition.face_distance([student_encoding], personal_encoding)
+        face_distance = face_distances[0]
+        confidence = round((1 - face_distance) * 100, 2)
+        matches = face_recognition.compare_faces([student_encoding], personal_encoding, tolerance=threshold)
+
+        return {
+            'match': bool(matches[0]),
+            'confidence': confidence,
+            'face_distance': float(face_distance),
+            'threshold': threshold
+        }
+
+    except Exception as e:
+        return {'error': str(e)}
+
+# Test
+filePersonalImage = open(r"api/(delete)img/NgocAnh_face.jpg", "rb")
+filePersonalImage = open(r"api/(delete)img/ThaiTuan_face.jpg", "rb")
+studentImagePathInDB = "/images/face/dangngocanh_333_face.jpg"
+
+result = verify_faces(filePersonalImage, studentImagePathInDB)
+print(result)
+filePersonalImage.close()

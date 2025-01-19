@@ -61,6 +61,7 @@ def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
         student_face = enhance_image(student_face)
 
         personal_encoding = face_recognition.face_encodings(personal_face)[0]
+        print(personal_encoding)
         student_encoding = face_recognition.face_encodings(student_face)[0]
 
         face_distances = face_recognition.face_distance([student_encoding], personal_encoding)
@@ -79,10 +80,10 @@ def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
         return {'error': str(e)}
 
 # Test
-# filePersonalImage = open(r"api/(delete)img/NgocAnh_face.jpg", "rb")
-# filePersonalImage = open(r"api/(delete)img/ThaiTuan_face.jpg", "rb")
-# studentImagePathInDB = "/images/face/dangngocanh_333_face.jpg"
+filePersonalImage = open(r"api/(delete)img/NgocAnh_face.jpg", "rb")
+filePersonalImage = open(r"api/(delete)img/ThaiTuan_face.jpg", "rb")
+studentImagePathInDB = "/images/face/dangngocanh_333_face.jpg"
 
-# result = verify_faces(filePersonalImage, studentImagePathInDB)
-# print(result)
-# filePersonalImage.close()
+result = verify_faces(filePersonalImage, studentImagePathInDB)
+print(result)
+filePersonalImage.close()
