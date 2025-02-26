@@ -80,10 +80,10 @@ def verify_faces(filePersonalImage, studentImagePathInDB, threshold=0.50006):
         return {'error': str(e)}
 
 # Test
-filePersonalImage = open(r"api/(delete)img/NgocAnh_face.jpg", "rb")
-filePersonalImage = open(r"api/(delete)img/ThaiTuan_face.jpg", "rb")
-studentImagePathInDB = "/images/face/dangngocanh_333_face.jpg"
+# filePersonalImage = open(r"api/(delete)img/NgocAnh_face.jpg", "rb")
+# filePersonalImage = open(r"api/(delete)img/ThaiTuan_face.jpg", "rb")
+# studentImagePathInDB = "/images/face/dangngocanh_333_face.jpg"
 
-result = verify_faces(filePersonalImage, studentImagePathInDB)
-print(result)
-filePersonalImage.close()
+# result = verify_faces(filePersonalImage, studentImagePathInDB)
+# print(result)
+# filePersonalImage.close()

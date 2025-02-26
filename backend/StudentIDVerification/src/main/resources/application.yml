@@ -1,6 +1,0 @@
-logging:
-  level:
-    root: DEBUG
-    com.Project.StudentIDVerification.controller: DEBUG  # Thay thế với package của bạn
-  console:
-    log-pattern: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"  # Cấu hình định dạng log
